@@ -1,0 +1,2427 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Pocket Imam</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .font-arabic {
+            font-family: 'Traditional Arabic', 'Arabic Typesetting', 'Geeza Pro', serif;
+        }
+        .prayer-image {
+            transition: all 0.5s ease-in-out;
+            max-height: 350px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-teal-50 via-emerald-50 to-cyan-50 min-h-screen">
+    <div id="app">
+        <!-- Loading screen while translations load -->
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="text-center">
+                <div class="text-6xl mb-4">🕌</div>
+                <div class="text-2xl font-bold text-teal-800 mb-2">Loading...</div>
+                <div class="animate-pulse text-teal-600">Chargement... التحميل...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Translations will be loaded from external JSON file
+        let TRANSLATIONS = null;
+        let translationsLoaded = false;
+
+        // Inline translations as fallback (for use without server)
+        const INLINE_TRANSLATIONS = {
+  "fr": {
+    "appTitle": "My Pocket Imam",
+    "subtitle": "Apprenez et pratiquez vos prières quotidiennes",
+    "reciter": "Récitateur",
+    "reciterName": "Saad El Ghamidi",
+    "rakaats": "Rakaats",
+    "back": "Retour",
+    "config": "Config",
+    "configuration": "Configuration",
+    "settings": "Paramètres",
+    "mandatorySurah": "Al-Fatiha (Obligatoire)",
+    "secondarySurah": "Sourate secondaire",
+    "infoRakaat34": "Pour les rakaats 3 et 4, seule Al-Fatiha est récitée",
+    "startGuidance": "Démarrer le guidage",
+    "scenarioMode": "Mode Scénario",
+    "automaticFlow": "Déroulement automatique des étapes",
+    "automaticActive": "Mode automatique activé - Les étapes s'enchaînent automatiquement",
+    "listenRecitation": "Écouter la récitation",
+    "pause": "Pause",
+    "playing": "Lecture en cours...",
+    "waiting": "En attente...",
+    "variant": "Variante",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "prayerComplete": "Prière terminée !",
+    "prayerAccepted": "Qu'Allah accepte votre prière",
+    "returnHome": "Retour à l'accueil",
+    "rakaat": "Rakaat",
+    "language": "Langue",
+    "avatar": "Avatar",
+    "boy": "Garçon",
+    "girl": "Fille",
+    "selectReciter": "Sélectionner le récitateur",
+    "selectAvatar": "Sélectionner l'avatar",
+    "city": "Ville",
+    "country": "Code Pays (ISO 3166)",
+    "enterCity": "Entrez le nom de votre ville",
+    "enterCountry": "Entrez le code pays à 2 lettres (ex: FR, UK, SA)",
+    "cityPlaceholder": "Paris",
+    "countryPlaceholder": "FR",
+    "calculationMethod": "Méthode de calcul",
+    "selectCalculationMethod": "Sélectionner la méthode de calcul",
+    "saveSettings": "Enregistrer les paramètres",
+    "donations": "Soutenir le projet",
+    "donationsMessage": "Ce projet est gratuit et le restera toujours. Vos dons servent uniquement à couvrir les frais d'hébergement. Tout surplus sera reversé à des œuvres de charité musulmanes.",
+    "supportProject": "Faire un don",
+    "openSource": "Code Open-Source",
+    "openSourceMessage": "Ce projet est développé comme une œuvre pour Allah ﷻ. Le code est entièrement open-source et libre d'utilisation. Vous pouvez le télécharger, le modifier et le partager.",
+    "openSourceWarning": "⚠️ Important : Ce projet ne doit en aucun cas être commercialisé ou vendu. C'est une sadaqa jariya (charité continue) offerte à la communauté.",
+    "viewOnGithub": "Voir sur GitHub",
+    "downloadCode": "Télécharger le code source",
+    "loadingPrayerTimes": "Chargement des horaires...",
+    "location": "Localisation",
+    "takbirOpening": "Takbir d'ouverture",
+    "openingInvocation": "Invocation d'ouverture",
+    "seekingRefuge": "Demande de refuge",
+    "bismillah": "Bismillah",
+    "reciteFatiha": "Récitation Al-Fatiha",
+    "secondarySurahStep": "Sourate secondaire",
+    "takbirRuku": "Takbir pour le Ruku",
+    "ruku": "Ruku (Inclinaison)",
+    "qiyam": "Qiyam (Retour debout)",
+    "afterQiyam": "Après le Qiyam",
+    "takbirSujud": "Takbir pour la prosternation",
+    "sujud1": "Sujud 1 (Prosternation)",
+    "takbirSit": "Takbir pour s'asseoir",
+    "jalsa": "Jalsa (Position assise)",
+    "takbirSujud2": "Takbir pour la 2ème prosternation",
+    "sujud2": "Sujud 2 (Prosternation)",
+    "tashahhud": "Tashahhud",
+    "ibrahimicPrayer": "Prière Ibrahimique",
+    "finalInvocation": "Invocation finale",
+    "salamRight": "Salam à droite",
+    "salamLeft": "Salam à gauche",
+    "raiseHands": "Levez les mains au niveau des oreilles et dites",
+    "reciteOpening": "Récitez l'invocation d'ouverture",
+    "seekProtection": "Demandez la protection d'Allah",
+    "beginWithName": "Commencez par le nom d'Allah",
+    "reciteFatihaAction": "Récitez la sourate Al-Fatiha",
+    "reciteSecondary": "Récitez la sourate secondaire sélectionnée",
+    "sayTakbirBowing": "Dites Allahu Akbar en vous inclinant",
+    "stayBowing": "Restez en inclinaison et glorifiez Allah",
+    "standUpSaying": "Relevez-vous en disant",
+    "onceStanding": "Une fois debout, dites",
+    "sayTakbirProstrating": "Dites Allahu Akbar en vous prosternant",
+    "stayProstrating": "Restez en prosternation et glorifiez Allah",
+    "sayTakbirSitting": "Dites Allahu Akbar en vous relevant",
+    "sitBriefly": "Asseyez-vous brièvement entre les deux prosternations",
+    "sayTakbirProstrating2": "Dites Allahu Akbar en vous prosternant à nouveau",
+    "prostrateAgain": "Prosternez-vous à nouveau et glorifiez Allah",
+    "standAndSit": "Relevez-vous et asseyez-vous",
+    "reciteTashahhud": "Récitez le Tashahhud",
+    "reciteIbrahimic": "Récitez la prière Ibrahimique",
+    "makeInvocations": "Faites des invocations personnelles",
+    "turnRightGreet": "Tournez la tête vers la droite et saluez",
+    "turnLeftGreet": "Tournez la tête vers la gauche et saluez",
+    "hadithOfTheDay": "Hadith du Jour",
+    "loadingHadith": "Chargement du hadith...",
+    "hadithError": "Erreur lors du chargement du hadith",
+    "refresh": "Rafraîchir",
+    "retry": "Réessayer",
+    "prayers": {
+      "fajr": "Fajr",
+      "dohr": "Dohr",
+      "asr": "Asr",
+      "maghreb": "Maghreb",
+      "isha": "Isha"
+    },
+    "surahs": {
+      "fatiha": "Al-Fatiha",
+      "ikhlas": "Al-Ikhlas",
+      "falaq": "Al-Falaq",
+      "nas": "An-Nas",
+      "kafirun": "Al-Kafirun",
+      "asr": "Al-Asr",
+      "qadr": "Al-Qadr"
+    },
+    "calculationMethods": {
+      "3": "Ligue Islamique Mondiale",
+      "2": "ISNA (Amérique du Nord)",
+      "5": "Autorité Égyptienne",
+      "4": "Umm Al-Qura (La Mecque)",
+      "1": "Université de Karachi",
+      "0": "Chiite Ithna-Ashari",
+      "7": "Téhéran",
+      "8": "Région du Golfe",
+      "9": "Koweït",
+      "10": "Qatar",
+      "11": "Singapour",
+      "12": "France (UOIF)",
+      "13": "Turquie (Diyanet)",
+      "14": "Russie",
+      "16": "Dubaï",
+      "17": "Malaisie (JAKIM)",
+      "18": "Tunisie",
+      "19": "Algérie",
+      "20": "Indonésie (KEMENAG)",
+      "21": "Maroc",
+      "22": "Portugal",
+      "23": "Jordanie"
+    }
+  },
+  "en": {
+    "appTitle": "My Pocket Imam",
+    "subtitle": "Learn and practice your daily prayers",
+    "reciter": "Reciter",
+    "reciterName": "Saad El Ghamidi",
+    "rakaats": "Rakaats",
+    "back": "Back",
+    "config": "Config",
+    "configuration": "Configuration",
+    "settings": "Settings",
+    "mandatorySurah": "Al-Fatiha (Mandatory)",
+    "secondarySurah": "Secondary Surah",
+    "infoRakaat34": "For rakaats 3 and 4, only Al-Fatiha is recited",
+    "startGuidance": "Start Guidance",
+    "scenarioMode": "Scenario Mode",
+    "automaticFlow": "Automatic flow of steps",
+    "automaticActive": "Automatic mode activated - Steps flow automatically",
+    "listenRecitation": "Listen to recitation",
+    "pause": "Pause",
+    "playing": "Playing...",
+    "waiting": "Waiting...",
+    "variant": "Variant",
+    "previous": "Previous",
+    "next": "Next",
+    "prayerComplete": "Prayer Complete!",
+    "prayerAccepted": "May Allah accept your prayer",
+    "returnHome": "Return Home",
+    "rakaat": "Rakaat",
+    "language": "Language",
+    "avatar": "Avatar",
+    "boy": "Boy",
+    "girl": "Girl",
+    "selectReciter": "Select Reciter",
+    "selectAvatar": "Select Avatar",
+    "city": "City",
+    "country": "Country Code (ISO 3166)",
+    "enterCity": "Enter your city name",
+    "enterCountry": "Enter 2-letter country code (e.g. FR, UK, SA)",
+    "cityPlaceholder": "London",
+    "countryPlaceholder": "GB",
+    "calculationMethod": "Calculation Method",
+    "selectCalculationMethod": "Select calculation method",
+    "saveSettings": "Save Settings",
+    "donations": "Support the Project",
+    "donationsMessage": "This project is free and will always remain free. Your donations are used solely to cover hosting costs. Any surplus will be donated to Muslim charities.",
+    "supportProject": "Make a Donation",
+    "openSource": "Open-Source Code",
+    "openSourceMessage": "This project is developed as a work for Allah ﷻ. The code is entirely open-source and free to use. You can download it, modify it, and share it.",
+    "openSourceWarning": "⚠️ Important: This project must not be commercialized or sold under any circumstances. It is a sadaqa jariya (continuous charity) offered to the community.",
+    "viewOnGithub": "View on GitHub",
+    "downloadCode": "Download Source Code",
+    "loadingPrayerTimes": "Loading prayer times...",
+    "location": "Location",
+    "takbirOpening": "Opening Takbir",
+    "openingInvocation": "Opening Invocation",
+    "seekingRefuge": "Seeking Refuge",
+    "bismillah": "Bismillah",
+    "reciteFatiha": "Reciting Al-Fatiha",
+    "secondarySurahStep": "Secondary Surah",
+    "takbirRuku": "Takbir for Ruku",
+    "ruku": "Ruku (Bowing)",
+    "qiyam": "Qiyam (Standing Up)",
+    "afterQiyam": "After Qiyam",
+    "takbirSujud": "Takbir for Prostration",
+    "sujud1": "Sujud 1 (Prostration)",
+    "takbirSit": "Takbir to Sit",
+    "jalsa": "Jalsa (Sitting Position)",
+    "takbirSujud2": "Takbir for 2nd Prostration",
+    "sujud2": "Sujud 2 (Prostration)",
+    "tashahhud": "Tashahhud",
+    "ibrahimicPrayer": "Ibrahimic Prayer",
+    "finalInvocation": "Final Invocation",
+    "salamRight": "Salam to the Right",
+    "salamLeft": "Salam to the Left",
+    "raiseHands": "Raise your hands to ear level and say",
+    "reciteOpening": "Recite the opening invocation",
+    "seekProtection": "Seek Allah's protection",
+    "beginWithName": "Begin with Allah's name",
+    "reciteFatihaAction": "Recite Surah Al-Fatiha",
+    "reciteSecondary": "Recite the selected secondary surah",
+    "sayTakbirBowing": "Say Allahu Akbar while bowing",
+    "stayBowing": "Stay in bowing position and glorify Allah",
+    "standUpSaying": "Stand up saying",
+    "onceStanding": "Once standing, say",
+    "sayTakbirProstrating": "Say Allahu Akbar while prostrating",
+    "stayProstrating": "Stay in prostration and glorify Allah",
+    "sayTakbirSitting": "Say Allahu Akbar while rising",
+    "sitBriefly": "Sit briefly between the two prostrations",
+    "sayTakbirProstrating2": "Say Allahu Akbar while prostrating again",
+    "prostrateAgain": "Prostrate again and glorify Allah",
+    "standAndSit": "Stand up and sit down",
+    "reciteTashahhud": "Recite the Tashahhud",
+    "reciteIbrahimic": "Recite the Ibrahimic prayer",
+    "makeInvocations": "Make personal invocations",
+    "turnRightGreet": "Turn your head to the right and greet",
+    "turnLeftGreet": "Turn your head to the left and greet",
+    "hadithOfTheDay": "Hadith of the Day",
+    "loadingHadith": "Loading hadith...",
+    "hadithError": "Error loading hadith",
+    "refresh": "Refresh",
+    "retry": "Retry",
+    "prayers": {
+      "fajr": "Fajr",
+      "dohr": "Dhuhr",
+      "asr": "Asr",
+      "maghreb": "Maghrib",
+      "isha": "Isha"
+    },
+    "surahs": {
+      "fatiha": "Al-Fatiha",
+      "ikhlas": "Al-Ikhlas",
+      "falaq": "Al-Falaq",
+      "nas": "An-Nas",
+      "kafirun": "Al-Kafirun",
+      "asr": "Al-Asr",
+      "qadr": "Al-Qadr"
+    },
+    "calculationMethods": {
+      "3": "Muslim World League",
+      "2": "ISNA (North America)",
+      "5": "Egyptian Authority",
+      "4": "Umm Al-Qura (Makkah)",
+      "1": "University of Karachi",
+      "0": "Shia Ithna-Ashari",
+      "7": "Tehran",
+      "8": "Gulf Region",
+      "9": "Kuwait",
+      "10": "Qatar",
+      "11": "Singapore",
+      "12": "France (UOIF)",
+      "13": "Turkey (Diyanet)",
+      "14": "Russia",
+      "16": "Dubai",
+      "17": "Malaysia (JAKIM)",
+      "18": "Tunisia",
+      "19": "Algeria",
+      "20": "Indonesia (KEMENAG)",
+      "21": "Morocco",
+      "22": "Portugal",
+      "23": "Jordan"
+    }
+  },
+  "ar": {
+    "appTitle": "إرشاد الصلاة",
+    "subtitle": "تعلم وممارسة صلواتك اليومية",
+    "reciter": "القارئ",
+    "reciterName": "سعد الغامدي",
+    "rakaats": "ركعات",
+    "back": "رجوع",
+    "config": "الإعدادات",
+    "configuration": "الإعدادات",
+    "settings": "الإعدادات",
+    "mandatorySurah": "الفاتحة (إلزامية)",
+    "secondarySurah": "السورة الثانوية",
+    "infoRakaat34": "للركعات 3 و 4، تُقرأ الفاتحة فقط",
+    "startGuidance": "بدء الإرشاد",
+    "scenarioMode": "الوضع التلقائي",
+    "automaticFlow": "التدفق التلقائي للخطوات",
+    "automaticActive": "الوضع التلقائي مُفعل - تتدفق الخطوات تلقائياً",
+    "listenRecitation": "استمع للتلاوة",
+    "pause": "إيقاف مؤقت",
+    "playing": "جاري التشغيل...",
+    "waiting": "في الانتظار...",
+    "variant": "متغير",
+    "previous": "السابق",
+    "next": "التالي",
+    "prayerComplete": "اكتملت الصلاة!",
+    "prayerAccepted": "تقبل الله صلاتك",
+    "returnHome": "العودة للرئيسية",
+    "rakaat": "ركعة",
+    "language": "اللغة",
+    "avatar": "الصورة الرمزية",
+    "boy": "ولد",
+    "girl": "بنت",
+    "selectReciter": "اختر القارئ",
+    "selectAvatar": "اختر الصورة الرمزية",
+    "city": "المدينة",
+    "country": "رمز الدولة (ISO 3166)",
+    "enterCity": "أدخل اسم مدينتك",
+    "enterCountry": "أدخل رمز الدولة المكون من حرفين (مثال: SA, FR, GB)",
+    "cityPlaceholder": "الرياض",
+    "countryPlaceholder": "SA",
+    "calculationMethod": "طريقة الحساب",
+    "selectCalculationMethod": "اختر طريقة الحساب",
+    "saveSettings": "حفظ الإعدادات",
+    "donations": "دعم المشروع",
+    "donationsMessage": "هذا المشروع مجاني وسيبقى مجانياً دائماً. تستخدم تبرعاتك فقط لتغطية تكاليف الاستضافة. سيتم التبرع بأي فائض للجمعيات الخيرية الإسلامية.",
+    "supportProject": "تبرع الآن",
+    "openSource": "الكود مفتوح المصدر",
+    "openSourceMessage": "تم تطوير هذا المشروع كعمل لله ﷻ. الكود مفتوح المصدر بالكامل ومجاني للاستخدام. يمكنك تنزيله وتعديله ومشاركته.",
+    "openSourceWarning": "⚠️ مهم: يجب عدم تسويق هذا المشروع أو بيعه تحت أي ظرف من الظروف. إنها صدقة جارية مقدمة للمجتمع.",
+    "viewOnGithub": "عرض على GitHub",
+    "downloadCode": "تحميل الكود المصدري",
+    "loadingPrayerTimes": "جاري تحميل أوقات الصلاة...",
+    "location": "الموقع",
+    "takbirOpening": "تكبيرة الإحرام",
+    "openingInvocation": "دعاء الاستفتاح",
+    "seekingRefuge": "الاستعاذة",
+    "bismillah": "البسملة",
+    "reciteFatiha": "قراءة الفاتحة",
+    "secondarySurahStep": "السورة الثانوية",
+    "takbirRuku": "التكبير للركوع",
+    "ruku": "الركوع",
+    "qiyam": "القيام",
+    "afterQiyam": "بعد القيام",
+    "takbirSujud": "التكبير للسجود",
+    "sujud1": "السجود الأول",
+    "takbirSit": "التكبير للجلوس",
+    "jalsa": "الجلسة",
+    "takbirSujud2": "التكبير للسجود الثاني",
+    "sujud2": "السجود الثاني",
+    "tashahhud": "التشهد",
+    "ibrahimicPrayer": "الصلاة الإبراهيمية",
+    "finalInvocation": "الدعاء الختامي",
+    "salamRight": "السلام على اليمين",
+    "salamLeft": "السلام على اليسار",
+    "raiseHands": "ارفع يديك إلى مستوى الأذنين وقل",
+    "reciteOpening": "اقرأ دعاء الاستفتاح",
+    "seekProtection": "استعذ بالله",
+    "beginWithName": "ابدأ باسم الله",
+    "reciteFatihaAction": "اقرأ سورة الفاتحة",
+    "reciteSecondary": "اقرأ السورة الثانوية المختارة",
+    "sayTakbirBowing": "قل الله أكبر عند الركوع",
+    "stayBowing": "ابق في وضع الركوع وسبح الله",
+    "standUpSaying": "قم وأنت تقول",
+    "onceStanding": "بمجرد الوقوف، قل",
+    "sayTakbirProstrating": "قل الله أكبر عند السجود",
+    "stayProstrating": "ابق ساجداً وسبح الله",
+    "sayTakbirSitting": "قل الله أكبر عند الجلوس",
+    "sitBriefly": "اجلس لفترة وجيزة بين السجدتين",
+    "sayTakbirProstrating2": "قل الله أكبر عند السجود مرة أخرى",
+    "prostrateAgain": "اسجد مرة أخرى وسبح الله",
+    "standAndSit": "قم واجلس",
+    "reciteTashahhud": "اقرأ التشهد",
+    "reciteIbrahimic": "اقرأ الصلاة الإبراهيمية",
+    "makeInvocations": "ادع بدعواتك الشخصية",
+    "turnRightGreet": "التفت برأسك إلى اليمين وسلم",
+    "turnLeftGreet": "التفت برأسك إلى اليسار وسلم",
+    "hadithOfTheDay": "حديث اليوم",
+    "loadingHadith": "جاري تحميل الحديث...",
+    "hadithError": "خطأ في تحميل الحديث",
+    "refresh": "تحديث",
+    "retry": "إعادة المحاولة",
+    "prayers": {
+      "fajr": "الفجر",
+      "dohr": "الظهر",
+      "asr": "العصر",
+      "maghreb": "المغرب",
+      "isha": "العشاء"
+    },
+    "surahs": {
+      "fatiha": "الفاتحة",
+      "ikhlas": "الإخلاص",
+      "falaq": "الفلق",
+      "nas": "الناس",
+      "kafirun": "الكافرون",
+      "asr": "العصر",
+      "qadr": "القدر"
+    },
+    "calculationMethods": {
+      "3": "رابطة العالم الإسلامي",
+      "2": "الجمعية الإسلامية لأمريكا الشمالية",
+      "5": "الهيئة المصرية العامة للمساحة",
+      "4": "أم القرى، مكة",
+      "1": "جامعة كراتشي",
+      "0": "الشيعة الإثنا عشرية",
+      "7": "طهران",
+      "8": "منطقة الخليج",
+      "9": "الكويت",
+      "10": "قطر",
+      "11": "سنغافورة",
+      "12": "فرنسا",
+      "13": "تركيا",
+      "14": "روسيا",
+      "16": "دبي",
+      "17": "ماليزيا",
+      "18": "تونس",
+      "19": "الجزائر",
+      "20": "إندونيسيا",
+      "21": "المغرب",
+      "22": "البرتغال",
+      "23": "الأردن"
+    }
+  },
+  "es": {
+    "appTitle": "My Pocket Imam",
+    "subtitle": "Aprende y practica tus oraciones diarias",
+    "reciter": "Recitador",
+    "reciterName": "Saad El Ghamidi",
+    "rakaats": "Rakaats",
+    "back": "Volver",
+    "config": "Config",
+    "configuration": "Configuración",
+    "settings": "Ajustes",
+    "mandatorySurah": "Al-Fatiha (Obligatorio)",
+    "secondarySurah": "Sura secundaria",
+    "infoRakaat34": "Para los rakaats 3 y 4, solo se recita Al-Fatiha",
+    "startGuidance": "Iniciar guía",
+    "scenarioMode": "Modo Escenario",
+    "automaticFlow": "Flujo automático de pasos",
+    "automaticActive": "Modo automático activado - Los pasos fluyen automáticamente",
+    "listenRecitation": "Escuchar recitación",
+    "pause": "Pausa",
+    "playing": "Reproduciendo...",
+    "waiting": "Esperando...",
+    "variant": "Variante",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "prayerComplete": "¡Oración completada!",
+    "prayerAccepted": "Que Allah acepte tu oración",
+    "returnHome": "Volver al inicio",
+    "rakaat": "Rakaat",
+    "language": "Idioma",
+    "avatar": "Avatar",
+    "boy": "Niño",
+    "girl": "Niña",
+    "selectReciter": "Seleccionar recitador",
+    "selectAvatar": "Seleccionar avatar",
+    "city": "Ciudad",
+    "country": "Código de país (ISO 3166)",
+    "enterCity": "Ingrese el nombre de su ciudad",
+    "enterCountry": "Ingrese el código de país de 2 letras (ej: ES, FR, SA)",
+    "cityPlaceholder": "Madrid",
+    "countryPlaceholder": "ES",
+    "calculationMethod": "Método de cálculo",
+    "selectCalculationMethod": "Seleccionar método de cálculo",
+    "saveSettings": "Guardar configuración",
+    "donations": "Apoyar el proyecto",
+    "donationsMessage": "Este proyecto es gratuito y siempre lo será. Sus donaciones se utilizan únicamente para cubrir los costos de alojamiento. Cualquier excedente se donará a organizaciones benéficas musulmanas.",
+    "supportProject": "Hacer una donación",
+    "openSource": "Código de código abierto",
+    "openSourceMessage": "Este proyecto se desarrolla como una obra para Allah ﷻ. El código es completamente de código abierto y de uso gratuito. Puedes descargarlo, modificarlo y compartirlo.",
+    "openSourceWarning": "⚠️ Importante: Este proyecto no debe comercializarse ni venderse bajo ninguna circunstancia. Es una sadaqa jariya (caridad continua) ofrecida a la comunidad.",
+    "viewOnGithub": "Ver en GitHub",
+    "downloadCode": "Descargar código fuente",
+    "loadingPrayerTimes": "Cargando horarios de oración...",
+    "location": "Ubicación",
+    "takbirOpening": "Takbir de apertura",
+    "openingInvocation": "Invocación de apertura",
+    "seekingRefuge": "Buscando refugio",
+    "bismillah": "Bismillah",
+    "reciteFatiha": "Recitando Al-Fatiha",
+    "secondarySurahStep": "Sura secundaria",
+    "takbirRuku": "Takbir para Ruku",
+    "ruku": "Ruku (Inclinación)",
+    "qiyam": "Qiyam (Levantarse)",
+    "afterQiyam": "Después de Qiyam",
+    "takbirSujud": "Takbir para la postración",
+    "sujud1": "Sujud 1 (Postración)",
+    "takbirSit": "Takbir para sentarse",
+    "jalsa": "Jalsa (Posición sentada)",
+    "takbirSujud2": "Takbir para la 2ª postración",
+    "sujud2": "Sujud 2 (Postración)",
+    "tashahhud": "Tashahhud",
+    "ibrahimicPrayer": "Oración Ibrahímica",
+    "finalInvocation": "Invocación final",
+    "salamRight": "Salam a la derecha",
+    "salamLeft": "Salam a la izquierda",
+    "raiseHands": "Levanta tus manos a la altura de las orejas y di",
+    "reciteOpening": "Recita la invocación de apertura",
+    "seekProtection": "Busca la protección de Allah",
+    "beginWithName": "Comienza con el nombre de Allah",
+    "reciteFatihaAction": "Recita la Sura Al-Fatiha",
+    "reciteSecondary": "Recita la sura secundaria seleccionada",
+    "sayTakbirBowing": "Di Allahu Akbar mientras te inclinas",
+    "stayBowing": "Permanece inclinado y glorifica a Allah",
+    "standUpSaying": "Levántate diciendo",
+    "onceStanding": "Una vez de pie, di",
+    "sayTakbirProstrating": "Di Allahu Akbar mientras te postras",
+    "stayProstrating": "Permanece postrado y glorifica a Allah",
+    "sayTakbirSitting": "Di Allahu Akbar mientras te levantas",
+    "sitBriefly": "Siéntate brevemente entre las dos postraciones",
+    "sayTakbirProstrating2": "Di Allahu Akbar mientras te postras nuevamente",
+    "prostrateAgain": "Póstrate nuevamente y glorifica a Allah",
+    "standAndSit": "Levántate y siéntate",
+    "reciteTashahhud": "Recita el Tashahhud",
+    "reciteIbrahimic": "Recita la oración Ibrahímica",
+    "makeInvocations": "Haz invocaciones personales",
+    "turnRightGreet": "Gira tu cabeza hacia la derecha y saluda",
+    "turnLeftGreet": "Gira tu cabeza hacia la izquierda y saluda",
+    "hadithOfTheDay": "Hadiz del Día",
+    "loadingHadith": "Cargando hadiz...",
+    "hadithError": "Error al cargar el hadiz",
+    "refresh": "Actualizar",
+    "retry": "Reintentar",
+    "prayers": {
+      "fajr": "Fajr",
+      "dohr": "Dhuhr",
+      "asr": "Asr",
+      "maghreb": "Maghrib",
+      "isha": "Isha"
+    },
+    "surahs": {
+      "fatiha": "Al-Fatiha",
+      "ikhlas": "Al-Ikhlas",
+      "falaq": "Al-Falaq",
+      "nas": "An-Nas",
+      "kafirun": "Al-Kafirun",
+      "asr": "Al-Asr",
+      "qadr": "Al-Qadr"
+    },
+    "calculationMethods": {
+      "3": "Liga Mundial Musulmana",
+      "2": "ISNA (América del Norte)",
+      "5": "Autoridad Egipcia",
+      "4": "Umm Al-Qura (La Meca)",
+      "1": "Universidad de Karachi",
+      "0": "Shia Ithna-Ashari",
+      "7": "Teherán",
+      "8": "Región del Golfo",
+      "9": "Kuwait",
+      "10": "Qatar",
+      "11": "Singapur",
+      "12": "Francia (UOIF)",
+      "13": "Turquía (Diyanet)",
+      "14": "Rusia",
+      "16": "Dubái",
+      "17": "Malasia (JAKIM)",
+      "18": "Túnez",
+      "19": "Argelia",
+      "20": "Indonesia (KEMENAG)",
+      "21": "Marruecos",
+      "22": "Portugal",
+      "23": "Jordania"
+    }
+  },
+  "it": {
+    "appTitle": "My Pocket Imam",
+    "subtitle": "Impara e pratica le tue preghiere quotidiane",
+    "reciter": "Recitatore",
+    "reciterName": "Saad El Ghamidi",
+    "rakaats": "Rakaats",
+    "back": "Indietro",
+    "config": "Config",
+    "configuration": "Configurazione",
+    "settings": "Impostazioni",
+    "mandatorySurah": "Al-Fatiha (Obbligatorio)",
+    "secondarySurah": "Sura secondaria",
+    "infoRakaat34": "Per i rakaats 3 e 4, viene recitata solo Al-Fatiha",
+    "startGuidance": "Inizia guida",
+    "scenarioMode": "Modalità Scenario",
+    "automaticFlow": "Flusso automatico dei passaggi",
+    "automaticActive": "Modalità automatica attivata - I passaggi fluiscono automaticamente",
+    "listenRecitation": "Ascolta la recitazione",
+    "pause": "Pausa",
+    "playing": "In riproduzione...",
+    "waiting": "In attesa...",
+    "variant": "Variante",
+    "previous": "Precedente",
+    "next": "Successivo",
+    "prayerComplete": "Preghiera completata!",
+    "prayerAccepted": "Che Allah accetti la tua preghiera",
+    "returnHome": "Torna alla home",
+    "rakaat": "Rakaat",
+    "language": "Lingua",
+    "avatar": "Avatar",
+    "boy": "Ragazzo",
+    "girl": "Ragazza",
+    "selectReciter": "Seleziona recitatore",
+    "selectAvatar": "Seleziona avatar",
+    "city": "Città",
+    "country": "Codice paese (ISO 3166)",
+    "enterCity": "Inserisci il nome della tua città",
+    "enterCountry": "Inserisci il codice paese a 2 lettere (es: IT, FR, SA)",
+    "cityPlaceholder": "Roma",
+    "countryPlaceholder": "IT",
+    "calculationMethod": "Metodo di calcolo",
+    "selectCalculationMethod": "Seleziona metodo di calcolo",
+    "saveSettings": "Salva impostazioni",
+    "donations": "Sostieni il progetto",
+    "donationsMessage": "Questo progetto è gratuito e rimarrà sempre tale. Le tue donazioni vengono utilizzate esclusivamente per coprire i costi di hosting. Qualsiasi eccedenza sarà donata a organizzazioni benefiche musulmane.",
+    "supportProject": "Fai una donazione",
+    "openSource": "Codice open-source",
+    "openSourceMessage": "Questo progetto è sviluppato come un'opera per Allah ﷻ. Il codice è completamente open-source e gratuito. Puoi scaricarlo, modificarlo e condividerlo.",
+    "openSourceWarning": "⚠️ Importante: Questo progetto non deve essere commercializzato o venduto in nessuna circostanza. È una sadaqa jariya (carità continua) offerta alla comunità.",
+    "viewOnGithub": "Visualizza su GitHub",
+    "downloadCode": "Scarica codice sorgente",
+    "loadingPrayerTimes": "Caricamento orari di preghiera...",
+    "location": "Posizione",
+    "takbirOpening": "Takbir di apertura",
+    "openingInvocation": "Invocazione di apertura",
+    "seekingRefuge": "Chiedere rifugio",
+    "bismillah": "Bismillah",
+    "reciteFatiha": "Recitare Al-Fatiha",
+    "secondarySurahStep": "Sura secondaria",
+    "takbirRuku": "Takbir per Ruku",
+    "ruku": "Ruku (Inchino)",
+    "qiyam": "Qiyam (Alzarsi)",
+    "afterQiyam": "Dopo Qiyam",
+    "takbirSujud": "Takbir per la prostrazione",
+    "sujud1": "Sujud 1 (Prostrazione)",
+    "takbirSit": "Takbir per sedersi",
+    "jalsa": "Jalsa (Posizione seduta)",
+    "takbirSujud2": "Takbir per la 2ª prostrazione",
+    "sujud2": "Sujud 2 (Prostrazione)",
+    "tashahhud": "Tashahhud",
+    "ibrahimicPrayer": "Preghiera Ibrahimica",
+    "finalInvocation": "Invocazione finale",
+    "salamRight": "Salam a destra",
+    "salamLeft": "Salam a sinistra",
+    "raiseHands": "Alza le mani all'altezza delle orecchie e dì",
+    "reciteOpening": "Recita l'invocazione di apertura",
+    "seekProtection": "Chiedi la protezione di Allah",
+    "beginWithName": "Inizia con il nome di Allah",
+    "reciteFatihaAction": "Recita la Sura Al-Fatiha",
+    "reciteSecondary": "Recita la sura secondaria selezionata",
+    "sayTakbirBowing": "Dì Allahu Akbar mentre ti inchini",
+    "stayBowing": "Rimani inchinato e glorifica Allah",
+    "standUpSaying": "Alzati dicendo",
+    "onceStanding": "Una volta in piedi, dì",
+    "sayTakbirProstrating": "Dì Allahu Akbar mentre ti prostri",
+    "stayProstrating": "Rimani prostrato e glorifica Allah",
+    "sayTakbirSitting": "Dì Allahu Akbar mentre ti alzi",
+    "sitBriefly": "Siediti brevemente tra le due prostrazioni",
+    "sayTakbirProstrating2": "Dì Allahu Akbar mentre ti prostri di nuovo",
+    "prostrateAgain": "Prostrati di nuovo e glorifica Allah",
+    "standAndSit": "Alzati e siediti",
+    "reciteTashahhud": "Recita il Tashahhud",
+    "reciteIbrahimic": "Recita la preghiera Ibrahimica",
+    "makeInvocations": "Fai invocazioni personali",
+    "turnRightGreet": "Gira la testa a destra e saluta",
+    "turnLeftGreet": "Gira la testa a sinistra e saluta",
+    "hadithOfTheDay": "Hadith del Giorno",
+    "loadingHadith": "Caricamento hadith...",
+    "hadithError": "Errore nel caricamento dell'hadith",
+    "refresh": "Aggiorna",
+    "retry": "Riprova",
+    "prayers": {
+      "fajr": "Fajr",
+      "dohr": "Dhuhr",
+      "asr": "Asr",
+      "maghreb": "Maghrib",
+      "isha": "Isha"
+    },
+    "surahs": {
+      "fatiha": "Al-Fatiha",
+      "ikhlas": "Al-Ikhlas",
+      "falaq": "Al-Falaq",
+      "nas": "An-Nas",
+      "kafirun": "Al-Kafirun",
+      "asr": "Al-Asr",
+      "qadr": "Al-Qadr"
+    },
+    "calculationMethods": {
+      "3": "Lega Mondiale Musulmana",
+      "2": "ISNA (Nord America)",
+      "5": "Autorità Egiziana",
+      "4": "Umm Al-Qura (La Mecca)",
+      "1": "Università di Karachi",
+      "0": "Shia Ithna-Ashari",
+      "7": "Teheran",
+      "8": "Regione del Golfo",
+      "9": "Kuwait",
+      "10": "Qatar",
+      "11": "Singapore",
+      "12": "Francia (UOIF)",
+      "13": "Turchia (Diyanet)",
+      "14": "Russia",
+      "16": "Dubai",
+      "17": "Malesia (JAKIM)",
+      "18": "Tunisia",
+      "19": "Algeria",
+      "20": "Indonesia (KEMENAG)",
+      "21": "Marocco",
+      "22": "Portogallo",
+      "23": "Giordania"
+    }
+  },
+  "tr": {
+    "appTitle": "My Pocket Imam",
+    "subtitle": "Günlük namazlarınızı öğrenin ve pratik yapın",
+    "reciter": "Kari",
+    "reciterName": "Saad El Ghamidi",
+    "rakaats": "Rekatlar",
+    "back": "Geri",
+    "config": "Yapılandırma",
+    "configuration": "Yapılandırma",
+    "settings": "Ayarlar",
+    "mandatorySurah": "Al-Fatiha (Zorunlu)",
+    "secondarySurah": "İkincil Sure",
+    "infoRakaat34": "3. ve 4. rekatlar için sadece Al-Fatiha okunur",
+    "startGuidance": "Rehberliği başlat",
+    "scenarioMode": "Senaryo Modu",
+    "automaticFlow": "Adımların otomatik akışı",
+    "automaticActive": "Otomatik mod etkinleştirildi - Adımlar otomatik olarak akar",
+    "listenRecitation": "Okumayı dinle",
+    "pause": "Duraklat",
+    "playing": "Oynatılıyor...",
+    "waiting": "Bekleniyor...",
+    "variant": "Varyant",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "prayerComplete": "Namaz tamamlandı!",
+    "prayerAccepted": "Allah namazınızı kabul etsin",
+    "returnHome": "Ana sayfaya dön",
+    "rakaat": "Rekat",
+    "language": "Dil",
+    "avatar": "Avatar",
+    "boy": "Erkek",
+    "girl": "Kız",
+    "selectReciter": "Kari seçin",
+    "selectAvatar": "Avatar seçin",
+    "city": "Şehir",
+    "country": "Ülke Kodu (ISO 3166)",
+    "enterCity": "Şehir adınızı girin",
+    "enterCountry": "2 harfli ülke kodunu girin (örn: TR, FR, SA)",
+    "cityPlaceholder": "İstanbul",
+    "countryPlaceholder": "TR",
+    "calculationMethod": "Hesaplama Yöntemi",
+    "selectCalculationMethod": "Hesaplama yöntemini seçin",
+    "saveSettings": "Ayarları kaydet",
+    "donations": "Projeyi destekle",
+    "donationsMessage": "Bu proje ücretsizdir ve her zaman ücretsiz kalacaktır. Bağışlarınız yalnızca barındırma maliyetlerini karşılamak için kullanılır. Fazla olan her şey Müslüman hayır kurumlarına bağışlanacaktır.",
+    "supportProject": "Bağış yap",
+    "openSource": "Açık Kaynak Kodu",
+    "openSourceMessage": "Bu proje Allah ﷻ için bir çalışma olarak geliştirilmiştir. Kod tamamen açık kaynaklıdır ve kullanımı ücretsizdir. İndirebilir, değiştirebilir ve paylaşabilirsiniz.",
+    "openSourceWarning": "⚠️ Önemli: Bu proje hiçbir koşulda ticarileştirilmemeli veya satılmamalıdır. Topluluğa sunulan sürekli bir sadaka (sadaqa jariya)dır.",
+    "viewOnGithub": "GitHub'da görüntüle",
+    "downloadCode": "Kaynak kodunu indir",
+    "loadingPrayerTimes": "Namaz vakitleri yükleniyor...",
+    "location": "Konum",
+    "takbirOpening": "Açılış Tekbiri",
+    "openingInvocation": "Açılış Duası",
+    "seekingRefuge": "Sığınma İsteği",
+    "bismillah": "Besmele",
+    "reciteFatiha": "Fatiha Okuma",
+    "secondarySurahStep": "İkincil Sure",
+    "takbirRuku": "Rüku için Tekbir",
+    "ruku": "Rüku (Eğilme)",
+    "qiyam": "Kıyam (Ayağa Kalkma)",
+    "afterQiyam": "Kıyam Sonrası",
+    "takbirSujud": "Secde için Tekbir",
+    "sujud1": "Secde 1 (Secde)",
+    "takbirSit": "Oturmak için Tekbir",
+    "jalsa": "Celse (Oturma Pozisyonu)",
+    "takbirSujud2": "2. Secde için Tekbir",
+    "sujud2": "Secde 2 (Secde)",
+    "tashahhud": "Teşehhüd",
+    "ibrahimicPrayer": "İbrahim Duası",
+    "finalInvocation": "Son Dua",
+    "salamRight": "Sağa Selam",
+    "salamLeft": "Sola Selam",
+    "raiseHands": "Ellerinizi kulak hizasına kaldırın ve deyin",
+    "reciteOpening": "Açılış duasını okuyun",
+    "seekProtection": "Allah'ın korumasını isteyin",
+    "beginWithName": "Allah'ın adıyla başlayın",
+    "reciteFatihaAction": "Fatiha Suresini okuyun",
+    "reciteSecondary": "Seçili ikincil sureyi okuyun",
+    "sayTakbirBowing": "Eğilirken Allahu Ekber deyin",
+    "stayBowing": "Eğilme pozisyonunda kalın ve Allah'ı yüceltin",
+    "standUpSaying": "Ayağa kalkarken deyin",
+    "onceStanding": "Ayağa kalktığınızda deyin",
+    "sayTakbirProstrating": "Secdeye varırken Allahu Ekber deyin",
+    "stayProstrating": "Secdede kalın ve Allah'ı yüceltin",
+    "sayTakbirSitting": "Kalkarken Allahu Ekber deyin",
+    "sitBriefly": "İki secde arasında kısaca oturun",
+    "sayTakbirProstrating2": "Tekrar secdeye varırken Allahu Ekber deyin",
+    "prostrateAgain": "Tekrar secdeye varın ve Allah'ı yüceltin",
+    "standAndSit": "Ayağa kalkın ve oturun",
+    "reciteTashahhud": "Teşehhüdü okuyun",
+    "reciteIbrahimic": "İbrahim duasını okuyun",
+    "makeInvocations": "Kişisel dualar edin",
+    "turnRightGreet": "Başınızı sağa çevirin ve selam verin",
+    "turnLeftGreet": "Başınızı sola çevirin ve selam verin",
+    "hadithOfTheDay": "Günün Hadisi",
+    "loadingHadith": "Hadis yükleniyor...",
+    "hadithError": "Hadis yüklenirken hata oluştu",
+    "refresh": "Yenile",
+    "retry": "Tekrar dene",
+    "prayers": {
+      "fajr": "Sabah",
+      "dohr": "Öğle",
+      "asr": "İkindi",
+      "maghreb": "Akşam",
+      "isha": "Yatsı"
+    },
+    "surahs": {
+      "fatiha": "Al-Fatiha",
+      "ikhlas": "Al-Ikhlas",
+      "falaq": "Al-Falaq",
+      "nas": "An-Nas",
+      "kafirun": "Al-Kafirun",
+      "asr": "Al-Asr",
+      "qadr": "Al-Qadr"
+    },
+    "calculationMethods": {
+      "3": "Müslüman Dünya Birliği",
+      "2": "ISNA (Kuzey Amerika)",
+      "5": "Mısır Otoritesi",
+      "4": "Umm Al-Qura (Mekke)",
+      "1": "Karaçi Üniversitesi",
+      "0": "Şii Ithna-Ashari",
+      "7": "Tahran",
+      "8": "Körfez Bölgesi",
+      "9": "Kuveyt",
+      "10": "Katar",
+      "11": "Singapur",
+      "12": "Fransa (UOIF)",
+      "13": "Türkiye (Diyanet)",
+      "14": "Rusya",
+      "16": "Dubai",
+      "17": "Malezya (JAKIM)",
+      "18": "Tunus",
+      "19": "Cezayir",
+      "20": "Endonezya (KEMENAG)",
+      "21": "Fas",
+      "22": "Portekiz",
+      "23": "Ürdün"
+    }
+  },
+  "nl": {
+    "appTitle": "My Pocket Imam",
+    "subtitle": "Leer en oefen je dagelijkse gebeden",
+    "reciter": "Voordracht",
+    "reciterName": "Saad El Ghamidi",
+    "rakaats": "Rakaats",
+    "back": "Terug",
+    "config": "Config",
+    "configuration": "Configuratie",
+    "settings": "Instellingen",
+    "mandatorySurah": "Al-Fatiha (Verplicht)",
+    "secondarySurah": "Secundaire Sura",
+    "infoRakaat34": "Voor rakaats 3 en 4 wordt alleen Al-Fatiha gereciteerd",
+    "startGuidance": "Start begeleiding",
+    "scenarioMode": "Scenariomodus",
+    "automaticFlow": "Automatische stroom van stappen",
+    "automaticActive": "Automatische modus geactiveerd - Stappen verlopen automatisch",
+    "listenRecitation": "Luister naar voordracht",
+    "pause": "Pauze",
+    "playing": "Wordt afgespeeld...",
+    "waiting": "Wachten...",
+    "variant": "Variant",
+    "previous": "Vorige",
+    "next": "Volgende",
+    "prayerComplete": "Gebed voltooid!",
+    "prayerAccepted": "Moge Allah je gebed accepteren",
+    "returnHome": "Terug naar home",
+    "rakaat": "Rakaat",
+    "language": "Taal",
+    "avatar": "Avatar",
+    "boy": "Jongen",
+    "girl": "Meisje",
+    "selectReciter": "Selecteer voordrachter",
+    "selectAvatar": "Selecteer avatar",
+    "city": "Stad",
+    "country": "Landcode (ISO 3166)",
+    "enterCity": "Voer je stadsnaam in",
+    "enterCountry": "Voer 2-letterige landcode in (bijv. NL, FR, SA)",
+    "cityPlaceholder": "Amsterdam",
+    "countryPlaceholder": "NL",
+    "calculationMethod": "Berekeningsmethode",
+    "selectCalculationMethod": "Selecteer berekeningsmethode",
+    "saveSettings": "Instellingen opslaan",
+    "donations": "Ondersteun het project",
+    "donationsMessage": "Dit project is gratis en zal altijd gratis blijven. Je donaties worden uitsluitend gebruikt om hostingkosten te dekken. Elk overschot wordt gedoneerd aan islamitische liefdadigheidsinstellingen.",
+    "supportProject": "Maak een donatie",
+    "openSource": "Open-source code",
+    "openSourceMessage": "Dit project is ontwikkeld als een werk voor Allah ﷻ. De code is volledig open-source en gratis te gebruiken. Je kunt het downloaden, aanpassen en delen.",
+    "openSourceWarning": "⚠️ Belangrijk: Dit project mag onder geen enkele omstandigheid worden gecommercialiseerd of verkocht. Het is een sadaqa jariya (voortdurende liefdadigheid) aangeboden aan de gemeenschap.",
+    "viewOnGithub": "Bekijk op GitHub",
+    "downloadCode": "Download broncode",
+    "loadingPrayerTimes": "Gebedstijden laden...",
+    "location": "Locatie",
+    "takbirOpening": "Openings Takbir",
+    "openingInvocation": "Openingsgebed",
+    "seekingRefuge": "Toevlucht zoeken",
+    "bismillah": "Bismillah",
+    "reciteFatiha": "Al-Fatiha reciteren",
+    "secondarySurahStep": "Secundaire Sura",
+    "takbirRuku": "Takbir voor Ruku",
+    "ruku": "Ruku (Buigen)",
+    "qiyam": "Qiyam (Opstaan)",
+    "afterQiyam": "Na Qiyam",
+    "takbirSujud": "Takbir voor Prostration",
+    "sujud1": "Sujud 1 (Prostration)",
+    "takbirSit": "Takbir om te zitten",
+    "jalsa": "Jalsa (Zittende positie)",
+    "takbirSujud2": "Takbir voor 2e Prostration",
+    "sujud2": "Sujud 2 (Prostration)",
+    "tashahhud": "Tashahhud",
+    "ibrahimicPrayer": "Ibrahimisch gebed",
+    "finalInvocation": "Laatste smeking",
+    "salamRight": "Salam naar rechts",
+    "salamLeft": "Salam naar links",
+    "raiseHands": "Hef je handen tot oorhoogte en zeg",
+    "reciteOpening": "Reciteer het openingsgebed",
+    "seekProtection": "Zoek Allah's bescherming",
+    "beginWithName": "Begin met Allah's naam",
+    "reciteFatihaAction": "Reciteer Sura Al-Fatiha",
+    "reciteSecondary": "Reciteer de geselecteerde secundaire sura",
+    "sayTakbirBowing": "Zeg Allahu Akbar terwijl je buigt",
+    "stayBowing": "Blijf in buigpositie en verheerlijk Allah",
+    "standUpSaying": "Sta op en zeg",
+    "onceStanding": "Eenmaal staand, zeg",
+    "sayTakbirProstrating": "Zeg Allahu Akbar terwijl je neerwerpt",
+    "stayProstrating": "Blijf in neerwerping en verheerlijk Allah",
+    "sayTakbirSitting": "Zeg Allahu Akbar terwijl je opstaat",
+    "sitBriefly": "Zit kort tussen de twee neerwerpingen",
+    "sayTakbirProstrating2": "Zeg Allahu Akbar terwijl je opnieuw neerwerpt",
+    "prostrateAgain": "Werp opnieuw neer en verheerlijk Allah",
+    "standAndSit": "Sta op en ga zitten",
+    "reciteTashahhud": "Reciteer de Tashahhud",
+    "reciteIbrahimic": "Reciteer het Ibrahimische gebed",
+    "makeInvocations": "Maak persoonlijke smekingen",
+    "turnRightGreet": "Draai je hoofd naar rechts en groet",
+    "turnLeftGreet": "Draai je hoofd naar links en groet",
+    "hadithOfTheDay": "Hadith van de Dag",
+    "loadingHadith": "Hadith laden...",
+    "hadithError": "Fout bij laden hadith",
+    "refresh": "Ververs",
+    "retry": "Opnieuw proberen",
+    "prayers": {
+      "fajr": "Fajr",
+      "dohr": "Dhuhr",
+      "asr": "Asr",
+      "maghreb": "Maghrib",
+      "isha": "Isha"
+    },
+    "surahs": {
+      "fatiha": "Al-Fatiha",
+      "ikhlas": "Al-Ikhlas",
+      "falaq": "Al-Falaq",
+      "nas": "An-Nas",
+      "kafirun": "Al-Kafirun",
+      "asr": "Al-Asr",
+      "qadr": "Al-Qadr"
+    },
+    "calculationMethods": {
+      "3": "Moslim Wereldliga",
+      "2": "ISNA (Noord-Amerika)",
+      "5": "Egyptische Autoriteit",
+      "4": "Umm Al-Qura (Mekka)",
+      "1": "Universiteit van Karachi",
+      "0": "Shia Ithna-Ashari",
+      "7": "Teheran",
+      "8": "Golfregio",
+      "9": "Koeweit",
+      "10": "Qatar",
+      "11": "Singapore",
+      "12": "Frankrijk (UOIF)",
+      "13": "Turkije (Diyanet)",
+      "14": "Rusland",
+      "16": "Dubai",
+      "17": "Maleisië (JAKIM)",
+      "18": "Tunesië",
+      "19": "Algerije",
+      "20": "Indonesië (KEMENAG)",
+      "21": "Marokko",
+      "22": "Portugal",
+      "23": "Jordanië"
+    }
+  },
+  "de": {
+    "appTitle": "My Pocket Imam",
+    "subtitle": "Lernen und üben Sie Ihre täglichen Gebete",
+    "reciter": "Rezitator",
+    "reciterName": "Saad El Ghamidi",
+    "rakaats": "Rakaats",
+    "back": "Zurück",
+    "config": "Konfig",
+    "configuration": "Konfiguration",
+    "settings": "Einstellungen",
+    "mandatorySurah": "Al-Fatiha (Pflicht)",
+    "secondarySurah": "Sekundäre Sure",
+    "infoRakaat34": "Für Rakaats 3 und 4 wird nur Al-Fatiha rezitiert",
+    "startGuidance": "Anleitung starten",
+    "scenarioMode": "Szenariomodus",
+    "automaticFlow": "Automatischer Ablauf der Schritte",
+    "automaticActive": "Automatischer Modus aktiviert - Schritte laufen automatisch ab",
+    "listenRecitation": "Rezitation anhören",
+    "pause": "Pause",
+    "playing": "Wird abgespielt...",
+    "waiting": "Warten...",
+    "variant": "Variante",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "prayerComplete": "Gebet abgeschlossen!",
+    "prayerAccepted": "Möge Allah Ihr Gebet annehmen",
+    "returnHome": "Zur Startseite",
+    "rakaat": "Rakaat",
+    "language": "Sprache",
+    "avatar": "Avatar",
+    "boy": "Junge",
+    "girl": "Mädchen",
+    "selectReciter": "Rezitator auswählen",
+    "selectAvatar": "Avatar auswählen",
+    "city": "Stadt",
+    "country": "Ländercode (ISO 3166)",
+    "enterCity": "Geben Sie Ihren Stadtnamen ein",
+    "enterCountry": "Geben Sie den 2-stelligen Ländercode ein (z.B. DE, FR, SA)",
+    "cityPlaceholder": "Berlin",
+    "countryPlaceholder": "DE",
+    "calculationMethod": "Berechnungsmethode",
+    "selectCalculationMethod": "Berechnungsmethode auswählen",
+    "saveSettings": "Einstellungen speichern",
+    "donations": "Projekt unterstützen",
+    "donationsMessage": "Dieses Projekt ist kostenlos und wird es immer bleiben. Ihre Spenden werden ausschließlich zur Deckung der Hosting-Kosten verwendet. Überschüsse werden an muslimische Wohltätigkeitsorganisationen gespendet.",
+    "supportProject": "Spenden",
+    "openSource": "Open-Source-Code",
+    "openSourceMessage": "Dieses Projekt wird als Werk für Allah ﷻ entwickelt. Der Code ist vollständig Open-Source und kostenlos nutzbar. Sie können ihn herunterladen, modifizieren und teilen.",
+    "openSourceWarning": "⚠️ Wichtig: Dieses Projekt darf unter keinen Umständen kommerzialisiert oder verkauft werden. Es ist eine sadaqa jariya (fortlaufende Wohltätigkeit), die der Gemeinschaft angeboten wird.",
+    "viewOnGithub": "Auf GitHub ansehen",
+    "downloadCode": "Quellcode herunterladen",
+    "loadingPrayerTimes": "Gebetszeiten werden geladen...",
+    "location": "Standort",
+    "takbirOpening": "Eröffnungs-Takbir",
+    "openingInvocation": "Eröffnungsbittgebet",
+    "seekingRefuge": "Zuflucht suchen",
+    "bismillah": "Bismillah",
+    "reciteFatiha": "Al-Fatiha rezitieren",
+    "secondarySurahStep": "Sekundäre Sure",
+    "takbirRuku": "Takbir für Ruku",
+    "ruku": "Ruku (Verbeugung)",
+    "qiyam": "Qiyam (Aufstehen)",
+    "afterQiyam": "Nach Qiyam",
+    "takbirSujud": "Takbir für Niederwerfung",
+    "sujud1": "Sujud 1 (Niederwerfung)",
+    "takbirSit": "Takbir zum Sitzen",
+    "jalsa": "Jalsa (Sitzposition)",
+    "takbirSujud2": "Takbir für 2. Niederwerfung",
+    "sujud2": "Sujud 2 (Niederwerfung)",
+    "tashahhud": "Tashahhud",
+    "ibrahimicPrayer": "Ibrahimisches Gebet",
+    "finalInvocation": "Abschließendes Bittgebet",
+    "salamRight": "Salam nach rechts",
+    "salamLeft": "Salam nach links",
+    "raiseHands": "Heben Sie Ihre Hände auf Ohrhöhe und sagen Sie",
+    "reciteOpening": "Rezitieren Sie das Eröffnungsbittgebet",
+    "seekProtection": "Suchen Sie Allahs Schutz",
+    "beginWithName": "Beginnen Sie mit Allahs Namen",
+    "reciteFatihaAction": "Rezitieren Sie Sure Al-Fatiha",
+    "reciteSecondary": "Rezitieren Sie die ausgewählte sekundäre Sure",
+    "sayTakbirBowing": "Sagen Sie Allahu Akbar beim Verbeugen",
+    "stayBowing": "Bleiben Sie in Verbeugung und preisen Sie Allah",
+    "standUpSaying": "Stehen Sie auf und sagen Sie",
+    "onceStanding": "Wenn Sie stehen, sagen Sie",
+    "sayTakbirProstrating": "Sagen Sie Allahu Akbar beim Niederwerfen",
+    "stayProstrating": "Bleiben Sie in Niederwerfung und preisen Sie Allah",
+    "sayTakbirSitting": "Sagen Sie Allahu Akbar beim Aufstehen",
+    "sitBriefly": "Sitzen Sie kurz zwischen den beiden Niederwerfungen",
+    "sayTakbirProstrating2": "Sagen Sie Allahu Akbar beim erneuten Niederwerfen",
+    "prostrateAgain": "Werfen Sie sich erneut nieder und preisen Sie Allah",
+    "standAndSit": "Stehen Sie auf und setzen Sie sich",
+    "reciteTashahhud": "Rezitieren Sie den Tashahhud",
+    "reciteIbrahimic": "Rezitieren Sie das Ibrahimische Gebet",
+    "makeInvocations": "Machen Sie persönliche Bittgebete",
+    "turnRightGreet": "Drehen Sie Ihren Kopf nach rechts und grüßen Sie",
+    "turnLeftGreet": "Drehen Sie Ihren Kopf nach links und grüßen Sie",
+    "hadithOfTheDay": "Hadith des Tages",
+    "loadingHadith": "Hadith wird geladen...",
+    "hadithError": "Fehler beim Laden des Hadith",
+    "refresh": "Aktualisieren",
+    "retry": "Erneut versuchen",
+    "prayers": {
+      "fajr": "Fajr",
+      "dohr": "Dhuhr",
+      "asr": "Asr",
+      "maghreb": "Maghrib",
+      "isha": "Isha"
+    },
+    "surahs": {
+      "fatiha": "Al-Fatiha",
+      "ikhlas": "Al-Ikhlas",
+      "falaq": "Al-Falaq",
+      "nas": "An-Nas",
+      "kafirun": "Al-Kafirun",
+      "asr": "Al-Asr",
+      "qadr": "Al-Qadr"
+    },
+    "calculationMethods": {
+      "3": "Muslimische Weltliga",
+      "2": "ISNA (Nordamerika)",
+      "5": "Ägyptische Behörde",
+      "4": "Umm Al-Qura (Mekka)",
+      "1": "Universität Karatschi",
+      "0": "Schia Ithna-Ashari",
+      "7": "Teheran",
+      "8": "Golfregion",
+      "9": "Kuwait",
+      "10": "Katar",
+      "11": "Singapur",
+      "12": "Frankreich (UOIF)",
+      "13": "Türkei (Diyanet)",
+      "14": "Russland",
+      "16": "Dubai",
+      "17": "Malaysia (JAKIM)",
+      "18": "Tunesien",
+      "19": "Algerien",
+      "20": "Indonesien (KEMENAG)",
+      "21": "Marokko",
+      "22": "Portugal",
+      "23": "Jordanien"
+    }
+  },
+  "hi": {
+    "appTitle": "My Pocket Imam",
+    "subtitle": "अपनी दैनिक नमाज़ सीखें और अभ्यास करें",
+    "reciter": "क़ारी",
+    "reciterName": "सआद अल गमीदी",
+    "rakaats": "रकअत",
+    "back": "वापस",
+    "config": "कॉन्फिग",
+    "configuration": "कॉन्फिगरेशन",
+    "settings": "सेटिंग्स",
+    "mandatorySurah": "अल-फ़ातिहा (अनिवार्य)",
+    "secondarySurah": "द्वितीयक सूरह",
+    "infoRakaat34": "रकअत 3 और 4 के लिए, केवल अल-फ़ातिहा पढ़ी जाती है",
+    "startGuidance": "मार्गदर्शन शुरू करें",
+    "scenarioMode": "परिदृश्य मोड",
+    "automaticFlow": "चरणों का स्वचालित प्रवाह",
+    "automaticActive": "स्वचालित मोड सक्रिय - चरण स्वचालित रूप से प्रवाहित होते हैं",
+    "listenRecitation": "तिलावत सुनें",
+    "pause": "रोकें",
+    "playing": "चल रहा है...",
+    "waiting": "प्रतीक्षा में...",
+    "variant": "रूपांतर",
+    "previous": "पिछला",
+    "next": "अगला",
+    "prayerComplete": "नमाज़ पूर्ण!",
+    "prayerAccepted": "अल्लाह आपकी नमाज़ क़बूल करे",
+    "returnHome": "होम पर वापस जाएं",
+    "rakaat": "रकअत",
+    "language": "भाषा",
+    "avatar": "अवतार",
+    "boy": "लड़का",
+    "girl": "लड़की",
+    "selectReciter": "क़ारी चुनें",
+    "selectAvatar": "अवतार चुनें",
+    "city": "शहर",
+    "country": "देश कोड (ISO 3166)",
+    "enterCity": "अपने शहर का नाम दर्ज करें",
+    "enterCountry": "2-अक्षर देश कोड दर्ज करें (जैसे IN, FR, SA)",
+    "cityPlaceholder": "दिल्ली",
+    "countryPlaceholder": "IN",
+    "calculationMethod": "गणना विधि",
+    "selectCalculationMethod": "गणना विधि चुनें",
+    "saveSettings": "सेटिंग्स सहेजें",
+    "donations": "परियोजना का समर्थन करें",
+    "donationsMessage": "यह परियोजना मुफ्त है और हमेशा मुफ्त रहेगी। आपके दान का उपयोग केवल होस्टिंग लागत को कवर करने के लिए किया जाता है। किसी भी अधिशेष को मुस्लिम दान संस्थाओं को दान कर दिया जाएगा।",
+    "supportProject": "दान करें",
+    "openSource": "ओपन-सोर्स कोड",
+    "openSourceMessage": "यह परियोजना अल्लाह ﷻ के लिए एक कार्य के रूप में विकसित की गई है। कोड पूरी तरह से ओपन-सोर्स और उपयोग करने के लिए स्वतंत्र है। आप इसे डाउनलोड, संशोधित और साझा कर सकते हैं।",
+    "openSourceWarning": "⚠️ महत्वपूर्ण: इस परियोजना को किसी भी परिस्थिति में व्यावसायीकृत या बेचा नहीं जाना चाहिए। यह समुदाय को दिया गया एक सदक़ा जारिया (सतत दान) है।",
+    "viewOnGithub": "GitHub पर देखें",
+    "downloadCode": "सोर्स कोड डाउनलोड करें",
+    "loadingPrayerTimes": "नमाज़ के समय लोड हो रहे हैं...",
+    "location": "स्थान",
+    "takbirOpening": "उद्घाटन तकबीर",
+    "openingInvocation": "उद्घाटन प्रार्थना",
+    "seekingRefuge": "शरण मांगना",
+    "bismillah": "बिस्मिल्लाह",
+    "reciteFatiha": "अल-फ़ातिहा पढ़ना",
+    "secondarySurahStep": "द्वितीयक सूरह",
+    "takbirRuku": "रुकू के लिए तकबीर",
+    "ruku": "रुकू (झुकना)",
+    "qiyam": "क़ियाम (खड़े होना)",
+    "afterQiyam": "क़ियाम के बाद",
+    "takbirSujud": "सजदे के लिए तकबीर",
+    "sujud1": "सजदा 1 (सजदा)",
+    "takbirSit": "बैठने के लिए तकबीर",
+    "jalsa": "जलसा (बैठने की स्थिति)",
+    "takbirSujud2": "2रे सजदे के लिए तकबीर",
+    "sujud2": "सजदा 2 (सजदा)",
+    "tashahhud": "तशह्हुद",
+    "ibrahimicPrayer": "इब्राहीमी दुआ",
+    "finalInvocation": "अंतिम प्रार्थना",
+    "salamRight": "दाहिनी ओर सलाम",
+    "salamLeft": "बाईं ओर सलाम",
+    "raiseHands": "अपने हाथों को कान के स्तर तक उठाएं और कहें",
+    "reciteOpening": "उद्घाटन प्रार्थना पढ़ें",
+    "seekProtection": "अल्लाह की सुरक्षा मांगें",
+    "beginWithName": "अल्लाह के नाम से शुरू करें",
+    "reciteFatihaAction": "सूरह अल-फ़ातिहा पढ़ें",
+    "reciteSecondary": "चयनित द्वितीयक सूरह पढ़ें",
+    "sayTakbirBowing": "झुकते समय अल्लाहु अकबर कहें",
+    "stayBowing": "झुकी हुई स्थिति में रहें और अल्लाह की महिमा करें",
+    "standUpSaying": "खड़े होते हुए कहें",
+    "onceStanding": "एक बार खड़े होने पर, कहें",
+    "sayTakbirProstrating": "सजदा करते समय अल्लाहु अकबर कहें",
+    "stayProstrating": "सजदे में रहें और अल्लाह की महिमा करें",
+    "sayTakbirSitting": "उठते समय अल्लाहु अकबर कहें",
+    "sitBriefly": "दो सजदों के बीच संक्षेप में बैठें",
+    "sayTakbirProstrating2": "फिर से सजदा करते समय अल्लाहु अकबर कहें",
+    "prostrateAgain": "फिर से सजदा करें और अल्लाह की महिमा करें",
+    "standAndSit": "खड़े हों और बैठें",
+    "reciteTashahhud": "तशह्हुद पढ़ें",
+    "reciteIbrahimic": "इब्राहीमी दुआ पढ़ें",
+    "makeInvocations": "व्यक्तिगत प्रार्थनाएं करें",
+    "turnRightGreet": "अपना सिर दाईं ओर घुमाएं और सलाम करें",
+    "turnLeftGreet": "अपना सिर बाईं ओर घुमाएं और सलाम करें",
+    "hadithOfTheDay": "आज की हदीस",
+    "loadingHadith": "हदीस लोड हो रही है...",
+    "hadithError": "हदीस लोड करने में त्रुटि",
+    "refresh": "ताज़ा करें",
+    "retry": "पुनः प्रयास करें",
+    "prayers": {
+      "fajr": "फ़ज्र",
+      "dohr": "ज़ुहर",
+      "asr": "अस्र",
+      "maghreb": "मग़रिब",
+      "isha": "इशा"
+    },
+    "surahs": {
+      "fatiha": "Al-Fatiha",
+      "ikhlas": "Al-Ikhlas",
+      "falaq": "Al-Falaq",
+      "nas": "An-Nas",
+      "kafirun": "Al-Kafirun",
+      "asr": "Al-Asr",
+      "qadr": "Al-Qadr"
+    },
+    "calculationMethods": {
+      "3": "मुस्लिम विश्व लीग",
+      "2": "ISNA (उत्तरी अमेरिका)",
+      "5": "मिस्र प्राधिकरण",
+      "4": "उम्म अल-क़ुरा (मक्का)",
+      "1": "कराची विश्वविद्यालय",
+      "0": "शिया इथना-अशारी",
+      "7": "तेहरान",
+      "8": "खाड़ी क्षेत्र",
+      "9": "कुवैत",
+      "10": "क़तर",
+      "11": "सिंगापुर",
+      "12": "फ्रांस (UOIF)",
+      "13": "तुर्की (दियानेत)",
+      "14": "रूस",
+      "16": "दुबई",
+      "17": "मलेशिया (JAKIM)",
+      "18": "ट्यूनीशिया",
+      "19": "अल्जीरिया",
+      "20": "इंडोनेशिया (KEMENAG)",
+      "21": "मोरक्को",
+      "22": "पुर्तगाल",
+      "23": "जॉर्डन"
+    }
+  }
+};
+
+        // Function to load translations
+        async function loadTranslations() {
+            try {
+                const response = await fetch('assets/lang/lang.json');
+                TRANSLATIONS = await response.json();
+                translationsLoaded = true;
+                console.log('Translations loaded from external file');
+                return true;
+            } catch (error) {
+                console.warn('Could not load external translations, using inline fallback:', error);
+                // Use inline translations as fallback
+                TRANSLATIONS = INLINE_TRANSLATIONS;
+                translationsLoaded = true;
+                return true;
+            }
+        }
+
+        const LANGUAGES = [
+            { code: 'fr', name: 'Français', flag: '🇫🇷' },
+            { code: 'en', name: 'English', flag: '🇬🇧' },
+            { code: 'ar', name: 'العربية', flag: '🇸🇦' },
+            { code: 'es', name: 'Español', flag: '🇪🇸' },
+            { code: 'it', name: 'Italiano', flag: '🇮🇹' },
+            { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
+            { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
+            { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+            { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' }
+        ];
+
+        const RECITERS = [
+            { id: 'saad-el-ghamidi', name: 'Saad El Ghamidi', arabicName: 'سعد الغامدي' },
+            { id: 'abdul-basit', name: 'Abdul Basit', arabicName: 'عبد الباسط عبد الصمد' },
+            { id: 'mishary-rashid', name: 'Mishary Rashid', arabicName: 'مشاري العفاسي' }
+        ];
+
+        const CALCULATION_METHODS = [
+            { id: 3, name: 'Muslim World League', nameAr: 'رابطة العالم الإسلامي', regions: '🌍' },
+            { id: 2, name: 'ISNA (North America)', nameAr: 'الجمعية الإسلامية لأمريكا الشمالية', regions: '🇺🇸🇨🇦' },
+            { id: 5, name: 'Egyptian Authority', nameAr: 'الهيئة المصرية العامة للمساحة', regions: '🇪🇬' },
+            { id: 4, name: 'Umm Al-Qura (Makkah)', nameAr: 'أم القرى، مكة', regions: '🇸🇦' },
+            { id: 1, name: 'University of Karachi', nameAr: 'جامعة كراتشي', regions: '🇵🇰' },
+            { id: 0, name: 'Shia Ithna-Ashari', nameAr: 'الشيعة الإثنا عشرية', regions: '🌙' },
+            { id: 7, name: 'Tehran', nameAr: 'طهران', regions: '🇮🇷' },
+            { id: 8, name: 'Gulf Region', nameAr: 'منطقة الخليج', regions: '🇦🇪🇧🇭🇴🇲' },
+            { id: 9, name: 'Kuwait', nameAr: 'الكويت', regions: '🇰🇼' },
+            { id: 10, name: 'Qatar', nameAr: 'قطر', regions: '🇶🇦' },
+            { id: 11, name: 'Singapore', nameAr: 'سنغافورة', regions: '🇸🇬' },
+            { id: 12, name: 'France (UOIF)', nameAr: 'فرنسا', regions: '🇫🇷' },
+            { id: 13, name: 'Turkey (Diyanet)', nameAr: 'تركيا', regions: '🇹🇷' },
+            { id: 14, name: 'Russia', nameAr: 'روسيا', regions: '🇷🇺' },
+            { id: 16, name: 'Dubai', nameAr: 'دبي', regions: '🇦🇪' },
+            { id: 17, name: 'Malaysia (JAKIM)', nameAr: 'ماليزيا', regions: '🇲🇾' },
+            { id: 18, name: 'Tunisia', nameAr: 'تونس', regions: '🇹🇳' },
+            { id: 19, name: 'Algeria', nameAr: 'الجزائر', regions: '🇩🇿' },
+            { id: 20, name: 'Indonesia (KEMENAG)', nameAr: 'إندونيسيا', regions: '🇮🇩' },
+            { id: 21, name: 'Morocco', nameAr: 'المغرب', regions: '🇲🇦' },
+            { id: 22, name: 'Portugal', nameAr: 'البرتغال', regions: '🇵🇹' },
+            { id: 23, name: 'Jordan', nameAr: 'الأردن', regions: '🇯🇴' }
+        ];
+
+        const PRAYERS = {
+            fajr: { name: 'Fajr', rakaats: 2, icon: '🌅', apiKey: 'Fajr' },
+            dohr: { name: 'Dohr', rakaats: 4, icon: '☀️', apiKey: 'Dhuhr' },
+            asr: { name: 'Asr', rakaats: 4, icon: '🌤️', apiKey: 'Asr' },
+            maghreb: { name: 'Maghreb', rakaats: 3, icon: '🌆', apiKey: 'Maghrib' },
+            isha: { name: 'Isha', rakaats: 4, icon: '🌙', apiKey: 'Isha' }
+        };
+
+        const SURAHS = [
+            { 
+                id: 'fatiha', 
+                name: 'Al-Fatiha', 
+                number: 1, 
+                arabic: 'الفاتحة', 
+                mandatory: true, 
+                audioFiles: {
+                    'saad-el-ghamidi': 'assets/audio/saad-el-ghamidi-001-al-fatiha-204-9244.mp3',
+                    'abdul-basit': 'assets/audio/Abdul-Basit-001-al-fatiha-204-9244.mp3',
+                    'mishary-rashid': 'assets/audio/Mishary-Rashid-001-al-fatiha-204-9244.mp3'
+                }
+            },
+            { 
+                id: 'ikhlas', 
+                name: 'Al-Ikhlas', 
+                number: 112, 
+                arabic: 'الإخلاص', 
+                audioFiles: {
+                    'saad-el-ghamidi': 'assets/audio/saad-el-ghamidi-112-al-ikhlas-201-1223.mp3',
+                    'abdul-basit': 'assets/audio/Abdul-Basit-112-al-ikhlas-201-1223.mp3',
+                    'mishary-rashid': 'assets/audio/Mishary-Rashid-112-al-ikhlas-201-1223.mp3'
+                }
+            },
+            { 
+                id: 'falaq', 
+                name: 'Al-Falaq', 
+                number: 113, 
+                arabic: 'الفلق', 
+                audioFiles: {
+                    'saad-el-ghamidi': 'assets/audio/saad-el-ghamidi-113-al-falaq-202-7322.mp3',
+                    'abdul-basit': 'assets/audio/Abdul-Basit-113-al-falaq-202-7322.mp3',
+                    'mishary-rashid': 'assets/audio/Mishary-Rashid-113-al-falaq-202-7322.mp3'
+                }
+            },
+            { 
+                id: 'nas', 
+                name: 'An-Nas', 
+                number: 114, 
+                arabic: 'الناس', 
+                audioFiles: {
+                    'saad-el-ghamidi': 'assets/audio/saad-el-ghamidi-114-an-nas-203-5140.mp3',
+                    'abdul-basit': 'assets/audio/Abdul-Basit-114-an-nas-203-5140.mp3',
+                    'mishary-rashid': 'assets/audio/Mishary-Rashid-114-an-nas-203-5140.mp3'
+                }
+            },
+            { 
+                id: 'kafirun', 
+                name: 'Al-Kafirun', 
+                number: 109, 
+                arabic: 'الكافرون', 
+                audioFiles: {
+                    'saad-el-ghamidi': 'assets/audio/saad-el-ghamidi-109-al-kafiroon-198-3820.mp3',
+                    'abdul-basit': 'assets/audio/Abdul-Basit-109-al-kafiroon-198-3820.mp3',
+                    'mishary-rashid': 'assets/audio/Mishary-Rashid-109-al-kafiroon-198-3820.mp3'
+                }
+            },
+            { 
+                id: 'asr', 
+                name: 'Al-Asr', 
+                number: 103, 
+                arabic: 'العصر', 
+                audioFiles: {
+                    'saad-el-ghamidi': 'assets/audio/saad-el-ghamidi-103-al-asr-192-2834.mp3',
+                    'abdul-basit': 'assets/audio/Abdul-Basit-103-al-asr-192-2834.mp3',
+                    'mishary-rashid': 'assets/audio/Mishary-Rashid-103-al-asr-192-2834.mp3'
+                }
+            },
+            { 
+                id: 'qadr', 
+                name: 'Al-Qadr', 
+                number: 97, 
+                arabic: 'القدر', 
+                audioFiles: {
+                    'saad-el-ghamidi': 'assets/audio/saad-el-ghamidi-097-al-qadr-186-6793.mp3',
+                    'abdul-basit': 'assets/audio/Abdul-Basit-097-al-qadr-186-6793.mp3',
+                    'mishary-rashid': 'assets/audio/Mishary-Rashid-097-al-qadr-186-6793.mp3'
+                }
+            }
+        ];
+
+        function getPositionImage(stepId, avatarGender = 'boy') {
+            const suffix = avatarGender === 'girl' ? '-girl.png' : '.png';
+            const imageMap = {
+                'takbir_ouverture': 'position-debout-main-tete',
+                'invocation_ouverture': 'position-debout-main-coeur',
+                'refuge': 'position-debout-main-coeur',
+                'bismillah': 'position-debout-main-coeur',
+                'fatiha': 'position-debout-main-coeur',
+                'second_surah': 'position-debout-main-coeur',
+                'takbir_ruku': 'position-debout-bras-corps',
+                'ruku': 'position-demi-prosternation',
+                'qiyam': 'position-debout-bras-corps',
+                'apres_qiyam': 'position-debout-bras-corps',
+                'takbir_sujud1': 'position-debout-bras-corps',
+                'sujud1': 'position-prosternation',
+                'takbir_jalsa': 'position-prosternation',
+                'jalsa': 'position-assise',
+                'takbir_sujud2': 'position-assise',
+                'sujud2': 'position-prosternation',
+                'takbir_tashahhud': 'position-prosternation',
+                'tashahhud': 'position-assise-tahiatou',
+                'salat_ibrahimiya': 'position-assise',
+                'invocation_finale': 'position-assise',
+                'salam_droite': 'position-assise-salam',
+                'salam_gauche': 'position-assise-salam'
+            };
+            const baseName = imageMap[stepId] || 'position-debout-bras-corps';
+            return 'assets/images/' + baseName + suffix;
+        }
+
+        function getPrayerSteps(t) {
+            return [
+                { id: 'takbir_ouverture', name: t.takbirOpening, arabic: 'اللَّهُ أَكْبَرُ', transliteration: 'Allahu Akbar', translation: 'God is the Greatest', position: 'standing', action: t.raiseHands, audioFile: 'assets/audio/takbir.mp3', firstRakaatOnly: true, pauseAfter: 1000 },
+                { id: 'invocation_ouverture', name: t.openingInvocation, arabic: 'سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ', transliteration: 'Subhanakal-lahumma wa bihamdika', translation: 'Glory and praise to You, O Allah', position: 'standing', action: t.reciteOpening, audioFiles: ['assets/audio/ouverture1.mp3', 'assets/audio/ouverture2.mp3', 'assets/audio/ouverture3.mp3'], firstRakaatOnly: true, hasOptions: true, pauseAfter: 1000 },
+                { id: 'refuge', name: t.seekingRefuge, arabic: 'أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ', transliteration: 'A\'oudhou billahi mina shaytani rajim', translation: 'I seek refuge in Allah from Satan the accursed', position: 'standing', action: t.seekProtection, audioFiles: ['assets/audio/refuge1.mp3', 'assets/audio/refuge2.mp3', 'assets/audio/refuge3.mp3'], firstRakaatOnly: true, hasOptions: true, pauseAfter: 500 },
+                { id: 'bismillah', name: t.bismillah, arabic: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', transliteration: 'Bismillah ir-Rahman ir-Rahim', translation: 'In the name of Allah, Most Gracious, Most Merciful', position: 'standing', action: t.beginWithName, audioFile: 'assets/audio/bismilah.mp3', firstRakaatOnly: true, pauseAfter: 500 },
+                { id: 'fatiha', name: t.reciteFatiha, arabic: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ', transliteration: 'Alhamdulillahi rabbil \'alamin', translation: 'Praise be to Allah, Lord of the worlds', position: 'standing', action: t.reciteFatihaAction, surahType: 'fatiha', pauseAfter: 1000 },
+                { id: 'second_surah', name: t.secondarySurahStep, arabic: '...', transliteration: '...', translation: 'Recite the chosen surah', position: 'standing', action: t.reciteSecondary, surahType: 'secondary', pauseAfter: 1000, firstTwoRakaatsOnly: true },
+                { id: 'takbir_ruku', name: t.takbirRuku, arabic: 'اللَّهُ أَكْبَرُ', transliteration: 'Allahu Akbar', translation: 'God is the Greatest', position: 'standing', action: t.sayTakbirBowing, audioFile: 'assets/audio/takbir.mp3', pauseAfter: 1000 },
+                { id: 'ruku', name: t.ruku, arabic: 'سُبْحَانَ رَبِّيَ الْعَظِيمِ', transliteration: 'Subhana Rabbiyal Adheem', translation: 'Glory to my Lord the Great', position: 'bowing', action: t.stayBowing, audioFiles: ['assets/audio/ruku1.mp3', 'assets/audio/Durant_l_inclinaison1.mp3', 'assets/audio/Durant_l_inclinaison2.mp3', 'assets/audio/Durant_l_inclinaison3.mp3', 'assets/audio/Durant_l_inclinaison4.mp3', 'assets/audio/Durant_l_inclinaison5.mp3', 'assets/audio/Durant_l_inclinaison6.mp3', 'assets/audio/Durant_l_inclinaison7.mp3'], hasOptions: true, pauseAfter: 1000 },
+                { id: 'qiyam', name: t.qiyam, arabic: 'سَمِعَ اللَّهُ لِمَنْ حَمِدَهُ', transliteration: 'Sami Allahu liman hamidah', translation: 'Allah hears those who praise Him', position: 'standing', action: t.standUpSaying, audioFile: 'assets/audio/en_ce_levant1.mp3', pauseAfter: 500 },
+                { id: 'apres_qiyam', name: t.afterQiyam, arabic: 'رَبَّنَا وَلَكَ الْحَمْدُ', transliteration: 'Rabbana wa lakal hamd', translation: 'Our Lord, to You be praise', position: 'standing', action: t.onceStanding, audioFiles: ['assets/audio/unefoislevé1.mp3', 'assets/audio/unefoislevé2.mp3', 'assets/audio/unefoislevé3.mp3', 'assets/audio/unefoislevé4.mp3', 'assets/audio/unefoislevé5.mp3', 'assets/audio/unefoislevé6.mp3'], hasOptions: true, pauseAfter: 1000 },
+                { id: 'takbir_sujud1', name: t.takbirSujud, arabic: 'اللَّهُ أَكْبَرُ', transliteration: 'Allahu Akbar', translation: 'God is the Greatest', position: 'standing', action: t.sayTakbirProstrating, audioFile: 'assets/audio/takbir.mp3', pauseAfter: 1000 },
+                { id: 'sujud1', name: t.sujud1, arabic: 'سُبْحَانَ رَبِّيَ الْأَعْلَىٰ', transliteration: 'Subhana Rabbiyal A\'la', translation: 'Glory to my Lord the Most High', position: 'prostrating', action: t.stayProstrating, audioFiles: ['assets/audio/durantprosternation1.mp3', 'assets/audio/durantprosternation2.mp3'], hasOptions: true, pauseAfter: 1000 },
+                { id: 'takbir_jalsa', name: t.takbirSit, arabic: 'اللَّهُ أَكْبَرُ', transliteration: 'Allahu Akbar', translation: 'God is the Greatest', position: 'prostrating', action: t.sayTakbirSitting, audioFile: 'assets/audio/takbir.mp3', pauseAfter: 1000 },
+                { id: 'jalsa', name: t.jalsa, arabic: 'رَبِّ اغْفِرْ لِي', transliteration: 'Rabbi ghfir li', translation: 'Lord, forgive me', position: 'sitting', action: t.sitBriefly, audioFile: 'assets/audio/takbir.mp3', pauseAfter: 2000 },
+                { id: 'takbir_sujud2', name: t.takbirSujud2, arabic: 'اللَّهُ أَكْبَرُ', transliteration: 'Allahu Akbar', translation: 'God is the Greatest', position: 'sitting', action: t.sayTakbirProstrating2, audioFile: 'assets/audio/takbir.mp3', pauseAfter: 1000 },
+                { id: 'sujud2', name: t.sujud2, arabic: 'سُبْحَانَ رَبِّيَ الْأَعْلَىٰ', transliteration: 'Subhana Rabbiyal A\'la', translation: 'Glory to my Lord the Most High', position: 'prostrating', action: t.prostrateAgain, audioFiles: ['assets/audio/durantprosternation1.mp3', 'assets/audio/durantprosternation2.mp3'], hasOptions: true, pauseAfter: 1000 }
+            ];
+        }
+
+        function getFinalSteps(t) {
+            return [
+                { id: 'takbir_tashahhud', name: t.takbirSit, arabic: 'اللَّهُ أَكْبَرُ', transliteration: 'Allahu Akbar', translation: 'God is the Greatest', position: 'prostrating', action: t.standAndSit, audioFile: 'assets/audio/takbir.mp3', pauseAfter: 1000 },
+                { id: 'tashahhud', name: t.tashahhud, arabic: 'التَّحِيَّاتُ لِلَّهِ', transliteration: 'At-tahiyyatu lillah', translation: 'Salutations are for Allah', position: 'sitting', action: t.reciteTashahhud, audioFile: 'assets/audio/tashaoud1.mp3', pauseAfter: 1000 },
+                { id: 'salat_ibrahimiya', name: t.ibrahimicPrayer, arabic: 'اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ', transliteration: 'Allahumma salli \'ala Muhammad', translation: 'O Allah, bless Muhammad', position: 'sitting', action: t.reciteIbrahimic, audioFiles: ['assets/audio/ibrahamique_apres_tashaoud1.mp3', 'assets/audio/ibrahamique_apres_tashaou2.mp3'], hasOptions: true, pauseAfter: 1000 },
+                { id: 'invocation_finale', name: t.finalInvocation, arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً', transliteration: 'Rabbana atina fid-dunya hasanah', translation: 'Lord, grant us good in this world', position: 'sitting', action: t.makeInvocations, audioFile: 'assets/audio/invocation_apres_ibrahimique.mp3', pauseAfter: 1000 },
+                { id: 'salam_droite', name: t.salamRight, arabic: 'السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ', transliteration: 'As-salamu \'alaykum wa rahmatullah', translation: 'Peace and mercy of Allah be upon you', position: 'sitting', action: t.turnRightGreet, audioFile: 'assets/audio/salam_final_part1.mp3', pauseAfter: 500 },
+                { id: 'salam_gauche', name: t.salamLeft, arabic: 'السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ', transliteration: 'As-salamu \'alaykum wa rahmatullah', translation: 'Peace and mercy of Allah be upon you', position: 'sitting', action: t.turnLeftGreet, audioFile: 'assets/audio/salam_final_part2.mp3', pauseAfter: 0 }
+            ];
+        }
+
+        let state = {
+            screen: 'home',
+            selectedPrayer: null,
+            rakaatConfig: [],
+            currentRakaat: 1,
+            currentStepIndex: 0,
+            audioOption: 0,
+            scenarioMode: false,
+            isPlaying: false,
+            language: localStorage.getItem('prayerAppLanguage') || 'fr',
+            selectedReciter: localStorage.getItem('prayerAppReciter') || 'saad-el-ghamidi',
+            avatarGender: localStorage.getItem('prayerAppAvatar') || 'boy',
+            city: localStorage.getItem('prayerAppCity') || '',
+            country: localStorage.getItem('prayerAppCountry') || '',
+            calculationMethod: parseInt(localStorage.getItem('prayerAppCalculationMethod')) || 3,
+            prayerTimes: null,
+            currentDate: null,
+            loadingPrayerTimes: false,
+            dailyHadith: null,
+            loadingHadith: false,
+            hadithError: null
+        };
+
+        let audio = new Audio();
+        let audioTimeoutId = null;
+
+        // Hadith Configuration
+        const hadithConfig = {
+            collections: ['bukhari', 'muslim', 'nawawi'],
+            languageMap: {
+                'fr': 'fra',
+                'en': 'eng',
+                'ar': 'ara',
+                'es': 'eng',
+                'it': 'eng',
+                'tr': 'tur',
+                'nl': 'eng',
+                'de': 'eng',
+                'hi': 'urd'
+            },
+            // Cache for total hadiths per collection
+            collectionSizes: {
+                'bukhari': 7563,
+                'muslim': 7563,
+                'nawawi': 42
+            }
+        };
+
+        // Hadith API Functions
+        async function fetchWithFallback(apiLang, collection, hadithNum) {
+            const baseUrl = 'https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions';
+            
+            // Try .min.json first
+            try {
+                const minUrl = `${baseUrl}/${apiLang}-${collection}/${hadithNum}.min.json`;
+                const response = await fetch(minUrl);
+                if (response.ok) {
+                    return await response.json();
+                }
+            } catch (error) {
+                console.log('Failed to fetch .min.json, trying .json');
+            }
+            
+            // Try .json
+            try {
+                const jsonUrl = `${baseUrl}/${apiLang}-${collection}/${hadithNum}.json`;
+                const response = await fetch(jsonUrl);
+                if (response.ok) {
+                    return await response.json();
+                }
+            } catch (error) {
+                console.log('Failed to fetch .json');
+            }
+            
+            throw new Error(`Failed to fetch hadith ${hadithNum} from ${collection}`);
+        }
+
+        async function fetchDailyHadith(userLang) {
+            state.loadingHadith = true;
+            state.hadithError = null;
+            render();
+            
+            try {
+                // Map user language to API code
+                const apiLang = hadithConfig.languageMap[userLang] || 'eng';
+                
+                // Choose random collection
+                const collection = hadithConfig.collections[Math.floor(Math.random() * hadithConfig.collections.length)];
+                
+                // Get total hadiths for this collection
+                const totalHadiths = hadithConfig.collectionSizes[collection] || 1000;
+                
+                // Generate random hadith number
+                const randomNum = Math.floor(Math.random() * totalHadiths) + 1;
+                
+                // Fetch specific hadith with fallback
+                try {
+                    const data = await fetchWithFallback(apiLang, collection, randomNum);
+                    
+                    if (data && data.hadiths && data.hadiths.length > 0) {
+                        state.dailyHadith = {
+                            text: data.hadiths[0].text,
+                            number: data.hadiths[0].hadithnumber || randomNum,
+                            collection: data.metadata?.name || collection,
+                            section: data.metadata?.section || '',
+                            language: apiLang
+                        };
+                        state.loadingHadith = false;
+                        render();
+                        return;
+                    }
+                } catch (error) {
+                    // If current language fails and it's not English, try English
+                    if (apiLang !== 'eng') {
+                        console.log('Trying English fallback...');
+                        const dataEng = await fetchWithFallback('eng', collection, randomNum);
+                        if (dataEng && dataEng.hadiths && dataEng.hadiths.length > 0) {
+                            state.dailyHadith = {
+                                text: dataEng.hadiths[0].text,
+                                number: dataEng.hadiths[0].hadithnumber || randomNum,
+                                collection: dataEng.metadata?.name || collection,
+                                section: dataEng.metadata?.section || '',
+                                language: 'eng'
+                            };
+                            state.loadingHadith = false;
+                            render();
+                            return;
+                        }
+                    }
+                    throw error;
+                }
+            } catch (error) {
+                console.error('Error fetching hadith:', error);
+                state.hadithError = 'Could not load hadith';
+                state.loadingHadith = false;
+                render();
+            }
+        }
+
+        window.refreshHadith = function() {
+            fetchDailyHadith(state.language);
+        };
+
+        let timeoutId = null;
+
+        function t() {
+            if (!TRANSLATIONS || !TRANSLATIONS[state.language]) {
+                return {};
+            }
+            return TRANSLATIONS[state.language];
+        }
+
+        async function fetchPrayerTimes(city, country) {
+            if (!city || !country) return;
+            
+            state.loadingPrayerTimes = true;
+            render();
+            
+            try {
+                const now = new Date();
+                const day = now.getDate().toString().padStart(2, '0');
+                const month = (now.getMonth() + 1).toString().padStart(2, '0');
+                const year = now.getFullYear();
+                const dateString = `${day}-${month}-${year}`;
+                
+                const response = await fetch(`https://api.aladhan.com/v1/timingsByCity/${dateString}?city=${encodeURIComponent(city)}&country=${country.toUpperCase()}&method=${state.calculationMethod}`);
+                const data = await response.json();
+                
+                if (data.code === 200 && data.data) {
+                    state.prayerTimes = data.data.timings;
+                    state.currentDate = data.data.date;
+                }
+            } catch (error) {
+                console.error('Error fetching prayer times:', error);
+            } finally {
+                state.loadingPrayerTimes = false;
+                render();
+            }
+        }
+
+        function getCurrentSteps() {
+            if (!state.selectedPrayer) return [];
+            const isLastRakaat = state.currentRakaat === PRAYERS[state.selectedPrayer].rakaats;
+            const isFirstRakaat = state.currentRakaat === 1;
+            const isFirstTwoRakaats = state.currentRakaat <= 2;
+            
+            let steps = getPrayerSteps(t()).filter(step => {
+                if (step.firstRakaatOnly && !isFirstRakaat) return false;
+                if (step.firstTwoRakaatsOnly && !isFirstTwoRakaats) return false;
+                return true;
+            });
+            
+            if (isLastRakaat) {
+                steps = [...steps, ...getFinalSteps(t())];
+            }
+            return steps;
+        }
+
+        function getCurrentAudioFile() {
+            const steps = getCurrentSteps();
+            const step = steps[state.currentStepIndex];
+            
+            if (step.surahType === 'fatiha') {
+                return SURAHS[0].audioFiles[state.selectedReciter];
+            } else if (step.surahType === 'secondary') {
+                const secondarySurah = state.rakaatConfig[state.currentRakaat - 1]?.secondarySurah;
+                return secondarySurah?.audioFiles[state.selectedReciter];
+            } else if (step.audioFile) {
+                return step.audioFile;
+            } else if (step.audioFiles && step.audioFiles.length > 0) {
+                return step.audioFiles[state.audioOption % step.audioFiles.length];
+            }
+            return null;
+        }
+
+        function playAudio() {
+            const audioFile = getCurrentAudioFile();
+            if (!audioFile) return;
+            
+            audio.src = audioFile;
+            audio.play().then(() => {
+                state.isPlaying = true;
+                render();
+            }).catch(err => {
+                console.error('Erreur de lecture audio:', err);
+            });
+        }
+
+        function stopAudio() {
+            audio.pause();
+            audio.currentTime = 0;
+            state.isPlaying = false;
+        }
+
+        function nextStep() {
+            const steps = getCurrentSteps();
+            if (state.currentStepIndex < steps.length - 1) {
+                state.currentStepIndex++;
+            } else if (state.currentRakaat < PRAYERS[state.selectedPrayer].rakaats) {
+                state.currentRakaat++;
+                state.currentStepIndex = 0;
+            }
+            stopAudio();
+            state.audioOption = 0;
+            render();
+            
+            if (state.scenarioMode) {
+                setTimeout(() => playAudio(), 300);
+            }
+        }
+
+        function previousStep() {
+            if (state.currentStepIndex > 0) {
+                state.currentStepIndex--;
+            } else if (state.currentRakaat > 1) {
+                state.currentRakaat--;
+                const prevSteps = getCurrentSteps();
+                state.currentStepIndex = prevSteps.length - 1;
+            }
+            stopAudio();
+            state.audioOption = 0;
+            render();
+        }
+
+        audio.onended = () => {
+            state.isPlaying = false;
+            render();
+            
+            if (state.scenarioMode) {
+                const steps = getCurrentSteps();
+                const step = steps[state.currentStepIndex];
+                const pauseDuration = step.pauseAfter || 1000;
+                
+                timeoutId = setTimeout(() => {
+                    const isLastStep = state.currentRakaat === PRAYERS[state.selectedPrayer].rakaats && 
+                                      state.currentStepIndex === steps.length - 1;
+                    if (!isLastStep) {
+                        nextStep();
+                    }
+                }, pauseDuration);
+            }
+        };
+
+        function render() {
+            const app = document.getElementById('app');
+            const trans = t();
+            const isRTL = state.language === 'ar';
+            const dirAttr = isRTL ? 'rtl' : 'ltr';
+            
+            if (state.screen === 'home') {
+                app.innerHTML = `
+                    <div class="max-w-4xl mx-auto p-6" dir="${dirAttr}">
+                        <div class="flex justify-between mb-4">
+                            <button onclick="goToSettings()" class="bg-white rounded-xl shadow-lg px-4 py-2 flex items-center gap-2 hover:shadow-xl transition-all border-2 border-teal-100">
+                                <span class="text-xl">⚙️</span>
+                                <span class="font-medium text-teal-800">${trans.settings}</span>
+                            </button>
+                            
+                            <div class="relative inline-block">
+                                <button onclick="toggleLanguageMenu()" class="bg-white rounded-xl shadow-lg px-4 py-2 flex items-center gap-2 hover:shadow-xl transition-all border-2 border-teal-100">
+                                    <span class="text-2xl">${LANGUAGES.find(l => l.code === state.language).flag}</span>
+                                    <span class="font-medium text-teal-800">${LANGUAGES.find(l => l.code === state.language).name}</span>
+                                    <span>▼</span>
+                                </button>
+                                <div id="languageMenu" class="hidden absolute ${isRTL ? 'left-0' : 'right-0'} mt-2 bg-white rounded-xl shadow-xl border-2 border-teal-100 overflow-hidden z-10">
+                                    ${LANGUAGES.map(lang => `
+                                        <button onclick="changeLanguage('${lang.code}')" class="w-full px-4 py-3 flex items-center gap-3 hover:bg-teal-50 transition-colors ${state.language === lang.code ? 'bg-teal-100' : ''}">
+                                            <span class="text-2xl">${lang.flag}</span>
+                                            <span class="font-medium">${lang.name}</span>
+                                        </button>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mb-12 pt-8">
+                            <div class="text-6xl mb-4">🕌</div>
+                            <h1 class="text-4xl font-bold text-teal-800 mb-2">${trans.appTitle}</h1>
+                            <p class="text-teal-600">${trans.subtitle}</p>
+                            <p class="text-sm text-teal-500 mt-2">${trans.reciter}: ${RECITERS.find(r => r.id === state.selectedReciter).name}</p>
+                            ${state.city && state.country ? `<p class="text-sm text-teal-500">${state.city}, ${state.country.toUpperCase()}</p>` : ''}
+                        </div>
+                        
+                        ${state.loadingPrayerTimes ? `
+                            <div class="text-center mb-8">
+                                <p class="text-teal-600">${trans.loadingPrayerTimes}</p>
+                            </div>
+                        ` : ''}
+                        
+                        ${state.currentDate ? `
+                            <div class="text-center mb-6 bg-white rounded-2xl shadow-lg p-4 border-2 border-teal-100">
+                                <div class="flex items-center justify-center gap-3">
+                                    <span class="text-2xl">📅</span>
+                                    <div>
+                                        <p class="text-sm text-gray-600">${state.currentDate.hijri.weekday.ar} - ${state.currentDate.hijri.day} ${state.currentDate.hijri.month.ar} ${state.currentDate.hijri.year}</p>
+                                        <p class="text-lg font-bold text-teal-800">${state.currentDate.gregorian.weekday.en}, ${state.currentDate.gregorian.day} ${state.currentDate.gregorian.month.en} ${state.currentDate.gregorian.year}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            ${Object.entries(PRAYERS).map(([key, prayer]) => {
+                                const prayerTime = state.prayerTimes ? state.prayerTimes[prayer.apiKey] : null;
+                                return `
+                                    <button onclick="selectPrayer('${key}')" class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all p-8 border-2 border-teal-100 hover:border-teal-300 hover:scale-105">
+                                        <div class="text-6xl mb-4">${prayer.icon}</div>
+                                        <h3 class="text-2xl font-bold text-teal-800 mb-2">${trans.prayers[key] || prayer.name}</h3>
+                                        <p class="text-teal-600">${prayer.rakaats} ${trans.rakaats}</p>
+                                        ${prayerTime ? `
+                                            <p class="text-xl font-bold text-teal-700 mt-2">${prayerTime}</p>
+                                        ` : ''}
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+                        
+                        <!-- Hadith du Jour - Compact -->
+                        ${state.dailyHadith ? `
+                            <div class="mt-8 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl shadow p-4 border border-amber-200" dir="${state.dailyHadith.language === 'ara' || state.dailyHadith.language === 'urd' ? 'rtl' : 'ltr'}">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="text-lg">📖</span>
+                                            <h3 class="text-sm font-bold text-amber-900">${trans.hadithOfTheDay || 'Hadith du Jour'}</h3>
+                                        </div>
+                                        <div class="bg-white/80 rounded-lg p-3 mb-2">
+                                            <p class="text-sm text-gray-700 leading-relaxed ${state.dailyHadith.language === 'ara' || state.dailyHadith.language === 'urd' ? 'text-right font-arabic' : 'text-left'}">${state.dailyHadith.text}</p>
+                                        </div>
+                                        <div class="flex items-center justify-between text-xs text-amber-700">
+                                            <span class="font-medium">${state.dailyHadith.collection}</span>
+                                            <span>#${state.dailyHadith.number}</span>
+                                        </div>
+                                    </div>
+                                    <button onclick="refreshHadith()" class="text-amber-600 hover:text-amber-800 transition-colors flex-shrink-0 p-1" title="${trans.refresh || 'Rafraîchir'}">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        ` : state.loadingHadith ? `
+                            <div class="mt-8 bg-amber-50 rounded-xl shadow p-4 border border-amber-200 text-center">
+                                <p class="text-sm text-amber-700 animate-pulse">📖 ${trans.loadingHadith || 'Chargement du hadith...'}</p>
+                            </div>
+                        ` : state.hadithError ? `
+                            <div class="mt-8 bg-red-50 rounded-xl shadow p-4 border border-red-200">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm text-red-700">⚠️ ${trans.hadithError || 'Erreur'}</p>
+                                    <button onclick="refreshHadith()" class="bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1 rounded text-xs transition-colors">
+                                        ${trans.retry || 'Réessayer'}
+                                    </button>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            } else if (state.screen === 'settings') {
+                app.innerHTML = `
+                    <div class="max-w-4xl mx-auto p-6" dir="${dirAttr}">
+                        <div class="flex items-center justify-between mb-8">
+                            <button onclick="goHome()" class="flex items-center gap-2 text-teal-700 hover:text-teal-900">
+                                <span>${isRTL ? '←' : '←'} ${trans.back}</span>
+                            </button>
+                            <h1 class="text-3xl font-bold text-teal-800">${trans.settings}</h1>
+                            <div class="w-24"></div>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <!-- Localisation -->
+                            <div class="bg-white rounded-2xl shadow-lg p-6 border-2 border-teal-100">
+                                <h3 class="text-xl font-bold text-teal-800 mb-4 flex items-center gap-2">
+                                    <span>📍</span>
+                                    <span>${trans.location}</span>
+                                </h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">${trans.city}</label>
+                                        <input 
+                                            type="text" 
+                                            id="cityInput" 
+                                            placeholder="${trans.cityPlaceholder}"
+                                            value="${state.city}"
+                                            onchange="updateCity(this.value)"
+                                            class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:outline-none text-lg"
+                                        />
+                                        <p class="text-sm text-gray-600 mt-1">${trans.enterCity}</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">${trans.country}</label>
+                                        <input 
+                                            type="text" 
+                                            id="countryInput" 
+                                            placeholder="${trans.countryPlaceholder}"
+                                            value="${state.country}"
+                                            onchange="updateCountry(this.value)"
+                                            maxlength="2"
+                                            class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:outline-none text-lg uppercase"
+                                        />
+                                        <p class="text-sm text-gray-600 mt-1">${trans.enterCountry}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Méthode de calcul -->
+                            <div class="bg-white rounded-2xl shadow-lg p-6 border-2 border-teal-100">
+                                <h3 class="text-xl font-bold text-teal-800 mb-4 flex items-center gap-2">
+                                    <span>📐</span>
+                                    <span>${trans.selectCalculationMethod}</span>
+                                </h3>
+                                <div class="space-y-2 max-h-96 overflow-y-auto">
+                                    ${CALCULATION_METHODS.map(method => `
+                                        <button onclick="selectCalculationMethod(${method.id})" class="w-full p-3 rounded-xl border-2 transition-all text-left ${state.calculationMethod === method.id ? 'bg-teal-100 border-teal-500' : 'bg-gray-50 border-gray-200 hover:border-teal-300'}">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-lg">${method.regions}</span>
+                                                    <div>
+                                                        <p class="font-bold text-gray-800 text-sm">${trans.calculationMethods[method.id] || method.name}</p>
+                                                        <p class="text-xs text-gray-600">${isRTL ? trans.calculationMethods[method.id] : method.nameAr}</p>
+                                                    </div>
+                                                </div>
+                                                ${state.calculationMethod === method.id ? '<span class="text-xl">✔</span>' : ''}
+                                            </div>
+                                        </button>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            
+                            <!-- Sélection du récitateur -->
+                            <div class="bg-white rounded-2xl shadow-lg p-6 border-2 border-teal-100">
+                                <h3 class="text-xl font-bold text-teal-800 mb-4 flex items-center gap-2">
+                                    <span>🎙️</span>
+                                    <span>${trans.selectReciter}</span>
+                                </h3>
+                                <div class="space-y-3">
+                                    ${RECITERS.map(reciter => `
+                                        <button onclick="selectReciter('${reciter.id}')" class="w-full p-4 rounded-xl border-2 transition-all ${state.selectedReciter === reciter.id ? 'bg-teal-100 border-teal-500' : 'bg-gray-50 border-gray-200 hover:border-teal-300'}">
+                                            <div class="flex items-center justify-between">
+                                                <div class="text-left">
+                                                    <p class="font-bold text-gray-800">${reciter.name}</p>
+                                                    <p class="text-sm text-gray-600">${reciter.arabicName}</p>
+                                                </div>
+                                                ${state.selectedReciter === reciter.id ? '<span class="text-2xl">✔</span>' : ''}
+                                            </div>
+                                        </button>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            
+                            <!-- Sélection de l'avatar -->
+                            <div class="bg-white rounded-2xl shadow-lg p-6 border-2 border-teal-100">
+                                <h3 class="text-xl font-bold text-teal-800 mb-4 flex items-center gap-2">
+                                    <span>👤</span>
+                                    <span>${trans.selectAvatar}</span>
+                                </h3>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <button onclick="selectAvatar('boy')" class="p-6 rounded-xl border-2 transition-all ${state.avatarGender === 'boy' ? 'bg-blue-100 border-blue-500' : 'bg-gray-50 border-gray-200 hover:border-blue-300'}">
+                                        <div class="flex flex-col items-center gap-3">
+                                            <img src="assets/images/position-debout-main-coeur.png" class="h-32 object-contain">
+                                            <p class="font-bold text-gray-800">${trans.boy}</p>
+                                            ${state.avatarGender === 'boy' ? '<span class="text-2xl">✔</span>' : ''}
+                                        </div>
+                                    </button>
+                                    <button onclick="selectAvatar('girl')" class="p-6 rounded-xl border-2 transition-all ${state.avatarGender === 'girl' ? 'bg-pink-100 border-pink-500' : 'bg-gray-50 border-gray-200 hover:border-pink-300'}">
+                                        <div class="flex flex-col items-center gap-3">
+                                            <img src="assets/images/position-debout-main-coeur-girl.png" class="h-32 object-contain">
+                                            <p class="font-bold text-gray-800">${trans.girl}</p>
+                                            ${state.avatarGender === 'girl' ? '<span class="text-2xl">✔</span>' : ''}
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Section Dons -->
+                        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl shadow-lg p-6 border-2 border-emerald-200 mt-6">
+                            <h3 class="text-xl font-bold text-emerald-800 mb-3 flex items-center gap-2">
+                                <span>💚</span>
+                                <span>${trans.donations}</span>
+                            </h3>
+                            <p class="text-gray-700 mb-4 text-sm leading-relaxed">${trans.donationsMessage}</p>
+                            <a href="https://www.paypal.com/paypalme/MDRIOUECH" target="_blank" rel="noopener noreferrer" class="inline-block bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all">
+                                💝 ${trans.supportProject}
+                            </a>
+                        </div>
+                        
+                        <!-- Section Open-Source -->
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-lg p-6 border-2 border-blue-200 mt-6">
+                            <h3 class="text-xl font-bold text-blue-800 mb-3 flex items-center gap-2">
+                                <span>📂</span>
+                                <span>${trans.openSource}</span>
+                            </h3>
+                            <p class="text-gray-700 mb-3 text-sm leading-relaxed">${trans.openSourceMessage}</p>
+                            <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 mb-4">
+                                <p class="text-amber-900 text-sm font-medium">${trans.openSourceWarning}</p>
+                            </div>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <a href="https://github.com/MehdyDriouech/MyPocketImam/" target="_blank" rel="noopener noreferrer" class="flex-1 bg-gray-800 text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-900 transition-all text-center flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                                    ${trans.viewOnGithub}
+                                </a>
+                                <button onclick="downloadSourceCode()" class="flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                                    <span>⬇️</span>
+                                    ${trans.downloadCode}
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button onclick="saveSettings()" class="w-full mt-8 bg-gradient-to-r from-teal-500 to-emerald-500 text-white text-xl font-bold py-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                            ${trans.saveSettings}
+                        </button>
+                    </div>
+                `;
+            } else if (state.screen === 'config') {
+                app.innerHTML = `
+                    <div class="max-w-4xl mx-auto p-6" dir="${dirAttr}">
+                        <div class="flex items-center justify-between mb-8">
+                            <button onclick="goHome()" class="flex items-center gap-2 text-teal-700 hover:text-teal-900">
+                                <span>${isRTL ? '←' : '←'} ${trans.back}</span>
+                            </button>
+                            <h1 class="text-3xl font-bold text-teal-800">${trans.configuration} ${trans.prayers[state.selectedPrayer] || PRAYERS[state.selectedPrayer].name}</h1>
+                            <div class="w-24"></div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-teal-500 to-emerald-500 rounded-2xl shadow-lg p-6 mb-8 text-white">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                                <div>
+                                    <p class="text-sm opacity-90">${trans.reciter}</p>
+                                    <p class="text-xl font-bold">${RECITERS.find(r => r.id === state.selectedReciter).name}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-6 mb-8">
+                            ${state.rakaatConfig.map((config, index) => `
+                                <div class="bg-white rounded-2xl shadow-lg p-6 border-2 border-teal-100">
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <div class="bg-teal-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold">${config.rakaat}</div>
+                                        <h3 class="text-xl font-bold text-teal-800">${trans.rakaat} ${config.rakaat}</h3>
+                                    </div>
+                                    <div class="mb-4 p-4 bg-teal-50 rounded-xl border-2 border-teal-200">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="font-bold text-teal-800">${trans.mandatorySurah}</p>
+                                                <p class="text-sm text-teal-600 ${isRTL ? 'text-left' : 'text-right'}">${SURAHS[0].arabic}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    ${config.rakaat <= 2 ? `
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">${trans.secondarySurah}</label>
+                                            <select onchange="updateSurah(${index}, this.value)" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:outline-none">
+                                                ${SURAHS.filter(s => !s.mandatory).map(surah => `
+                                                    <option value="${surah.id}" ${config.secondarySurah.id === surah.id ? 'selected' : ''}>
+                                                        ${trans.surahs[surah.id] || surah.name} - ${surah.arabic} (${surah.number})
+                                                    </option>
+                                                `).join('')}
+                                            </select>
+                                        </div>
+                                    ` : `
+                                        <div class="p-4 bg-gray-50 rounded-xl border-2 border-gray-200">
+                                            <p class="text-sm text-gray-600 italic">
+                                                ℹ️ ${trans.infoRakaat34}
+                                            </p>
+                                        </div>
+                                    `}
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <button onclick="startGuidance()" class="w-full bg-gradient-to-r from-teal-500 to-emerald-500 text-white text-xl font-bold py-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                            ▶ ${trans.startGuidance}
+                        </button>
+                    </div>
+                `;
+            } else if (state.screen === 'guidance') {
+                const steps = getCurrentSteps();
+                const step = steps[state.currentStepIndex];
+                const isLastStep = state.currentRakaat === PRAYERS[state.selectedPrayer].rakaats && state.currentStepIndex === steps.length - 1;
+                const audioFile = getCurrentAudioFile();
+                const totalSteps = PRAYERS[state.selectedPrayer].rakaats * getPrayerSteps(trans).length + getFinalSteps(trans).length;
+                const currentAbsoluteStep = (state.currentRakaat - 1) * getPrayerSteps(trans).length + state.currentStepIndex + 1;
+                const progress = (currentAbsoluteStep / totalSteps) * 100;
+                const positionImage = getPositionImage(step.id, state.avatarGender);
+                
+                app.innerHTML = `
+                    <div class="max-w-4xl mx-auto p-6" dir="${dirAttr}">
+                        <div class="flex items-center justify-between mb-6">
+                            <button onclick="goToConfig()" class="flex items-center gap-2 text-teal-700 hover:text-teal-900">
+                                <span>⚙️ ${trans.config}</span>
+                            </button>
+                            <div class="text-center">
+                                <h1 class="text-2xl font-bold text-teal-800">${trans.prayers[state.selectedPrayer] || PRAYERS[state.selectedPrayer].name}</h1>
+                                <p class="text-teal-600">${trans.rakaat} ${state.currentRakaat}/${PRAYERS[state.selectedPrayer].rakaats}</p>
+                            </div>
+                            <button onclick="goHome()" class="flex items-center gap-2 text-teal-700 hover:text-teal-900">
+                                <span>🏠</span>
+                            </button>
+                        </div>
+                        
+                        <div class="mb-6 bg-white rounded-2xl shadow-lg p-4 border-2 border-teal-100">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">🎬</span>
+                                    <div>
+                                        <p class="font-bold text-teal-800">${trans.scenarioMode}</p>
+                                        <p class="text-sm text-gray-600">${trans.automaticFlow}</p>
+                                    </div>
+                                </div>
+                                <button onclick="toggleScenario()" class="relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${state.scenarioMode ? 'bg-teal-500' : 'bg-gray-300'}">
+                                    <span class="inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${state.scenarioMode ? 'translate-x-7' : 'translate-x-1'}"></span>
+                                </button>
+                            </div>
+                            ${state.scenarioMode ? `
+                                <div class="mt-3 p-3 bg-teal-50 rounded-xl">
+                                    <p class="text-sm text-teal-700">🎬 ${trans.automaticActive}</p>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="mb-8">
+                            <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                                <div class="bg-gradient-to-r from-teal-500 to-emerald-500 h-full transition-all duration-500 rounded-full" style="width: ${progress}%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-3xl shadow-2xl p-12 mb-8 border-2 border-teal-100">
+                            <div class="flex justify-center items-center mb-8">
+                                <img src="${positionImage}" alt="${step.name}" class="prayer-image">
+                            </div>
+                            
+                            <div class="text-center space-y-4">
+                                <h2 class="text-3xl font-bold text-teal-800">${step.name}</h2>
+                                <p class="text-lg text-gray-600 italic">${step.action}</p>
+                                
+                                <div class="bg-teal-50 rounded-2xl p-6 space-y-3">
+                                    <p class="text-4xl font-arabic leading-loose">${step.arabic}</p>
+                                    <p class="text-xl text-teal-700 font-medium">${step.transliteration}</p>
+                                    <p class="text-lg text-gray-700">${step.translation}</p>
+                                </div>
+                                
+                                ${audioFile ? `
+                                    <div class="space-y-2">
+                                        ${!state.scenarioMode ? `
+                                            <button onclick="toggleAudio()" class="bg-teal-500 text-white px-8 py-4 rounded-full font-medium hover:bg-teal-600 transition-all flex items-center gap-3 mx-auto shadow-lg">
+                                                <span>${state.isPlaying ? '⏸️' : '🔊'}</span>
+                                                ${state.isPlaying ? trans.pause : trans.listenRecitation}
+                                            </button>
+                                        ` : `
+                                            <div class="flex items-center justify-center gap-2 text-teal-600">
+                                                <span class="animate-pulse">🔊</span>
+                                                <span class="text-sm font-medium">${state.isPlaying ? trans.playing : trans.waiting}</span>
+                                            </div>
+                                        `}
+                                        
+                                        ${!state.scenarioMode && step.hasOptions && step.audioFiles && step.audioFiles.length > 1 ? `
+                                            <div class="flex items-center justify-center gap-2">
+                                                <button onclick="changeVariant(-1)" class="text-teal-600 hover:text-teal-800 px-3 py-1 rounded">${isRTL ? '►' : '◄'}</button>
+                                                <span class="text-sm text-teal-600">${trans.variant} ${state.audioOption + 1}/${step.audioFiles.length}</span>
+                                                <button onclick="changeVariant(1)" class="text-teal-600 hover:text-teal-800 px-3 py-1 rounded">${isRTL ? '◄' : '►'}</button>
+                                            </div>
+                                        ` : ''}
+                                        
+                                        <p class="text-sm text-teal-600">${trans.reciter}: ${RECITERS.find(r => r.id === state.selectedReciter).name}</p>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        ${!state.scenarioMode ? `
+                            <div class="flex gap-4">
+                                <button onclick="previousStep()" ${state.currentRakaat === 1 && state.currentStepIndex === 0 ? 'disabled' : ''} class="flex-1 bg-white text-teal-700 font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed border-2 border-teal-200">
+                                    ${isRTL ? '►' : '◄'} ${trans.previous}
+                                </button>
+                                <button onclick="nextStep()" ${isLastStep ? 'disabled' : ''} class="flex-1 bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                                    ${trans.next} ${isRTL ? '◄' : '►'}
+                                </button>
+                            </div>
+                        ` : ''}
+                        
+                        ${isLastStep ? `
+                            <div class="mt-6 bg-emerald-100 border-2 border-emerald-300 rounded-2xl p-6 text-center">
+                                <p class="text-2xl font-bold text-emerald-800 mb-2">🎉 ${trans.prayerComplete}</p>
+                                <p class="text-emerald-700">${trans.prayerAccepted}</p>
+                                <button onclick="goHome()" class="mt-4 bg-emerald-500 text-white px-6 py-3 rounded-xl font-medium hover:bg-emerald-600 transition-all">
+                                    ${trans.returnHome}
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+        }
+
+        window.toggleLanguageMenu = () => {
+            const menu = document.getElementById('languageMenu');
+            menu.classList.toggle('hidden');
+        };
+
+        window.changeLanguage = (lang) => {
+            state.language = lang;
+            localStorage.setItem('prayerAppLanguage', lang);
+            document.documentElement.lang = lang;
+            // Reload hadith in new language
+            fetchDailyHadith(lang);
+            render();
+        };
+
+        window.goToSettings = () => {
+            state.screen = 'settings';
+            render();
+        };
+
+        window.updateCity = (city) => {
+            state.city = city;
+        };
+
+        window.updateCountry = (country) => {
+            state.country = country.toUpperCase();
+        };
+
+        window.selectCalculationMethod = (methodId) => {
+            state.calculationMethod = methodId;
+            render();
+        };
+
+        window.selectReciter = (reciterId) => {
+            state.selectedReciter = reciterId;
+            render();
+        };
+
+        window.selectAvatar = (gender) => {
+            state.avatarGender = gender;
+            render();
+        };
+
+        window.saveSettings = () => {
+            localStorage.setItem('prayerAppReciter', state.selectedReciter);
+            localStorage.setItem('prayerAppAvatar', state.avatarGender);
+            localStorage.setItem('prayerAppCity', state.city);
+            localStorage.setItem('prayerAppCountry', state.country);
+            localStorage.setItem('prayerAppCalculationMethod', state.calculationMethod);
+            
+            if (state.city && state.country) {
+                fetchPrayerTimes(state.city, state.country);
+            }
+            
+            state.screen = 'home';
+            render();
+        };
+
+        window.selectPrayer = (prayerId) => {
+            state.selectedPrayer = prayerId;
+            state.rakaatConfig = Array.from({ length: PRAYERS[prayerId].rakaats }, (_, i) => ({
+                rakaat: i + 1,
+                secondarySurah: SURAHS.find(s => s.id === 'ikhlas')
+            }));
+            state.screen = 'config';
+            render();
+        };
+
+        window.updateSurah = (index, surahId) => {
+            state.rakaatConfig[index].secondarySurah = SURAHS.find(s => s.id === surahId);
+            render();
+        };
+
+        window.startGuidance = () => {
+            state.currentRakaat = 1;
+            state.currentStepIndex = 0;
+            state.screen = 'guidance';
+            render();
+        };
+
+        window.goHome = () => {
+            stopAudio();
+            state.scenarioMode = false;
+            state.screen = 'home';
+            render();
+        };
+
+        window.goToConfig = () => {
+            stopAudio();
+            state.scenarioMode = false;
+            state.screen = 'config';
+            render();
+        };
+
+        window.toggleAudio = () => {
+            if (state.isPlaying) {
+                stopAudio();
+            } else {
+                playAudio();
+            }
+            render();
+        };
+
+        window.toggleScenario = () => {
+            state.scenarioMode = !state.scenarioMode;
+            if (state.scenarioMode) {
+                playAudio();
+            } else {
+                stopAudio();
+                if (timeoutId) clearTimeout(timeoutId);
+            }
+            render();
+        };
+
+        window.changeVariant = (direction) => {
+            const steps = getCurrentSteps();
+            const step = steps[state.currentStepIndex];
+            if (step.audioFiles) {
+                state.audioOption = (state.audioOption + direction + step.audioFiles.length) % step.audioFiles.length;
+                stopAudio();
+                render();
+            }
+        };
+
+        window.nextStep = nextStep;
+        window.previousStep = previousStep;
+
+        window.downloadSourceCode = () => {
+            const link = document.createElement('a');
+            link.href = 'prayer-guidance-app-source.zip';
+            link.download = 'prayer-guidance-app-source.zip';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('languageMenu');
+            if (menu && !e.target.closest('button')) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        // Initialize the application
+        async function initializeApp() {
+            // Load translations first
+            await loadTranslations();
+            
+            // Then fetch prayer times if city and country are set
+            if (state.city && state.country) {
+                fetchPrayerTimes(state.city, state.country);
+            }
+            
+            // Load daily hadith
+            fetchDailyHadith(state.language);
+            
+            // Finally render the app
+            render();
+        }
+        
+        // Start the application
+        initializeApp();
+    </script>
+</body>
+</html>
