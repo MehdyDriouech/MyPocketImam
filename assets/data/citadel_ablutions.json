@@ -1,0 +1,46 @@
+[
+  {
+    "situation": {
+      "fr": "Avant les ablutions",
+      "ar": ""
+    },
+    "transliteration": "Bi-smi llāh.",
+    "doua": {
+      "fr": "Au nom d’Allah.",
+      "ar": ""
+    }
+  },
+  {
+    "situation": {
+      "fr": "Après les ablutions – Invocation 1",
+      "ar": ""
+    },
+    "transliteration": "Ash-hadu an lā ilāha illā llāhu, waḥdahu lā sharīka lahu, wa ash-hadu anna Muḥammadan ʿabduhu wa rasūluhu.",
+    "doua": {
+      "fr": "J’atteste que nulle divinité autre qu’Allah n’est digne d’adoration et j’atteste que Muhammad est Son serviteur et Son Messager.",
+      "ar": ""
+    }
+  },
+  {
+    "situation": {
+      "fr": "Après les ablutions – Invocation 2",
+      "ar": ""
+    },
+    "transliteration": "Allāhumma jʿalnī mina t-tawwābīn, wa jʿalnī mina-l-mutaṭahhirīn.",
+    "doua": {
+      "fr": "Ô Seigneur ! Mets-moi au nombre de ceux qui se repentent et de ceux qui se purifient.",
+      "ar": ""
+    }
+  },
+  {
+    "situation": {
+      "fr": "Après les ablutions – Invocation 3",
+      "ar": ""
+    },
+    "transliteration": "Subḥānaka llāhumma wa bi-ḥamdik, ash-hadu an lā ilāha illā anta, astaghfiruka wa atūbu ilayk.",
+    "doua": {
+      "fr": "Gloire à Toi, Ô Allah, et par Ta louange ; j’atteste qu’il n’est de divinité que Toi ; je Te demande pardon et je me repens auprès de Toi.",
+      "ar": ""
+    }
+  }
+]

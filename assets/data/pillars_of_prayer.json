@@ -1,0 +1,425 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "category": "pillars_of_prayer",
+    "language_support": [
+      "fr",
+      "ar",
+      "en"
+    ],
+    "source": "My Pocket Imam - base pédagogique"
+  },
+  "items": [
+    {
+      "id": "rukn_01_qiyam",
+      "order": 1,
+      "type": "pillar",
+      "labels": {
+        "ar": "القيام",
+        "translit": "Al-Qiyām",
+        "fr": "Se tenir debout",
+        "en": "Standing"
+      },
+      "description": {
+        "fr": "Se tenir debout pendant les prières obligatoires pour celui qui en est capable.",
+        "en": "Standing during obligatory prayers for those able to do so.",
+        "ar": "الوقوف في الصلوات المفروضة لمن قدر عليه."
+      },
+      "how_to": {
+        "fr": "Tient-toi droit, regard au lieu de prosternation, pieds espacés d'environ la largeur des épaules.",
+        "en": "Stand upright, gaze at the place of prostration, feet roughly shoulder-width apart.",
+        "ar": "قف معتدلاً، وانظر إلى موضع السجود، وقدماك بقدر عرض الكتفين."
+      },
+      "audio_url": null,
+      "common_mistakes_fr": [
+        "S'appuyer sans nécessité",
+        "Regarder autour de soi",
+        "Pieds collés ou trop écartés"
+      ],
+      "references": [
+        "Consensus des savants sur l'obligation du qiyām dans le fard pour le capable."
+      ]
+    },
+    {
+      "id": "rukn_02_takbir",
+      "order": 2,
+      "type": "pillar",
+      "labels": {
+        "ar": "تكبيرة الإحرام",
+        "translit": "Takbīrat al-Ihrām",
+        "fr": "Takbîr d’entrée en prière",
+        "en": "Opening Takbir"
+      },
+      "description": {
+        "fr": "Dire « Allāhu Akbar » pour entrer en état de prière.",
+        "en": "Say 'Allāhu Akbar' to enter the prayer state.",
+        "ar": "قول «الله أكبر» للدخول في الصلاة."
+      },
+      "how_to": {
+        "fr": "Élève les mains à hauteur des épaules ou des oreilles et dis distinctement « Allāhu Akbar ».",
+        "en": "Raise both hands to shoulder or ear level and clearly say 'Allāhu Akbar'.",
+        "ar": "ارفع اليدين حذو المنكبين أو الأذنين وقل بوضوح: الله أكبر."
+      },
+      "audio_url": null,
+      "common_mistakes_fr": [
+        "Murmurer inaudiblement",
+        "Dire une autre formule",
+        "Oublier le takbîr"
+      ],
+      "references": [
+        "« مفتاح الصلاة الطهور وتحريمها التكبير » (Abū Dāwūd)."
+      ]
+    },
+    {
+      "id": "rukn_03_fatiha",
+      "order": 3,
+      "type": "pillar",
+      "labels": {
+        "ar": "قراءة الفاتحة",
+        "translit": "Qirā’at al-Fātiḥa",
+        "fr": "Récitation d’Al-Fâtiha",
+        "en": "Recitation of Al-Fatiha"
+      },
+      "description": {
+        "fr": "Réciter la sourate Al‑Fâtiha dans chaque unité (rakʿa).",
+        "en": "Recite Surah Al‑Fatiha in every unit (rakʿah).",
+        "ar": "قراءة سورة الفاتحة في كل ركعة."
+      },
+      "how_to": {
+        "fr": "Récite Al‑Fâtiha correctement et calmement, puis une autre sourate au 1er et 2e rakʿa des prières obligatoires.",
+        "en": "Recite Al‑Fatiha properly and calmly, then another surah in the 1st and 2nd rakʿahs of obligatory prayers.",
+        "ar": "اقرأ الفاتحة بتجويد وطمأنينة، ثم سورة أخرى في الركعتين الأوليين من الفرض."
+      },
+      "audio_url": null,
+      "common_mistakes_fr": [
+        "Omettre des versets",
+        "Récitation précipitée sans articulation",
+        "Ne pas corriger une erreur qui change le sens"
+      ],
+      "references": [
+        "« لا صلاة لمن لم يقرأ بفاتحة الكتاب » (al-Bukhārī, Muslim)."
+      ]
+    },
+    {
+      "id": "rukn_04_ruku",
+      "order": 4,
+      "type": "pillar",
+      "labels": {
+        "ar": "الركوع",
+        "translit": "Ar-Rukūʿ",
+        "fr": "Inclinaison (Rukûʿ)",
+        "en": "Bowing (Rukuʿ)"
+      },
+      "description": {
+        "fr": "S’incliner en posant les mains sur les genoux avec le dos droit.",
+        "en": "Bow placing hands on knees with the back straight.",
+        "ar": "الانحناء ووضع اليدين على الركبتين واستواء الظهر."
+      },
+      "how_to": {
+        "fr": "Penche le buste jusqu’à aligner le dos, doigts écartés sur les genoux, dis au minimum une fois « Subḥāna Rabbiyal‑ʿAẓīm ».",
+        "en": "Bend until the back is level, spread fingers on the knees, say at least once 'Subḥāna Rabbiyal‑ʿAẓīm'.",
+        "ar": "انحنِ حتى يستوي ظهرك، وضع أصابعك مفرّجة على الركبتين، وقل مرة على الأقل: سبحان ربي العظيم."
+      },
+      "audio_url": null,
+      "common_mistakes_fr": [
+        "Dos arrondi",
+        "Regard vers l’avant",
+        "Descendre trop peu"
+      ],
+      "references": [
+        "Description de la prière du Prophète ﷺ (ḥadiths authentiques)."
+      ]
+    },
+    {
+      "id": "rukn_05_qawmah",
+      "order": 5,
+      "type": "pillar",
+      "labels": {
+        "ar": "الاعتدال بعد الركوع",
+        "translit": "Al-Iʿtidāl baʿda ar‑rukūʿ",
+        "fr": "Redressement après l’inclinaison",
+        "en": "Standing up after bowing"
+      },
+      "description": {
+        "fr": "Se redresser complètement après le rukûʿ.",
+        "en": "Stand fully upright after bowing.",
+        "ar": "الاعتدال قائمًا بعد الركوع."
+      },
+      "how_to": {
+        "fr": "Redresse‑toi complètement en disant « Samiʿa Allāhu liman ḥamidah », puis « Rabbanā wa laka al‑ḥamd ».",
+        "en": "Stand upright saying 'Samiʿa Allāhu liman ḥamidah', then 'Rabbanā wa laka al‑ḥamd'.",
+        "ar": "اعتدل قائماً قائلاً: سمع الله لمن حمده، ثم: ربنا ولك الحمد."
+      },
+      "audio_url": null,
+      "common_mistakes_fr": [
+        "Ne pas marquer un arrêt (tuma’nīna)",
+        "Se précipiter vers la prosternation"
+      ],
+      "references": [
+        "Hadiths de la tuma’nīna et de l’iʿtidāl (al‑Bukhārī, Muslim)."
+      ]
+    },
+    {
+      "id": "rukn_06_sujud",
+      "order": 6,
+      "type": "pillar",
+      "labels": {
+        "ar": "السجود",
+        "translit": "As‑Sujūd",
+        "fr": "Prosternation (Sujûd)",
+        "en": "Prostration (Sujud)"
+      },
+      "description": {
+        "fr": "Prosternation sur 7 membres : front (avec le nez), deux mains, deux genoux, deux pieds.",
+        "en": "Prostrate on seven body parts: forehead (with nose), both hands, both knees, both feet.",
+        "ar": "السجود على سبعة أعضاء: الجبهة مع الأنف، والكفّان، والركبتان، وأطراف القدمين."
+      },
+      "how_to": {
+        "fr": "Pose d’abord les mains puis le front et le nez; doigts dirigés vers la Qibla; dis « Subḥāna Rabbiyal‑Aʿlā ».",
+        "en": "Place hands first, then forehead and nose; fingers toward the Qibla; say 'Subḥāna Rabbiyal‑Aʿlā'.",
+        "ar": "ضع اليدين ثم الجبهة والأنف أولاً؛ والأصابع نحو القبلة؛ وقل: سبحان ربي الأعلى."
+      },
+      "audio_url": null,
+      "common_mistakes_fr": [
+        "Ne pas coller le nez au sol",
+        "Coudes posés au sol",
+        "Pieds relevés"
+      ],
+      "references": [
+        "Hadith des sept membres (al‑Bukhārī, Muslim)."
+      ]
+    },
+    {
+      "id": "rukn_07_sit_between_sujud",
+      "order": 7,
+      "type": "pillar",
+      "labels": {
+        "ar": "الجلوس بين السجدتين",
+        "translit": "Al‑julūs bayna as‑sajdatayn",
+        "fr": "Assise entre les deux prosternations",
+        "en": "Sitting between the two prostrations"
+      },
+      "description": {
+        "fr": "S’asseoir brièvement et calmement entre les deux prosternations.",
+        "en": "Sit briefly and calmly between the two prostrations.",
+        "ar": "الجلوس بطمأنينة بين السجدتين."
+      },
+      "how_to": {
+        "fr": "Assieds‑toi sur ton pied gauche, droit dressé, et dis « Rabbighfir lī, warḥamnī, wahdinī, waʿāfinī, warzuqnī ».",
+        "en": "Sit on the left foot, right upright, and say the supplication of forgiveness and mercy.",
+        "ar": "اجلس على رجلك اليسرى واليمنى منصوبة، وقل دعاء المغفرة والرحمة."
+      },
+      "audio_url": null,
+      "common_mistakes_fr": [
+        "Zapper l’assise",
+        "Pas d’arrêt suffisant"
+      ],
+      "references": [
+        "Hadiths authentiques sur la description de l’assise entre les deux sujūd."
+      ]
+    },
+    {
+      "id": "rukn_08_tumanina",
+      "order": 8,
+      "type": "pillar",
+      "labels": {
+        "ar": "الطمأنينة",
+        "translit": "At‑Tuma’nīna",
+        "fr": "Sérénité/immobilité (Tuma’nîna)",
+        "en": "Tranquility/Pause (Tuma’nina)"
+      },
+      "description": {
+        "fr": "Marquer une pause immobile minimale dans chaque posture.",
+        "en": "Hold a minimal still pause in every posture.",
+        "ar": "السكون اليسير في كل هيئة من هيئات الصلاة."
+      },
+      "how_to": {
+        "fr": "Immobilise chaque position un instant, sans te précipiter.",
+        "en": "Stabilize each position briefly without rushing.",
+        "ar": "ثبّت كل وضع قليلاً دون عجلة."
+      },
+      "audio_url": null,
+      "common_mistakes_fr": [
+        "Mouvements en continu",
+        "Absence de pauses"
+      ],
+      "references": [
+        "Le Prophète ﷺ ordonna au « mal‑priant » de marquer la tuma’nīna (al‑Bukhārī)."
+      ]
+    },
+    {
+      "id": "rukn_09_tartib",
+      "order": 9,
+      "type": "pillar",
+      "labels": {
+        "ar": "الترتيب",
+        "translit": "At‑Tartīb",
+        "fr": "Respect de l’ordre (Tartîb)",
+        "en": "Sequence order (Tartib)"
+      },
+      "description": {
+        "fr": "Respecter l’ordre des actes de la prière tel que transmis.",
+        "en": "Maintain the prescribed sequence of prayer acts.",
+        "ar": "التزام ترتيب أفعال الصلاة كما ورد."
+      },
+      "how_to": {
+        "fr": "N’inverse pas les étapes : qiyām → rukūʿ → qawmah → sujūd → assise etc.",
+        "en": "Do not invert steps: standing → bowing → rising → prostration → sitting, etc.",
+        "ar": "لا تعكس المراحل: قيام → ركوع → اعتدال → سجود → جلوس..."
+      },
+      "audio_url": null,
+      "common_mistakes_fr": [
+        "Passer du qiyām au sujūd directement",
+        "Désordre répété"
+      ],
+      "references": [
+        "Description normative de la prière (al‑Bukhārī, Muslim)."
+      ]
+    },
+    {
+      "id": "rukn_10_final_tashahhud",
+      "order": 10,
+      "type": "pillar",
+      "labels": {
+        "ar": "التشهد الأخير",
+        "translit": "At‑Tashahhud al‑Ākhir",
+        "fr": "Dernier Tachahhud",
+        "en": "Final Tashahhud"
+      },
+      "description": {
+        "fr": "Réciter le tachahhud final avant les salām.",
+        "en": "Recite the final Tashahhud before the salams.",
+        "ar": "قراءة التشهد الأخير قبل السلام."
+      },
+      "how_to": {
+        "fr": "Récite « At‑taḥiyyātu lillāh... » jusqu’à la fin du tachahhud.",
+        "en": "Recite “At‑taḥiyyātu lillāh...” until the end of the Tashahhud.",
+        "ar": "اقرأ « التحيات لله... » إلى نهاية التشهد."
+      },
+      "audio_url": null,
+      "common_mistakes_fr": [
+        "Récitation tronquée",
+        "Le sauter par oubli sans rattrapage"
+      ],
+      "references": [
+        "Hadiths sur le tachahhud final (Abu Dāwūd, an‑Nasā’ī)."
+      ]
+    },
+    {
+      "id": "rukn_11_sit_for_final_tashahhud",
+      "order": 11,
+      "type": "pillar",
+      "labels": {
+        "ar": "الجلوس للتشهد الأخير",
+        "translit": "Al‑julūs li‑tashahhud al‑Ākhir",
+        "fr": "Assise pour le dernier tachahhud",
+        "en": "Sitting for the final Tashahhud"
+      },
+      "description": {
+        "fr": "S’asseoir pour réciter le tachahhud final.",
+        "en": "Sit to recite the final Tashahhud.",
+        "ar": "الجلوس لقراءة التشهد الأخير."
+      },
+      "how_to": {
+        "fr": "Adopte la position de tawarruk en dernière rakʿa (selon l’école), sinon assise habituelle.",
+        "en": "Adopt tawarruk in the last rakʿah (per school), otherwise the regular sitting.",
+        "ar": "اتخذ هيئة التورك في الركعة الأخيرة بحسب المذهب، وإلا الجلسة المعتادة."
+      },
+      "audio_url": null,
+      "common_mistakes_fr": [
+        "Se lever par erreur avant de terminer",
+        "Ne pas s’asseoir complètement"
+      ],
+      "references": [
+        "Description de la prière (Sunna)."
+      ]
+    },
+    {
+      "id": "rukn_12_salat_alan_nabi",
+      "order": 12,
+      "type": "pillar",
+      "labels": {
+        "ar": "الصلاة على النبي ﷺ",
+        "translit": "Aṣ‑ṣalāt ʿala an‑nabī ﷺ",
+        "fr": "Salutations sur le Prophète ﷺ",
+        "en": "Sending prayers upon the Prophet ﷺ"
+      },
+      "description": {
+        "fr": "Envoyer les prières sur le Prophète ﷺ à la fin de la prière.",
+        "en": "Send prayers upon the Prophet ﷺ at the end of prayer.",
+        "ar": "الصلاة على النبي ﷺ في آخر الصلاة."
+      },
+      "how_to": {
+        "fr": "Après le tachahhud, dis : « Allāhumma ṣalli ʿalā Muḥammad... » selon la formule authentique.",
+        "en": "After Tashahhud, say the authentic Ṣalāt Ibrāhīmiyya.",
+        "ar": "بعد التشهد، قل الصلاة الإبراهيمية بصيغتها الصحيحة."
+      },
+      "audio_url": null,
+      "common_mistakes_fr": [
+        "Formule incomplète",
+        "La sauter totalement"
+      ],
+      "references": [
+        "Formules authentiques dans al‑Bukhārī et Muslim."
+      ]
+    },
+    {
+      "id": "rukn_13_niyyah",
+      "order": 13,
+      "type": "pillar",
+      "labels": {
+        "ar": "النية",
+        "translit": "An‑Niyya",
+        "fr": "Intention (Niyya)",
+        "en": "Intention (Niyyah)"
+      },
+      "description": {
+        "fr": "Avoir l’intention dans le cœur de la prière visée (ex. Ẓuhr, ʿAṣr…).",
+        "en": "Hold the intention in the heart for the specific prayer (e.g., Dhuhr, ʿAsr).",
+        "ar": "عقد النية بالقلب للصلاة المعيّنة (مثال: الظهر، العصر)."
+      },
+      "how_to": {
+        "fr": "Intention silencieuse dans le cœur; ne pas la prononcer à voix haute.",
+        "en": "Silent intention in the heart; do not voice it aloud.",
+        "ar": "النية بالقلب من غير تلفّظ."
+      },
+      "audio_url": null,
+      "common_mistakes_fr": [
+        "Prononcer la niyya à voix haute",
+        "Hésiter sur la prière à accomplir"
+      ],
+      "references": [
+        "« إنما الأعمال بالنيات » (al‑Bukhārī)."
+      ]
+    },
+    {
+      "id": "rukn_14_salam",
+      "order": 14,
+      "type": "pillar",
+      "labels": {
+        "ar": "السلام",
+        "translit": "As‑Salām",
+        "fr": "Salut final (Salām)",
+        "en": "Final Salām"
+      },
+      "description": {
+        "fr": "Terminer la prière par le salām au moins une fois à droite (selon écoles).",
+        "en": "End the prayer with salām at least once to the right (per schools).",
+        "ar": "ختام الصلاة بالتسليم مرة واحدة على الأقل إلى اليمين (بحسب الأقوال)."
+      },
+      "how_to": {
+        "fr": "Tourne légèrement la tête et dis : « As‑salāmu ʿalaykum wa raḥmatullāh ».",
+        "en": "Turn slightly and say: 'As‑salāmu ʿalaykum wa raḥmatullāh'.",
+        "ar": "التفت قليلاً وقل: السلام عليكم ورحمة الله."
+      },
+      "audio_url": null,
+      "common_mistakes_fr": [
+        "Salām inaudible pour soi‑même",
+        "Salām avant d’achever le tachahhud"
+      ],
+      "references": [
+        "Hadiths sur la clôture de la prière (Abu Dāwūd, at‑Tirmidhī)."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "schema": {
+    "situation": {
+      "fr": "string",
+      "ar": "string"
+    },
+    "transliteration": "string",
+    "doua": {
+      "fr": "string",
+      "ar": "string"
+    }
+  },
+  "themes": [
+    "citadel_morning_evening.json",
+    "citadel_wake_up.json",
+    "citadel_toilets.json",
+    "citadel_ablutions.json",
+    "citadel_home.json",
+    "citadel_mosque.json",
+    "citadel_travel.json",
+    "citadel_market.json",
+    "citadel_children_protection.json",
+    "citadel_stress_sorrow.json",
+    "citadel_after_meal.json",
+    "citadel_final_tashahhud.json",
+    "citadel_marriage_vehicle.json",
+    "citadel_rain.json",
+    "citadel_anger.json",
+    "citadel_funeral.json",
+    "citadel_illness.json",
+    "citadel_visit_sick.json",
+    "citadel_evil_eye.json"
+  ]
+}
