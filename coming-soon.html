@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Pocket Imam - Bientôt disponible</title>
+    <meta name="description" content="Application d'apprentissage de la prière islamique - Guide interactif avec audio, support multilingue et horaires de prière">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #2dd4bf 100%);
+        }
+        
+        .pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .beta-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-teal-50 via-emerald-50 to-cyan-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="text-4xl">🕌</div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-teal-800">My Pocket Imam</h1>
+                        <p class="text-sm text-teal-600">بسم الله الرحمن الرحيم</p>
+                    </div>
+                </div>
+                <div class="beta-badge text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                    BIENTÔT
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <!-- Hero Section -->
+        <div class="text-center mb-16 fade-in-up">
+            <div class="inline-block gradient-bg text-white px-6 py-2 rounded-full text-sm font-semibold mb-6 shadow-lg">
+                🎉 Sadaqa Jariya - Gratuit pour tous
+            </div>
+            <h2 class="text-5xl md:text-6xl font-bold text-gray-800 mb-6 leading-tight">
+                Apprenez la Prière<br/>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-emerald-600">
+                    de Manière Interactive
+                </span>
+            </h2>
+            <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+                Une application web complète pour guider les utilisateurs à travers les étapes de la prière islamique avec récitations audio, support multilingue et horaires automatiques.
+            </p>
+            
+            <!-- Beta Access Button -->
+            <a href="https://beta.my-pocket-imam.com/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-3 bg-gradient-to-r from-teal-600 to-emerald-600 text-white px-10 py-5 rounded-2xl text-xl font-bold shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 mb-4">
+                <span>🚀</span>
+                <span>Accéder à la Version Beta</span>
+                <span>→</span>
+            </a>
+            
+            <!-- Disclaimer -->
+            <div class="max-w-2xl mx-auto mt-8 bg-amber-50 border-2 border-amber-300 rounded-xl p-4">
+                <div class="flex items-start gap-3">
+                    <span class="text-2xl flex-shrink-0">⚠️</span>
+                    <div class="text-left">
+                        <p class="text-amber-900 font-semibold mb-1">Application en cours de développement</p>
+                        <p class="text-sm text-amber-800">Des bugs et inexactitudes peuvent apparaître. Votre feedback est précieux pour nous aider à améliorer l'application. Qu'Allah récompense votre patience et votre contribution.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+            <div class="bg-white rounded-2xl shadow-lg p-6 border-2 border-teal-100 hover:border-teal-300 hover:shadow-xl transition-all">
+                <div class="text-5xl mb-4">🎙️</div>
+                <h3 class="text-xl font-bold text-teal-800 mb-2">Récitations Audio</h3>
+                <p class="text-gray-600">3 récitateurs renommés : Saad El Ghamidi, Abdul Basit, Mishary Rashid</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-lg p-6 border-2 border-teal-100 hover:border-teal-300 hover:shadow-xl transition-all">
+                <div class="text-5xl mb-4">🌍</div>
+                <h3 class="text-xl font-bold text-teal-800 mb-2">Multilingue</h3>
+                <p class="text-gray-600">Support complet en Français, English et العربية</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-lg p-6 border-2 border-teal-100 hover:border-teal-300 hover:shadow-xl transition-all">
+                <div class="text-5xl mb-4">⏰</div>
+                <h3 class="text-xl font-bold text-teal-800 mb-2">Horaires Automatiques</h3>
+                <p class="text-gray-600">23 méthodes de calcul via l'API Aladhan</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-lg p-6 border-2 border-teal-100 hover:border-teal-300 hover:shadow-xl transition-all">
+                <div class="text-5xl mb-4">🎬</div>
+                <h3 class="text-xl font-bold text-teal-800 mb-2">Mode Scénario</h3>
+                <p class="text-gray-600">Apprentissage automatique fluide et progressif</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-lg p-6 border-2 border-teal-100 hover:border-teal-300 hover:shadow-xl transition-all">
+                <div class="text-5xl mb-4">👥</div>
+                <h3 class="text-xl font-bold text-teal-800 mb-2">Avatars Personnalisables</h3>
+                <p class="text-gray-600">Représentations visuelles garçon/fille</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-lg p-6 border-2 border-teal-100 hover:border-teal-300 hover:shadow-xl transition-all">
+                <div class="text-5xl mb-4">🧰</div>
+                <h3 class="text-xl font-bold text-teal-800 mb-2">Outils du Musulman</h3>
+                <p class="text-gray-600">Ablutions, Citadelle du musulman, Piliers de la prière</p>
+            </div>
+        </div>
+
+        <!-- Target Audience -->
+        <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 mb-16 border-2 border-teal-100">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-teal-800 mb-4">🎯 Pour Qui ?</h2>
+                <p class="text-gray-600 text-lg">Cette application a été créée pour faciliter l'apprentissage de la prière</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center p-6 bg-teal-50 rounded-xl">
+                    <div class="text-4xl mb-3">🌙</div>
+                    <h3 class="font-bold text-teal-800 mb-2">Nouveaux Musulmans</h3>
+                    <p class="text-sm text-gray-600">Guide complet étape par étape</p>
+                </div>
+                
+                <div class="text-center p-6 bg-emerald-50 rounded-xl">
+                    <div class="text-4xl mb-3">👶</div>
+                    <h3 class="font-bold text-teal-800 mb-2">Enfants</h3>
+                    <p class="text-sm text-gray-600">Interface ludique et pédagogique</p>
+                </div>
+                
+                <div class="text-center p-6 bg-cyan-50 rounded-xl">
+                    <div class="text-4xl mb-3">📚</div>
+                    <h3 class="font-bold text-teal-800 mb-2">Perfectionnement</h3>
+                    <p class="text-sm text-gray-600">Pour approfondir sa pratique</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Surahs Available -->
+        <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-3xl shadow-xl p-8 mb-16 border-2 border-purple-200">
+            <h2 class="text-3xl font-bold text-purple-900 mb-6 text-center">📖 Sourates Disponibles</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="bg-white/80 rounded-xl p-4 text-center">
+                    <p class="font-bold text-purple-800">Al-Fatiha</p>
+                    <p class="text-sm text-purple-600" dir="rtl">الفاتحة</p>
+                </div>
+                <div class="bg-white/80 rounded-xl p-4 text-center">
+                    <p class="font-bold text-purple-800">Al-Ikhlas</p>
+                    <p class="text-sm text-purple-600" dir="rtl">الإخلاص</p>
+                </div>
+                <div class="bg-white/80 rounded-xl p-4 text-center">
+                    <p class="font-bold text-purple-800">Al-Falaq</p>
+                    <p class="text-sm text-purple-600" dir="rtl">الفلق</p>
+                </div>
+                <div class="bg-white/80 rounded-xl p-4 text-center">
+                    <p class="font-bold text-purple-800">An-Nas</p>
+                    <p class="text-sm text-purple-600" dir="rtl">الناس</p>
+                </div>
+                <div class="bg-white/80 rounded-xl p-4 text-center">
+                    <p class="font-bold text-purple-800">Al-Kafirun</p>
+                    <p class="text-sm text-purple-600" dir="rtl">الكافرون</p>
+                </div>
+                <div class="bg-white/80 rounded-xl p-4 text-center">
+                    <p class="font-bold text-purple-800">Al-Asr</p>
+                    <p class="text-sm text-purple-600" dir="rtl">العصر</p>
+                </div>
+                <div class="bg-white/80 rounded-xl p-4 text-center">
+                    <p class="font-bold text-purple-800">Al-Qadr</p>
+                    <p class="text-sm text-purple-600" dir="rtl">القدر</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- License and Usage -->
+        <div class="grid md:grid-cols-2 gap-6 mb-16">
+            <div class="bg-white rounded-2xl shadow-lg p-8 border-2 border-green-200">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="text-4xl">✅</span>
+                    <h3 class="text-2xl font-bold text-green-800">Autorisé</h3>
+                </div>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-2">
+                        <span class="text-green-600 mt-1">•</span>
+                        <span class="text-gray-700">Utiliser l'application gratuitement</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-green-600 mt-1">•</span>
+                        <span class="text-gray-700">Modifier le code pour vos besoins personnels</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-green-600 mt-1">•</span>
+                        <span class="text-gray-700">Partager l'application avec d'autres</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-green-600 mt-1">•</span>
+                        <span class="text-gray-700">Contribuer à l'amélioration du code</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-green-600 mt-1">•</span>
+                        <span class="text-gray-700">L'héberger sur votre propre site web</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-lg p-8 border-2 border-red-200">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="text-4xl">❌</span>
+                    <h3 class="text-2xl font-bold text-red-800">Interdit</h3>
+                </div>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-2">
+                        <span class="text-red-600 mt-1">•</span>
+                        <span class="text-gray-700"><strong>Vendre</strong> cette application ou une version modifiée</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-red-600 mt-1">•</span>
+                        <span class="text-gray-700"><strong>Commercialiser</strong> ce projet sous quelque forme que ce soit</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-red-600 mt-1">•</span>
+                        <span class="text-gray-700">Retirer les mentions de l'auteur original</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-red-600 mt-1">•</span>
+                        <span class="text-gray-700">Prétendre en être l'auteur original</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Mission Statement -->
+        <div class="bg-gradient-to-r from-teal-600 to-emerald-600 rounded-3xl shadow-2xl p-8 md:p-12 mb-16 text-white text-center">
+            <div class="text-5xl mb-4">💚</div>
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">Œuvre pour Allah ﷻ</h2>
+            <p class="text-xl mb-6 leading-relaxed max-w-3xl mx-auto">
+                Ce projet est offert comme une <strong>sadaqa jariya</strong> et doit rester <strong>100% gratuit</strong> pour tous.
+            </p>
+            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 max-w-2xl mx-auto">
+                <p class="text-lg italic">
+                    "Le meilleur d'entre vous est celui qui apprend le Coran et l'enseigne"
+                </p>
+                <p class="text-sm mt-2">- Prophète Muhammad ﷺ</p>
+            </div>
+        </div>
+
+        <!-- Support Section -->
+        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl shadow-xl p-8 md:p-12 mb-16 border-2 border-emerald-200">
+            <div class="text-center mb-8">
+                <div class="text-5xl mb-4">🤲</div>
+                <h2 class="text-3xl font-bold text-emerald-900 mb-4">Soutien et Dons</h2>
+                <p class="text-gray-700 text-lg max-w-2xl mx-auto mb-6">
+                    Les dons servent <strong>uniquement</strong> à couvrir les frais d'hébergement. Tout surplus est reversé à des œuvres de charité musulmanes vérifiées.
+                </p>
+                <a href="https://www.paypal.com/paypalme/MDRIOUECH" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-8 py-4 rounded-xl font-bold hover:shadow-lg transition-all">
+                    <span>💰</span>
+                    <span>Soutenir le Projet</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Dua Section -->
+        <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 text-center border-2 border-teal-100">
+            <h2 class="text-3xl font-bold text-teal-800 mb-6">🤲 Du'a</h2>
+            <div class="space-y-4 max-w-3xl mx-auto">
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    Qu'Allah accepte cette œuvre, la rende bénéfique pour la communauté, et en fasse une sadaqa jariya pour tous ceux qui y ont contribué.
+                </p>
+                <p class="text-2xl text-teal-700 font-arabic leading-loose" dir="rtl">
+                    اللهم تقبل منا هذا العمل واجعله في ميزان حسناتنا
+                </p>
+                <p class="text-xl text-teal-600 font-bold" dir="rtl">
+                    جزاكم الله خيرا
+                </p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white/80 backdrop-blur-sm mt-16 py-8 border-t-2 border-teal-100">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-8 mb-6">
+                <div>
+                    <h3 class="text-lg font-bold text-teal-800 mb-3">👨‍💻 Auteurs Originaux</h3>
+                    <p class="text-gray-700 mb-2">
+                        <strong>Mehdy DRIOUECH & Sanel DRIOUECH</strong>
+                    </p>
+                    <p class="text-sm text-gray-600">Vibecodé avec l'aide de Claude</p>
+                    <p class="text-sm text-gray-600">Créé comme une œuvre pour Allah ﷻ</p>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold text-teal-800 mb-3">💻 Technologies</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full text-sm">HTML5</span>
+                        <span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm">JavaScript</span>
+                        <span class="bg-cyan-100 text-cyan-800 px-3 py-1 rounded-full text-sm">TailwindCSS</span>
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">API Aladhan</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center pt-6 border-t border-teal-100">
+                <p class="text-gray-600 text-sm mb-2">
+                    Remerciements spéciaux à <a href="https://github.com/fawazahmed0/hadith-api" target="_blank" rel="noopener noreferrer" class="text-teal-600 hover:text-teal-800 font-medium">fawazahmed0</a> pour l'API hadith
+                </p>
+                <p class="text-teal-700 font-medium">
+                    © 2025 My Pocket Imam - Sadaqa Jariya - Gratuit pour tous
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

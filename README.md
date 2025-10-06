@@ -98,7 +98,6 @@ Qu'Allah accepte cette œuvre, la rende bénéfique pour la communauté, et en f
 - Vibecodé avec l'aide de Claude
 - Créé comme une œuvre pour Allah ﷻ
 - remerciments speciaux à fawazahmed0 pour l'API hadith (https://github.com/fawazahmed0/hadith-api)
-- remerciments speciaux à quran.com pour l'API Coran (https://github.com/quran)
 
 ## 🌟 Contribuer
 
