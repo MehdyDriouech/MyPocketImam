@@ -14,6 +14,7 @@ Cette application a été développée comme une **sadaqa jariya** (charité con
 - 📐 23 méthodes de calcul des horaires disponibles
 - 🎬 Mode scénario automatique pour un apprentissage fluide
 - 📚 7 sourates courantes disponibles
+- 🧰 Outils du musulmans (comment faire ses ablutions, La citadelle du musulman, piliers de la prière)
 
 ## 🎯 Objectif
 
@@ -25,8 +26,9 @@ Cette application vise à faciliter l'apprentissage de la prière pour :
 ## 💻 Installation
 
 1. Décompressez le fichier ZIP
-2. Ouvrez le fichier `prayer-guidance-app.html` dans votre navigateur
-3. C'est tout ! L'application fonctionne localement sans serveur
+2. Lancer un serveur apache en local et placez le contenu du dossier dans le répertoire nécessaire
+3. Ouvrez le fichier `index.html` dans votre navigateur
+4. (Pour la partie offline first, une version allégée de l'application sera mise a dispo)
 
 ## 🎵 Fichiers Audio Inclus
 
@@ -90,12 +92,13 @@ Qu'Allah accepte cette œuvre, la rende bénéfique pour la communauté, et en f
 
 ---
 
-## 👨‍💻 Auteur Original
+## 👨‍💻 Auteurs Originaux
 
 **Mehdy DRIOUECH & Sanel DRIOUECH**
 - Vibecodé avec l'aide de Claude
 - Créé comme une œuvre pour Allah ﷻ
 - remerciments speciaux à fawazahmed0 pour l'API hadith (https://github.com/fawazahmed0/hadith-api)
+
 ## 🌟 Contribuer
 
 Les contributions sont les bienvenues ! Si vous souhaitez améliorer l'application :
@@ -110,7 +113,7 @@ Gardez toujours à l'esprit que ce projet doit rester gratuit et accessible à t
 
 ## 📞 Contact
 
-Pour toute question ou suggestion, n'hésitez pas à me contacter.
+Pour toute question ou suggestion, n'hésitez pas à me contacter en ouvrant une issue dans ce repo github
 
 ---
 
