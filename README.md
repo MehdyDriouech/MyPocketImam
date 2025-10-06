@@ -14,7 +14,7 @@ Cette application a été développée comme une **sadaqa jariya** (charité con
 - 📐 23 méthodes de calcul des horaires disponibles
 - 🎬 Mode scénario automatique pour un apprentissage fluide
 - 📚 7 sourates courantes disponibles
-- 🧰 Outils du musulmans (comment faire ses ablutions, La citadelle du musulman, piliers de la prière)
+- 🧰 Outils du musulmans (comment faire ses ablutions, La citadelle du musulman, piliers de la prière, accès au coran)
 
 ## 🎯 Objectif
 
@@ -95,9 +95,10 @@ Qu'Allah accepte cette œuvre, la rende bénéfique pour la communauté, et en f
 ## 👨‍💻 Auteurs Originaux
 
 **Mehdy DRIOUECH & Sanel DRIOUECH**
-- Vibecodé avec l'aide de Claude
+- Entierement Vibecodé (Pas merci ChatGPT et la manie de vouloir tout remodifier a chaques release alors que c'est pas nécessaire)
 - Créé comme une œuvre pour Allah ﷻ
 - remerciments speciaux à fawazahmed0 pour l'API hadith (https://github.com/fawazahmed0/hadith-api)
+- remerciement speciaux à quran.com pour l'API Coran (https://github.com/quran)
 
 ## 🌟 Contribuer
 
