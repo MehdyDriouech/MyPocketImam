@@ -151,6 +151,12 @@
   "ablutionComplete": "Ablutions complete!",
   "ablutionAccepted": "May Allah accept your ablutions.",
   "intention": "Intention",
+  "qibla": "Qibla",
+  "qiblaDesc": "Find the direction of Mecca",
+  "appearance": "Appearance",
+  "theme_light": "Light Mode",
+  "theme_dark": "Dark Mode",
+  "theme_system": "System",
   "intentionDesc": "Make the intention in your heart to perform wudhu for the sake of Allah.",
   "sayBismillah": "Say Bismillah",
   "bismillahDesc": "Begin by saying “Bismillah”.",
@@ -237,5 +243,14 @@
   "onboardingLocationDesc": "Enter your city and country code to get accurate times.",
   "onboardingOptional": "This information is optional. You can configure it later in settings.",
   "start": "Start",
-  "skip": "Skip"
+  "skip": "Skip",
+  "tasbihDigital": "Digital Tasbih",
+  "tasbihDesc": "Dhikr Counter",
+  "counter": "Counter",
+  "presets": "Presets",
+  "history": "History",
+  "noHistory": "No recorded sessions",
+  "reset": "Reset",
+  "target": "Target",
+  "totalCount": "Total (All-time)"
 }
