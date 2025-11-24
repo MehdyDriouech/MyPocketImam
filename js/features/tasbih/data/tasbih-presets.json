@@ -1,0 +1,44 @@
+[
+    {
+        "id": "subhanallah",
+        "arabic": "سُبْحَانَ ٱللَّٰهِ",
+        "transliteration": "Subhanallah",
+        "meaning": "Gloire à Allah",
+        "target": 33
+    },
+    {
+        "id": "alhamdulillah",
+        "arabic": "ٱلْحَمْدُ لِلَّٰهِ",
+        "transliteration": "Alhamdulillah",
+        "meaning": "Louange à Allah",
+        "target": 33
+    },
+    {
+        "id": "allahuakbar",
+        "arabic": "ٱللَّٰهُ أَكْبَرُ",
+        "transliteration": "Allahu Akbar",
+        "meaning": "Allah est le Plus Grand",
+        "target": 33
+    },
+    {
+        "id": "astaghfirullah",
+        "arabic": "أَسْتَغْفِرُ ٱللَّٰهَ",
+        "transliteration": "Astaghfirullah",
+        "meaning": "Je demande pardon à Allah",
+        "target": 100
+    },
+    {
+        "id": "lailahaillallah",
+        "arabic": "لَا إِلَٰهَ إِلَّا ٱللَّٰهُ",
+        "transliteration": "La ilaha illallah",
+        "meaning": "Il n'y a de dieu qu'Allah",
+        "target": 100
+    },
+    {
+        "id": "salat_nabi",
+        "arabic": "ٱللَّٰهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ",
+        "transliteration": "Allahumma salli 'ala Muhammad",
+        "meaning": "Prières sur le Prophète",
+        "target": 10
+    }
+]

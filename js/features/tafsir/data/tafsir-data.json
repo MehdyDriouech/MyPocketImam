@@ -1,0 +1,795 @@
+[
+    {
+      "surah": 1,
+      "name": "Al-Fatiha",
+      "tafsirs": [
+        {
+          "ayah": 1,
+          "text": {
+            "fr": "Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux. Ces deux épithètes font partie des noms divins.",
+            "ar": "بسم الله الرحمن الرحيم - الرحمن والرحيم اسمان من أسماء الله تعالى.",
+            "en": "In the name of Allah, the Most Gracious, the Most Merciful. These two epithets are among Allah's names."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 2,
+          "text": {
+            "fr": "Louange à Allah, Seigneur de l'univers. C'est une louange qu'Allah S'est adressée à Lui-même.",
+            "ar": "الحمد لله رب العالمين - هذا ثناء أثنى به الله على نفسه.",
+            "en": "All praise is due to Allah, Lord of the worlds. It is praise that Allah addressed to Himself."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 3,
+          "text": {
+            "fr": "Le Tout Miséricordieux, le Très Miséricordieux. Il possède une miséricorde infinie envers Ses créatures.",
+            "ar": "الرحمن الرحيم - يشير إلى سعة رحمة الله بخلقه.",
+            "en": "The Most Gracious, the Most Merciful. It indicates the vastness of Allah's mercy toward His creation."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 4,
+          "text": {
+            "fr": "Maître du Jour de la Rétribution. Allah est le Souverain du Jour du Jugement.",
+            "ar": "مالك يوم الدين - الله هو المتصرف في يوم القيامة.",
+            "en": "Master of the Day of Judgment. Allah is the Sovereign on the Day of Resurrection."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 5,
+          "text": {
+            "fr": "C'est Toi que nous adorons, et c'est Toi dont nous implorons le secours. L'adoration et la demande d'aide doivent être adressées à Allah seul.",
+            "ar": "إياك نعبد وإياك نستعين - العبادة والاستعانة حق لله وحده.",
+            "en": "You alone we worship, and You alone we ask for help. Worship and seeking help are due to Allah alone."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 6,
+          "text": {
+            "fr": "Guide-nous dans le droit chemin. C'est une prière pour obtenir la direction vers la vérité.",
+            "ar": "اهدنا الصراط المستقيم - دعاء لله أن يهدينا سبيل الحق.",
+            "en": "Guide us to the straight path. This is a supplication to be guided to the truth."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 7,
+          "text": {
+            "fr": "Le chemin de ceux que Tu as comblés de bienfaits, non pas de ceux qui ont encouru Ta colère, ni des égarés. On demande à être guidés sur la voie des pieux, loin de la voie des mécréants et des ignorants.",
+            "ar": "صراط الذين أنعمت عليهم غير المغضوب عليهم ولا الضالين - نسأل الله أن يهدينا طريق الصالحين بعيداً عن طريق الكافرين والجاهلين.",
+            "en": "The path of those whom You have blessed, not of those who earned Your anger, nor of those who went astray. We ask to be guided to the way of the righteous, away from the path of the disbelievers and the ignorant."
+          },
+          "source": "Ibn Kathir"
+        }
+      ]
+    },
+    {
+      "surah": 2,
+      "name": "Al-Baqara",
+      "tafsirs": [
+        {
+          "ayah": 1,
+          "text": {
+            "fr": "Alif, Lâm, Mîm. Allah seul connaît le sens de ces lettres.",
+            "ar": "الم - الله وحده يعلم معنى هذه الأحرف.",
+            "en": "Alif, Lam, Meem. Allah alone knows the meaning of these letters."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 2,
+          "text": {
+            "fr": "Interprétation du verset 2 de cette sourate.",
+            "ar": "تفسير الآية 2 من هذه السورة.",
+            "en": "Explanation of verse 2 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 3,
+          "text": {
+            "fr": "Interprétation du verset 3 de cette sourate.",
+            "ar": "تفسير الآية 3 من هذه السورة.",
+            "en": "Explanation of verse 3 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 4,
+          "text": {
+            "fr": "Interprétation du verset 4 de cette sourate.",
+            "ar": "تفسير الآية 4 من هذه السورة.",
+            "en": "Explanation of verse 4 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 5,
+          "text": {
+            "fr": "Interprétation du verset 5 de cette sourate.",
+            "ar": "تفسير الآية 5 من هذه السورة.",
+            "en": "Explanation of verse 5 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 6,
+          "text": {
+            "fr": "Interprétation du verset 6 de cette sourate.",
+            "ar": "تفسير الآية 6 من هذه السورة.",
+            "en": "Explanation of verse 6 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 7,
+          "text": {
+            "fr": "Interprétation du verset 7 de cette sourate.",
+            "ar": "تفسير الآية 7 من هذه السورة.",
+            "en": "Explanation of verse 7 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 8,
+          "text": {
+            "fr": "Interprétation du verset 8 de cette sourate.",
+            "ar": "تفسير الآية 8 من هذه السورة.",
+            "en": "Explanation of verse 8 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 9,
+          "text": {
+            "fr": "Interprétation du verset 9 de cette sourate.",
+            "ar": "تفسير الآية 9 من هذه السورة.",
+            "en": "Explanation of verse 9 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 10,
+          "text": {
+            "fr": "Interprétation du verset 10 de cette sourate.",
+            "ar": "تفسير الآية 10 من هذه السورة.",
+            "en": "Explanation of verse 10 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 11,
+          "text": {
+            "fr": "Interprétation du verset 11 de cette sourate.",
+            "ar": "تفسير الآية 11 من هذه السورة.",
+            "en": "Explanation of verse 11 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 12,
+          "text": {
+            "fr": "Interprétation du verset 12 de cette sourate.",
+            "ar": "تفسير الآية 12 من هذه السورة.",
+            "en": "Explanation of verse 12 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 13,
+          "text": {
+            "fr": "Interprétation du verset 13 de cette sourate.",
+            "ar": "تفسير الآية 13 من هذه السورة.",
+            "en": "Explanation of verse 13 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 14,
+          "text": {
+            "fr": "Interprétation du verset 14 de cette sourate.",
+            "ar": "تفسير الآية 14 من هذه السورة.",
+            "en": "Explanation of verse 14 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 15,
+          "text": {
+            "fr": "Interprétation du verset 15 de cette sourate.",
+            "ar": "تفسير الآية 15 من هذه السورة.",
+            "en": "Explanation of verse 15 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 16,
+          "text": {
+            "fr": "Interprétation du verset 16 de cette sourate.",
+            "ar": "تفسير الآية 16 من هذه السورة.",
+            "en": "Explanation of verse 16 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 17,
+          "text": {
+            "fr": "Interprétation du verset 17 de cette sourate.",
+            "ar": "تفسير الآية 17 من هذه السورة.",
+            "en": "Explanation of verse 17 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 18,
+          "text": {
+            "fr": "Interprétation du verset 18 de cette sourate.",
+            "ar": "تفسير الآية 18 من هذه السورة.",
+            "en": "Explanation of verse 18 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 19,
+          "text": {
+            "fr": "Interprétation du verset 19 de cette sourate.",
+            "ar": "تفسير الآية 19 من هذه السورة.",
+            "en": "Explanation of verse 19 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 20,
+          "text": {
+            "fr": "Interprétation du verset 20 de cette sourate.",
+            "ar": "تفسير الآية 20 من هذه السورة.",
+            "en": "Explanation of verse 20 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 21,
+          "text": {
+            "fr": "Interprétation du verset 21 de cette sourate.",
+            "ar": "تفسير الآية 21 من هذه السورة.",
+            "en": "Explanation of verse 21 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 22,
+          "text": {
+            "fr": "Interprétation du verset 22 de cette sourate.",
+            "ar": "تفسير الآية 22 من هذه السورة.",
+            "en": "Explanation of verse 22 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 23,
+          "text": {
+            "fr": "Interprétation du verset 23 de cette sourate.",
+            "ar": "تفسير الآية 23 من هذه السورة.",
+            "en": "Explanation of verse 23 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 24,
+          "text": {
+            "fr": "Interprétation du verset 24 de cette sourate.",
+            "ar": "تفسير الآية 24 من هذه السورة.",
+            "en": "Explanation of verse 24 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 25,
+          "text": {
+            "fr": "Interprétation du verset 25 de cette sourate.",
+            "ar": "تفسير الآية 25 من هذه السورة.",
+            "en": "Explanation of verse 25 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 26,
+          "text": {
+            "fr": "Interprétation du verset 26 de cette sourate.",
+            "ar": "تفسير الآية 26 من هذه السورة.",
+            "en": "Explanation of verse 26 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 27,
+          "text": {
+            "fr": "Interprétation du verset 27 de cette sourate.",
+            "ar": "تفسير الآية 27 من هذه السورة.",
+            "en": "Explanation of verse 27 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 28,
+          "text": {
+            "fr": "Interprétation du verset 28 de cette sourate.",
+            "ar": "تفسير الآية 28 من هذه السورة.",
+            "en": "Explanation of verse 28 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 29,
+          "text": {
+            "fr": "Interprétation du verset 29 de cette sourate.",
+            "ar": "تفسير الآية 29 من هذه السورة.",
+            "en": "Explanation of verse 29 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 30,
+          "text": {
+            "fr": "Interprétation du verset 30 de cette sourate.",
+            "ar": "تفسير الآية 30 من هذه السورة.",
+            "en": "Explanation of verse 30 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 31,
+          "text": {
+            "fr": "Interprétation du verset 31 de cette sourate.",
+            "ar": "تفسير الآية 31 من هذه السورة.",
+            "en": "Explanation of verse 31 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 32,
+          "text": {
+            "fr": "Interprétation du verset 32 de cette sourate.",
+            "ar": "تفسير الآية 32 من هذه السورة.",
+            "en": "Explanation of verse 32 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 33,
+          "text": {
+            "fr": "Interprétation du verset 33 de cette sourate.",
+            "ar": "تفسير الآية 33 من هذه السورة.",
+            "en": "Explanation of verse 33 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 34,
+          "text": {
+            "fr": "Interprétation du verset 34 de cette sourate.",
+            "ar": "تفسير الآية 34 من هذه السورة.",
+            "en": "Explanation of verse 34 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 35,
+          "text": {
+            "fr": "Interprétation du verset 35 de cette sourate.",
+            "ar": "تفسير الآية 35 من هذه السورة.",
+            "en": "Explanation of verse 35 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 36,
+          "text": {
+            "fr": "Interprétation du verset 36 de cette sourate.",
+            "ar": "تفسير الآية 36 من هذه السورة.",
+            "en": "Explanation of verse 36 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 37,
+          "text": {
+            "fr": "Interprétation du verset 37 de cette sourate.",
+            "ar": "تفسير الآية 37 من هذه السورة.",
+            "en": "Explanation of verse 37 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 38,
+          "text": {
+            "fr": "Interprétation du verset 38 de cette sourate.",
+            "ar": "تفسير الآية 38 من هذه السورة.",
+            "en": "Explanation of verse 38 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 39,
+          "text": {
+            "fr": "Interprétation du verset 39 de cette sourate.",
+            "ar": "تفسير الآية 39 من هذه السورة.",
+            "en": "Explanation of verse 39 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 40,
+          "text": {
+            "fr": "Interprétation du verset 40 de cette sourate.",
+            "ar": "تفسير الآية 40 من هذه السورة.",
+            "en": "Explanation of verse 40 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 41,
+          "text": {
+            "fr": "Interprétation du verset 41 de cette sourate.",
+            "ar": "تفسير الآية 41 من هذه السورة.",
+            "en": "Explanation of verse 41 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 42,
+          "text": {
+            "fr": "Interprétation du verset 42 de cette sourate.",
+            "ar": "تفسير الآية 42 من هذه السورة.",
+            "en": "Explanation of verse 42 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 43,
+          "text": {
+            "fr": "Interprétation du verset 43 de cette sourate.",
+            "ar": "تفسير الآية 43 من هذه السورة.",
+            "en": "Explanation of verse 43 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 44,
+          "text": {
+            "fr": "Interprétation du verset 44 de cette sourate.",
+            "ar": "تفسير الآية 44 من هذه السورة.",
+            "en": "Explanation of verse 44 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 45,
+          "text": {
+            "fr": "Interprétation du verset 45 de cette sourate.",
+            "ar": "تفسير الآية 45 من هذه السورة.",
+            "en": "Explanation of verse 45 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 46,
+          "text": {
+            "fr": "Interprétation du verset 46 de cette sourate.",
+            "ar": "تفسير الآية 46 من هذه السورة.",
+            "en": "Explanation of verse 46 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 47,
+          "text": {
+            "fr": "Interprétation du verset 47 de cette sourate.",
+            "ar": "تفسير الآية 47 من هذه السورة.",
+            "en": "Explanation of verse 47 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 48,
+          "text": {
+            "fr": "Interprétation du verset 48 de cette sourate.",
+            "ar": "تفسير الآية 48 من هذه السورة.",
+            "en": "Explanation of verse 48 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 49,
+          "text": {
+            "fr": "Interprétation du verset 49 de cette sourate.",
+            "ar": "تفسير الآية 49 من هذه السورة.",
+            "en": "Explanation of verse 49 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 50,
+          "text": {
+            "fr": "Interprétation du verset 50 de cette sourate.",
+            "ar": "تفسير الآية 50 من هذه السورة.",
+            "en": "Explanation of verse 50 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 51,
+          "text": {
+            "fr": "Interprétation du verset 51 de cette sourate.",
+            "ar": "تفسير الآية 51 من هذه السورة.",
+            "en": "Explanation of verse 51 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 52,
+          "text": {
+            "fr": "Interprétation du verset 52 de cette sourate.",
+            "ar": "تفسير الآية 52 من هذه السورة.",
+            "en": "Explanation of verse 52 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 53,
+          "text": {
+            "fr": "Interprétation du verset 53 de cette sourate.",
+            "ar": "تفسير الآية 53 من هذه السورة.",
+            "en": "Explanation of verse 53 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 54,
+          "text": {
+            "fr": "Interprétation du verset 54 de cette sourate.",
+            "ar": "تفسير الآية 54 من هذه السورة.",
+            "en": "Explanation of verse 54 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 55,
+          "text": {
+            "fr": "Interprétation du verset 55 de cette sourate.",
+            "ar": "تفسير الآية 55 من هذه السورة.",
+            "en": "Explanation of verse 55 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 56,
+          "text": {
+            "fr": "Interprétation du verset 56 de cette sourate.",
+            "ar": "تفسير الآية 56 من هذه السورة.",
+            "en": "Explanation of verse 56 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 57,
+          "text": {
+            "fr": "Interprétation du verset 57 de cette sourate.",
+            "ar": "تفسير الآية 57 من هذه السورة.",
+            "en": "Explanation of verse 57 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 58,
+          "text": {
+            "fr": "Interprétation du verset 58 de cette sourate.",
+            "ar": "تفسير الآية 58 من هذه السورة.",
+            "en": "Explanation of verse 58 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 59,
+          "text": {
+            "fr": "Interprétation du verset 59 de cette sourate.",
+            "ar": "تفسير الآية 59 من هذه السورة.",
+            "en": "Explanation of verse 59 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 60,
+          "text": {
+            "fr": "Interprétation du verset 60 de cette sourate.",
+            "ar": "تفسير الآية 60 من هذه السورة.",
+            "en": "Explanation of verse 60 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 61,
+          "text": {
+            "fr": "Interprétation du verset 61 de cette sourate.",
+            "ar": "تفسير الآية 61 من هذه السورة.",
+            "en": "Explanation of verse 61 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 62,
+          "text": {
+            "fr": "Interprétation du verset 62 de cette sourate.",
+            "ar": "تفسير الآية 62 من هذه السورة.",
+            "en": "Explanation of verse 62 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 63,
+          "text": {
+            "fr": "Interprétation du verset 63 de cette sourate.",
+            "ar": "تفسير الآية 63 من هذه السورة.",
+            "en": "Explanation of verse 63 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 64,
+          "text": {
+            "fr": "Interprétation du verset 64 de cette sourate.",
+            "ar": "تفسير الآية 64 من هذه السورة.",
+            "en": "Explanation of verse 64 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 65,
+          "text": {
+            "fr": "Interprétation du verset 65 de cette sourate.",
+            "ar": "تفسير الآية 65 من هذه السورة.",
+            "en": "Explanation of verse 65 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 66,
+          "text": {
+            "fr": "Interprétation du verset 66 de cette sourate.",
+            "ar": "تفسير الآية 66 من هذه السورة.",
+            "en": "Explanation of verse 66 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 67,
+          "text": {
+            "fr": "Interprétation du verset 67 de cette sourate.",
+            "ar": "تفسير الآية 67 من هذه السورة.",
+            "en": "Explanation of verse 67 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 68,
+          "text": {
+            "fr": "Interprétation du verset 68 de cette sourate.",
+            "ar": "تفسير الآية 68 من هذه السورة.",
+            "en": "Explanation of verse 68 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 69,
+          "text": {
+            "fr": "Interprétation du verset 69 de cette sourate.",
+            "ar": "تفسير الآية 69 من هذه السورة.",
+            "en": "Explanation of verse 69 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 70,
+          "text": {
+            "fr": "Interprétation du verset 70 de cette sourate.",
+            "ar": "تفسير الآية 70 من هذه السورة.",
+            "en": "Explanation of verse 70 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 71,
+          "text": {
+            "fr": "Interprétation du verset 71 de cette sourate.",
+            "ar": "تفسير الآية 71 من هذه السورة.",
+            "en": "Explanation of verse 71 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 72,
+          "text": {
+            "fr": "Interprétation du verset 72 de cette sourate.",
+            "ar": "تفسير الآية 72 من هذه السورة.",
+            "en": "Explanation of verse 72 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 73,
+          "text": {
+            "fr": "Interprétation du verset 73 de cette sourate.",
+            "ar": "تفسير الآية 73 من هذه السورة.",
+            "en": "Explanation of verse 73 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 74,
+          "text": {
+            "fr": "Interprétation du verset 74 de cette sourate.",
+            "ar": "تفسير الآية 74 من هذه السورة.",
+            "en": "Explanation of verse 74 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 75,
+          "text": {
+            "fr": "Interprétation du verset 75 de cette sourate.",
+            "ar": "تفسير الآية 75 من هذه السورة.",
+            "en": "Explanation of verse 75 of this chapter."
+          },
+          "source": "Ibn Kathir"
+        }
+      ]
+    },
+    {
+      "surah": 112,
+      "name": "Al-Ikhlas",
+      "tafsirs": [
+        {
+          "ayah": 1,
+          "text": {
+            "fr": "Dis : Il est Allah, Unique. C'est-à-dire qu'Il est l'Unique, Celui qui n'a pas d'égal ni d'associé.",
+            "ar": "قل هو الله أحد - أي هو الواحد الذي لا نظير له ولا شريك.",
+            "en": "Say: He is Allah, One. That is, He is the One who has no equal or partner."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 2,
+          "text": {
+            "fr": "Allah, le Seul à être imploré pour ce que nous désirons.",
+            "ar": "الله الصمد - أي المقصود في الحوائج على الدوام.",
+            "en": "Allah, the Eternal Refuge. He is the One sought for all needs."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 3,
+          "text": {
+            "fr": "Il n'a jamais engendré et n'a pas été engendré.",
+            "ar": "لم يلد ولم يولد - ليس له ولد ولا والد.",
+            "en": "He neither begets nor is born. He has no offspring and no parent."
+          },
+          "source": "Ibn Kathir"
+        },
+        {
+          "ayah": 4,
+          "text": {
+            "fr": "Et nul n'est égal à Lui.",
+            "ar": "ولم يكن له كفؤاً أحد - لا أحد يماثله سبحانه.",
+            "en": "And there is none equal to Him."
+          },
+          "source": "Ibn Kathir"
+        }
+      ]
+    }
+  ]
+  

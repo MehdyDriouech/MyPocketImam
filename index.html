@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Pocket Imam</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
     <style>
         .font-arabic {
             font-family: 'Traditional Arabic', 'Arabic Typesetting', 'Geeza Pro', serif;
         }
+
         .prayer-image {
             transition: all 0.5s ease-in-out;
             max-height: 350px;
@@ -16,7 +18,8 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-teal-50 via-emerald-50 to-cyan-50 min-h-screen">
+
+<body class="min-h-screen">
     <div id="app">
         <!-- Loading screen while translations load -->
         <div class="flex items-center justify-center min-h-screen">
@@ -29,6 +32,7 @@
     </div>
 
     <!-- External JavaScript file -->
-    <script type="module" src="assets/scripts.js"></script>
+    <script type="module" src="js/app.js"></script>
 </body>
+
 </html>
