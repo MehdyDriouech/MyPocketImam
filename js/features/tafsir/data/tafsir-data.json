@@ -4,69 +4,142 @@
       "name": "Al-Fatiha",
       "tafsirs": [
         {
-          "ayah": 1,
-          "text": {
-            "fr": "Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux. Ces deux épithètes font partie des noms divins.",
-            "ar": "بسم الله الرحمن الرحيم - الرحمن والرحيم اسمان من أسماء الله تعالى.",
-            "en": "In the name of Allah, the Most Gracious, the Most Merciful. These two epithets are among Allah's names."
-          },
-          "source": "Ibn Kathir"
+          "surah": 1,
+          "name": "Al-Fatiha",
+          "name_ar": "الفاتحة",
+          "name_en": "Al-Fatiha - The Opening",
+          "name_fr": "Al-Fâtiha - L'Ouverture",
+          "tafsirs": [
+            {
+              "ayah": 1,
+              "source": "Ibn Kathir",
+              "text": "Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux : c'est l'ouverture de la récitation et de toute adoration, en cherchant l'aide d'Allah et Sa bénédiction.",
+              "text_fr": "« Au nom d’Allah, le Tout Miséricordieux, le Très Miséricordieux » signifie : je commence ma récitation et mon action en invoquant le Nom d’Allah, en recherchant Son aide et Sa bénédiction. « Ar-Rahmân » désigne Sa miséricorde générale pour toute la création, et « Ar-Rahîm » Sa miséricorde particulière pour les croyants dans ce monde et dans l’Au-delà.",
+              "text_ar": "﴿بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ﴾ أي أبتدئ قراءتي وعملي مستعينًا بالله، طالبًا بركته. والرحمن رحمته عامة بجميع الخلق، والرحيم رحمته خاصة بالمؤمنين في الدنيا والآخرة، كما قرر ذلك ابن كثير وغيره من المفسرين.",
+              "text_en": "\"In the Name of Allah, the Most Gracious, the Most Merciful\" means: I begin my recitation and my deeds by invoking Allah’s Name, seeking His help and blessing. \"Ar-Rahman\" refers to His all-encompassing mercy for all creation, and \"Ar-Rahim\" to His specific mercy for the believers in this world and the Hereafter.",
+              "lang_default": "fr"
+            },
+            {
+              "ayah": 1,
+              "source": "Al-Tabari",
+              "text": "Le serviteur commence par mentionner le Nom d'Allah pour marquer que tout repose sur Lui et non sur ses propres forces.",
+              "text_fr": "At-Tabarî explique que le serviteur est invité à commencer par le Nom d’Allah pour montrer que toute force et tout succès viennent de Lui. Dire « bismillâh » avant l’acte, c’est reconnaître que l’action ne se réalise pas par la seule capacité de l’homme, mais par l’aide et la permission d’Allah.",
+              "text_ar": "يبيّن الطبري أن العبد مأمور أن يفتتح عمله بذكر اسم الله، إقرارًا بأن القوة والتوفيق من عنده، لا من حول العبد ولا قوته. فقول العبد: «بسم الله» اعتراف منه بأن عمله لا يتم إلا بإذن الله وتيسيره.",
+              "text_en": "Al-Tabari explains that the servant is ordered to begin with Allah’s Name, acknowledging that power and success come from Him alone. Saying \"bismillah\" before an action is a confession that the deed cannot be completed except by Allah’s permission and facilitation.",
+              "lang_default": "fr"
+            },
+            {
+              "ayah": 1,
+              "source": "Al-Qurtubi",
+              "text": "La basmala rappelle que toute chose licite doit commencer par le Nom d'Allah, et qu'elle sépare la récitation des sourates.",
+              "text_fr": "Al-Qurtubî souligne que la basmala est une parole de bénédiction placée en tête des sourates et des actes. Elle distingue les chapitres du Coran et rappelle au croyant que toute parole et tout acte importants doivent débuter par le Nom d’Allah, pour être agréés et préservés des insufflations sataniques.",
+              "text_ar": "يذكر القرطبي أن البسملة كلمة بركة شُرِعَ افتتاح السور والأعمال بها، وهي فاصلة بين السور، وتذكيرٌ للمؤمن أن يُبدأ كل قول أو فعل ذي شأن باسم الله رجاءَ قبوله وصرف وساوس الشيطان عنه.",
+              "text_en": "Al-Qurtubi notes that the basmala is a blessed phrase legislated at the beginning of chapters and deeds. It separates the surahs and reminds the believer to start any important speech or action with Allah’s Name, hoping for acceptance and protection from satanic whispers.",
+              "lang_default": "fr"
+            },
+            {
+              "ayah": 2,
+              "source": "Ibn Kathir",
+              "text": "« Louange à Allah, Seigneur de l'univers » : toute forme de louange parfaite revient à Allah seul, Seigneur et Educateur de tous les mondes.",
+              "text_fr": "« Louange à Allah, Seigneur de l’univers » signifie que toute louange, qu’elle soit prononcée par la langue ou exprimée par le cœur, revient en réalité à Allah. Il est le Seigneur (Rabb) qui crée, organise, nourrit et éduque toutes les créatures, visibles et invisibles. Aucun bienfait n’existe sans qu’Il en soit la source.",
+              "text_ar": "﴿الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ﴾ أي أن كل ثناء وكمال مردّه إلى الله وحده؛ فهو الرب الخالق المالك المدبّر لجميع العوالم، لا نعمة إلا وهو منعمها ولا كمال إلا وهو واهبه.",
+              "text_en": "\"All praise is due to Allah, Lord of the worlds\" means that every praise and perfection ultimately belongs to Allah alone. He is the Lord who creates, owns and manages all worlds, seen and unseen; no blessing exists except that He is its giver.",
+              "lang_default": "fr"
+            },
+            {
+              "ayah": 3,
+              "source": "Ibn Kathir",
+              "text": "La répétition de « le Tout Miséricordieux, le Très Miséricordieux » après la louange souligne que Sa seigneurie est fondée sur la miséricorde.",
+              "text_fr": "Après avoir mentionné Sa seigneurie, Allah répète Ses Noms « le Tout Miséricordieux, le Très Miséricordieux » pour montrer que Sa gestion de la création est enveloppée de miséricorde. Même les décrets difficiles contiennent une sagesse et une miséricorde, apparentes ou cachées.",
+              "text_ar": "إعادة قوله ﴿الرَّحْمَنِ الرَّحِيمِ﴾ بعد ذكر الربوبية إشارة إلى أن تدبيره للعالم قائم على الرحمة، وأن ما يقضيه من خير أو بلاء فإنما هو لحكمة ورحمة بعباده، ظاهرة كانت أو خفية.",
+              "text_en": "Repeating \"the Most Gracious, the Most Merciful\" after mentioning His Lordship indicates that His management of the creation is enveloped in mercy. Even what appears as hardship carries wisdom and mercy for His servants.",
+              "lang_default": "fr"
+            },
+            {
+              "ayah": 4,
+              "source": "Ibn Kathir",
+              "text": "« Maître du Jour de la Rétribution » : Il est le seul Souverain ce jour-là, où aucun roi ni pouvoir humain n’aura de poids devant Sa justice.",
+              "text_fr": "« Maître du Jour de la Rétribution » signifie qu’Allah est le Souverain absolu du Jour du Jugement. Ce jour-là, les rois seront dépouillés de toute autorité et nul ne parlera sans Sa permission. Il récompensera les obéissants et châtiera les injustes selon Sa justice parfaite.",
+              "text_ar": "﴿مَالِكِ يَوْمِ الدِّينِ﴾ أي المتصرف وحده في يوم القيامة، يوم الجزاء والحساب، حيث تزول المُلكيات الدنيوية ولا يبقى إلا ملكه سبحانه، يثيب المطيعين ويعاقب الظالمين بعدله.",
+              "text_en": "\"Master of the Day of Recompense\" means He alone will possess and control the Day of Resurrection, the Day of reward and account, when all worldly dominion will vanish and only His will remain. He will reward the obedient and punish the wrongdoers with perfect justice.",
+              "lang_default": "fr"
+            },
+            {
+              "ayah": 5,
+              "source": "Ibn Kathir",
+              "text": "« C'est Toi que nous adorons et c'est Toi dont nous implorons l'aide » : rassemblement entre sincérité dans l’adoration et dépendance totale à Allah.",
+              "text_fr": "Ce verset résume la relation du serviteur avec son Seigneur : « Nous T’adorons » implique la pureté de l’intention, en n’adorant qu’Allah, et la conformité au chemin du Prophète. « Nous implorons Ton aide » signifie reconnaître sa faiblesse et demander à Allah la force de L’adorer et de persévérer.",
+              "text_ar": "﴿إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ﴾ جمع بين غاية الذل لله في العبادة، وتمام الاعتماد عليه في الاستعانة. فلا عبادة مقبولة إلا بإخلاص المتابعة، ولا قدرة للعبد على ذلك إلا بعون الله وتوفيقه.",
+              "text_en": "\"You alone we worship, and You alone we ask for help\" combines utmost humility in worship and complete reliance upon Allah. No act of worship is accepted without sincerity and following the Prophet, and no one can achieve that except with Allah’s aid.",
+              "lang_default": "fr"
+            },
+            {
+              "ayah": 6,
+              "source": "Ibn Kathir",
+              "text": "« Guide-nous dans le droit chemin » : demande centrale du croyant, répétée à chaque unité de prière pour obtenir la guidée constante.",
+              "text_fr": "Le croyant implore son Seigneur de le diriger vers le chemin de la vérité dans les croyances, les paroles et les actes. Cette demande revient dans chaque rak‘a pour montrer que la guidée n’est pas acquise une fois pour toutes : elle a besoin d’être renouvelée et raffermie jusqu’à la mort.",
+              "text_ar": "﴿اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ﴾ دعاء متكرر في كل ركعة؛ لأن العبد محتاج دائمًا إلى هداية ثابتة ومتزايدة في العلم والعمل، ظاهرًا وباطنًا، حتى يلقى الله تعالى.",
+              "text_en": "\"Guide us to the straight path\" is a repeated supplication in every unit of prayer, because the servant constantly needs firm and increasing guidance—in knowledge and in action—until he meets Allah.",
+              "lang_default": "fr"
+            },
+            {
+              "ayah": 7,
+              "source": "Ibn Kathir",
+              "text": "Le droit chemin est celui des prophètes, des véridiques, des martyrs et des pieux, opposé au chemin des juifs qui ont su mais désobéi, et des chrétiens qui ont adoré dans l’égarement.",
+              "text_fr": "« Le chemin de ceux que Tu as comblés de faveurs » désigne, selon le Coran et la Sunna, les prophètes, les véridiques, les martyrs et les gens de bien. « Non pas de ceux qui ont encouru Ta colère » renvoie à ceux qui ont connu la vérité mais l’ont délaissée, et « ni des égarés » à ceux qui ont adoré Allah sur la base de l’ignorance et de l’innovation.",
+              "text_ar": "﴿صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ﴾ هم الأنبياء والصديقون والشهداء والصالحون، و﴿غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ﴾ مَن عَلِموا الحق وتركوه، و﴿وَلا الضَّالِّينَ﴾ مَن عبدوا الله على جهل وبدعة، كما جاء في تفسير السلف ونقله ابن كثير.",
+              "text_en": "\"The path of those whom You have blessed\" refers to the prophets, the truthful, the martyrs and the righteous. \"Not of those who incurred Your anger\" refers to those who knew the truth but abandoned it, and \"nor of those who went astray\" to those who worshipped Allah based on ignorance and innovation, as explained by the early scholars.",
+              "lang_default": "fr"
+            }
+          ]
         },
         {
-          "ayah": 2,
-          "text": {
-            "fr": "Louange à Allah, Seigneur de l'univers. C'est une louange qu'Allah S'est adressée à Lui-même.",
-            "ar": "الحمد لله رب العالمين - هذا ثناء أثنى به الله على نفسه.",
-            "en": "All praise is due to Allah, Lord of the worlds. It is praise that Allah addressed to Himself."
-          },
-          "source": "Ibn Kathir"
-        },
-        {
-          "ayah": 3,
-          "text": {
-            "fr": "Le Tout Miséricordieux, le Très Miséricordieux. Il possède une miséricorde infinie envers Ses créatures.",
-            "ar": "الرحمن الرحيم - يشير إلى سعة رحمة الله بخلقه.",
-            "en": "The Most Gracious, the Most Merciful. It indicates the vastness of Allah's mercy toward His creation."
-          },
-          "source": "Ibn Kathir"
-        },
-        {
-          "ayah": 4,
-          "text": {
-            "fr": "Maître du Jour de la Rétribution. Allah est le Souverain du Jour du Jugement.",
-            "ar": "مالك يوم الدين - الله هو المتصرف في يوم القيامة.",
-            "en": "Master of the Day of Judgment. Allah is the Sovereign on the Day of Resurrection."
-          },
-          "source": "Ibn Kathir"
-        },
-        {
-          "ayah": 5,
-          "text": {
-            "fr": "C'est Toi que nous adorons, et c'est Toi dont nous implorons le secours. L'adoration et la demande d'aide doivent être adressées à Allah seul.",
-            "ar": "إياك نعبد وإياك نستعين - العبادة والاستعانة حق لله وحده.",
-            "en": "You alone we worship, and You alone we ask for help. Worship and seeking help are due to Allah alone."
-          },
-          "source": "Ibn Kathir"
-        },
-        {
-          "ayah": 6,
-          "text": {
-            "fr": "Guide-nous dans le droit chemin. C'est une prière pour obtenir la direction vers la vérité.",
-            "ar": "اهدنا الصراط المستقيم - دعاء لله أن يهدينا سبيل الحق.",
-            "en": "Guide us to the straight path. This is a supplication to be guided to the truth."
-          },
-          "source": "Ibn Kathir"
-        },
-        {
-          "ayah": 7,
-          "text": {
-            "fr": "Le chemin de ceux que Tu as comblés de bienfaits, non pas de ceux qui ont encouru Ta colère, ni des égarés. On demande à être guidés sur la voie des pieux, loin de la voie des mécréants et des ignorants.",
-            "ar": "صراط الذين أنعمت عليهم غير المغضوب عليهم ولا الضالين - نسأل الله أن يهدينا طريق الصالحين بعيداً عن طريق الكافرين والجاهلين.",
-            "en": "The path of those whom You have blessed, not of those who earned Your anger, nor of those who went astray. We ask to be guided to the way of the righteous, away from the path of the disbelievers and the ignorant."
-          },
-          "source": "Ibn Kathir"
+          "surah": 112,
+          "name": "Al-Ikhlas",
+          "name_ar": "الإخلاص",
+          "name_en": "Al-Ikhlas - Sincerity",
+          "name_fr": "Al-Ikhlâs - Le Monothéisme pur",
+          "tafsirs": [
+            {
+              "ayah": 1,
+              "source": "Ibn Kathir",
+              "text": "« Dis : Il est Allah, Unique. » : affirmation claire du tawhid, en réponse à ceux qui ont demandé au Prophète de décrire son Seigneur.",
+              "text_fr": "Ce verset répond à ceux qui questionnaient le Prophète sur la réalité de son Seigneur. « Allah est Unique » signifie qu’Il est unique dans Son essence, Ses noms, Ses attributs et Ses actes : nul ne Lui ressemble, nul ne partage Sa divinité ni Sa seigneurie.",
+              "text_ar": "﴿قُلْ هُوَ اللَّهُ أَحَدٌ﴾ جواب لمن سأل النبي ﷺ عن ربه، أي: هو الله المتفرد بذاته وأسمائه وصفاته وأفعاله، لا شريك له ولا ندّ، ليس كمثله شيء وهو وحده المستحق للعبادة.",
+              "text_en": "\"Say: He is Allah, One\" is an answer to those who asked the Prophet about his Lord. It means that Allah is absolutely one in His essence, names, attributes and actions; none resembles Him and He alone deserves worship.",
+              "lang_default": "fr"
+            },
+            {
+              "ayah": 2,
+              "source": "Ibn Kathir",
+              "text": "« Allah, le Seul à être imploré pour ce que nous désirons » : Il est As-Samad, le Maître parfait vers qui se tournent toutes les créatures.",
+              "text_fr": "« As-Samad » est celui qui est parfait dans Sa royauté, Sa puissance, Sa science et Sa sagesse, et vers qui toutes les créatures se tournent dans leurs besoins. Il n’a besoin de personne, alors que tout dépend de Lui.",
+              "text_ar": "﴿اللَّهُ الصَّمَدُ﴾ أي السيد الكامل في صفاته، الذي تُقصَد إليه الخلائق في حوائجها، الغني عن جميع خلقه، المحتاج إليه كل شيء.",
+              "text_en": "\"Allah, the Self-Sufficient Master\" (As-Samad) is the One who is perfect in His attributes, to whom all creation turns for its needs. He has no need of anyone, while everything is in need of Him.",
+              "lang_default": "fr"
+            },
+            {
+              "ayah": 3,
+              "source": "Ibn Kathir",
+              "text": "« Il n’a jamais engendré, n’a pas été engendré » : négation de toute filiation, ascendance ou descendance, contraire à Sa perfection.",
+              "text_fr": "Allah n’a pas d’enfant, car la filiation implique le besoin, la ressemblance et le passage des générations, ce qui est incompatible avec Sa perfection. Il n’a pas davantage de parents, car Il est le Premier sans début et le Dernier sans fin.",
+              "text_ar": "﴿لَمْ يَلِدْ وَلَمْ يُولَدْ﴾ نفيٌ لأن يكون له ولد أو أصل؛ لأن الولادة تستلزم النقص والحاجة إلى الزوجة والنسل، والله سبحانه منزه عن ذلك كله، فهو الأول الذي ليس قبله شيء، والآخر الذي ليس بعده شيء.",
+              "text_en": "\"He neither begets nor is born\" negates that He could have a child or parents. Begetting implies need, similarity and succession, which contradict His absolute perfection. He is the First with no beginning and the Last with no end.",
+              "lang_default": "fr"
+            },
+            {
+              "ayah": 4,
+              "source": "Ibn Kathir",
+              "text": "« Et nul n’est égal à Lui » : aucune créature ne Lui ressemble ni dans Son essence, ni dans Ses attributs, ni dans Ses actes.",
+              "text_fr": "Ce verset clôt la sourate par la négation de tout égal ou semblable à Allah. Ni dans Son être, ni dans Ses noms, ni dans Ses attributs, ni dans Ses actes, Il n’a de pareil. Le croyant affirme ainsi le tawhid de manière complète, en rejetant toute forme d’association.",
+              "text_ar": "﴿وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ﴾ أي لا نظير له ولا مثيل، لا في ذاته ولا في أسمائه ولا في صفاته ولا في أفعاله، فله الكمال المطلق، ومن سواه مخلوق فقير إليه.",
+              "text_en": "\"And there is none comparable to Him\" means that there is no equal or rival to Allah—not in His essence, nor His names, nor His attributes, nor His actions. He possesses absolute perfection, while every other being is created and in need of Him.",
+              "lang_default": "fr"
+            }
+          ]
         }
       ]
+      
     },
     {
       "surah": 2,

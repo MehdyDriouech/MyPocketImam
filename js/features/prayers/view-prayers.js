@@ -42,7 +42,7 @@ export class PrayersView {
 
     renderHome() {
         const trans = this.translations.getAll();
-        if (!trans || !trans.prayers) return '<div class="loading-container"><div class="spinner">🕌</div><p>Chargement...</p></div>';
+        if (!trans || !trans.prayers) return '<div class="loading-container"><div class="spinner"></div><p>Chargement...</p></div>';
 
         const PRAYERS = this.config.getPrayers();
         const LANGUAGES = this.config.getLanguages();
@@ -51,103 +51,235 @@ export class PrayersView {
         const dirAttr = this.translations.isRTL() ? 'rtl' : 'ltr';
         const rtl = this.translations.isRTL();
         const currentReciter = RECITERS.find(r => r.id === this.state.get('selectedReciter'));
+        const currentLang = LANGUAGES.find(l => l.code === this.state.get('language'));
+        const city = this.state.get('city') || '';
+        const country = this.state.get('country') || '';
         const currentDate = this.state.get('currentDate');
         const prayerTimes = this.state.get('prayerTimes');
         const dailyHadith = this.state.get('dailyHadith');
 
-        const prayersHTML = Object.entries(PRAYERS).map(([key, prayer]) => {
+        // Toutes les prières
+        const allPrayerKeys = Object.keys(PRAYERS);
+        const topRowPrayers = allPrayerKeys.slice(0, 3); // Fajr, Dohr, Asr
+        const bottomRowPrayers = allPrayerKeys.slice(3); // Maghreb, Isha
+
+        const renderPrayerCard = (key) => {
+            const prayer = PRAYERS[key];
             const prayerTime = prayerTimes ? prayerTimes[prayer.apiKey] : null;
             return `
-            <button data-action="select-prayer" data-prayer="${key}" class="card prayer-card w-full text-left">
-                <div class="mb-4" style="font-size: 3rem;">${prayer.icon}</div>
-                <h3 class="prayer-name mb-2">${trans.prayers[key] || prayer.name}</h3>
-                <p class="text-muted">${prayer.rakaats} ${trans.rakaats}</p>
-                ${prayerTime ? `
-                    <p class="prayer-time mt-4">${prayerTime}</p>
-                ` : ''}
-            </button>
-        `;
-        }).join('');
+                <button data-action="select-prayer" data-prayer="${key}" 
+                        class="prayer-card-home"
+                        style="
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            text-align: center;
+                            padding: 1.5rem 1rem;
+                            background: var(--card-bg);
+                            border: 1px solid var(--border-color);
+                            border-radius: 16px;
+                            transition: all 0.2s ease;
+                            cursor: pointer;
+                            min-height: 180px;
+                        ">
+                    <div style="font-size: 3.5rem; margin-bottom: 0.75rem; line-height: 1;">
+                        ${prayer.icon}
+                    </div>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color); margin-bottom: 0.25rem;">
+                        ${trans.prayers[key] || prayer.name}
+                    </h3>
+                    <p style="font-size: 0.8rem; color: var(--primary-color); opacity: 0.7; margin-bottom: 0.75rem;">
+                        ${prayer.rakaats} ${trans.rakaats || 'Rakaats'}
+                    </p>
+                    <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color);">
+                        ${prayerTime || '--:--'}
+                    </p>
+                </button>
+            `;
+        };
 
         return `
-        <div class="container" dir="${dirAttr}">
-            <div class="app-header mb-4 rounded-xl">
-                <div class="flex gap-2">
-                    <button data-action="go-settings" class="btn btn-secondary">
-                        <span>⚙️</span>
-                        <span>${trans.settings}</span>
-                    </button>
-                    <button data-action="go-tools" class="btn btn-secondary">
-                        <span>🧰</span>
-                        <span>${trans.muslimTools || 'Outils'}</span>
-                    </button>
-                </div>
+        <div style="min-height: 100vh; background: var(--bg-color);">
+            <div style="max-width: 900px; margin: 0 auto; padding: 1rem 1rem 2rem;">
                 
-                <div class="flex gap-2">
-                    <button data-action="toggle-theme" class="btn btn-icon">
-                        <span>🌓</span>
+                <!-- Top Navigation Bar -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 0.75rem;">
+                    <button data-action="go-settings" style="
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        padding: 0.75rem 1.25rem;
+                        background: var(--card-bg);
+                        border: 1px solid var(--border-color);
+                        border-radius: 50px;
+                        color: var(--text-color);
+                        font-weight: 500;
+                        font-size: 0.9rem;
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                    ">
+                        <span style="font-size: 1.1rem;">⚙️</span>
+                        <span>${trans.settings || 'Paramètres'}</span>
                     </button>
                     
-                    <div class="relative inline-block">
-                        <button data-action="toggle-language-menu" class="btn btn-secondary">
-                            <span>${LANGUAGES.find(l => l.code === this.state.get('language')).flag}</span>
-                            <span>▼</span>
+                    <button data-action="go-tools" style="
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        padding: 0.75rem 1.25rem;
+                        background: var(--card-bg);
+                        border: 1px solid var(--border-color);
+                        border-radius: 50px;
+                        color: var(--text-color);
+                        font-weight: 500;
+                        font-size: 0.9rem;
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                    ">
+                        <span style="font-size: 1.1rem;">🧰</span>
+                        <span>${trans.muslimTools || 'Outils du Musulman'}</span>
+                    </button>
+                    
+                    <div style="position: relative;" class="language-selector-wrapper">
+                        <button data-action="toggle-lang-dropdown" style="
+                            display: flex;
+                            align-items: center;
+                            gap: 0.5rem;
+                            padding: 0.75rem 1.25rem;
+                            background: var(--card-bg);
+                            border: 1px solid var(--border-color);
+                            border-radius: 50px;
+                            color: var(--primary-color);
+                            font-weight: 600;
+                            font-size: 0.9rem;
+                            cursor: pointer;
+                            transition: all 0.2s ease;
+                        ">
+                            <span>${currentLang?.flag || '🌐'}</span>
+                            <span>${currentLang?.name || 'Français'}</span>
+                            <span style="font-size: 0.6rem; margin-left: 0.25rem;">▼</span>
                         </button>
-                        <div id="language-menu" class="hidden absolute ${rtl ? 'left-0' : 'right-0'} mt-2 card p-2 z-50 w-48">
+                        <div id="lang-dropdown" class="hidden" style="
+                            position: absolute;
+                            top: calc(100% + 0.5rem);
+                            right: 0;
+                            background: var(--card-bg);
+                            border: 1px solid var(--border-color);
+                            border-radius: 16px;
+                            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+                            overflow: hidden;
+                            z-index: 1000;
+                            min-width: 180px;
+                        ">
                             ${LANGUAGES.map(lang => `
-                                <button data-action="select-language" data-lang="${lang.code}" class="btn btn-ghost w-full justify-start ${this.state.get('language') === lang.code ? 'bg-primary-light' : ''}">
-                                    <span>${lang.flag}</span>
-                                    <span>${lang.name}</span>
+                                <button data-action="select-lang" data-lang="${lang.code}" style="
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 0.75rem;
+                                    width: 100%;
+                                    padding: 0.75rem 1rem;
+                                    background: ${lang.code === this.state.get('language') ? 'var(--primary-light)' : 'transparent'};
+                                    border: none;
+                                    color: var(--text-color);
+                                    font-size: 0.9rem;
+                                    cursor: pointer;
+                                    transition: background 0.15s ease;
+                                    text-align: left;
+                                " onmouseover="this.style.background='var(--primary-light)'" onmouseout="this.style.background='${lang.code === this.state.get('language') ? 'var(--primary-light)' : 'transparent'}'">
+                                    <span style="font-size: 1.25rem;">${lang.flag}</span>
+                                    <span style="font-weight: ${lang.code === this.state.get('language') ? '600' : '400'}; color: ${lang.code === this.state.get('language') ? 'var(--primary-color)' : 'var(--text-color)'};">${lang.name}</span>
+                                    ${lang.code === this.state.get('language') ? '<span style="margin-left: auto; color: var(--primary-color);">✓</span>' : ''}
                                 </button>
                             `).join('')}
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="text-center mb-12 pt-8">
-                <div class="mb-4" style="font-size: 4rem;">🕌</div>
-                <h1 class="app-title mb-2" style="font-size: 2.5rem;">${trans.appTitle}</h1>
-                <p class="text-muted">${trans.subtitle}</p>
-                <p class="text-sm mt-2" style="color: var(--primary-color)">${trans.reciter}: ${currentReciter?.name}</p>
-                ${this.state.get('city') ? `<p class="text-sm text-muted">${this.state.get('city')}, ${this.state.get('country')}</p>` : ''}
-            </div>
-            
-            ${currentDate ? `
-                <div class="card mb-6 text-center">
-                    <div class="flex items-center justify-center gap-3">
-                        <span class="text-2xl">📅</span>
-                        <div>
-                            <p class="text-sm text-muted">${currentDate.hijri.weekday.ar} - ${currentDate.hijri.day} ${currentDate.hijri.month.ar} ${currentDate.hijri.year}</p>
-                            <p class="text-lg font-bold" style="color: var(--heading-color)">${currentDate.gregorian.weekday.en}, ${currentDate.gregorian.day} ${currentDate.gregorian.month.en} ${currentDate.gregorian.year}</p>
-                        </div>
-                    </div>
-                </div>
-            ` : ''}
-            
-            <div class="grid grid-cols-2 gap-4">
-                ${prayersHTML}
-            </div>
 
-            ${dailyHadith ? `
-                <div class="card mt-8" style="background: var(--primary-light); border-color: var(--accent-color);" dir="${dailyHadith.language === 'ara' || dailyHadith.language === 'urd' ? 'rtl' : 'ltr'}">
-                    <div class="flex items-start justify-between gap-3">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="text-lg">📖</span>
-                                <h3 class="text-sm font-bold" style="color: var(--accent-hover)">${trans.hadithOfTheDay || 'Hadith du Jour'}</h3>
-                            </div>
-                            <div class="card p-3 mb-2" style="background: rgba(255,255,255,0.8);">
-                                <p class="text-sm leading-relaxed ${dailyHadith.language === 'ara' || dailyHadith.language === 'urd' ? 'text-right font-arabic' : 'text-left'}">${dailyHadith.text}</p>
-                            </div>
-                            <div class="flex items-center justify-between text-xs text-muted">
-                                <span class="font-medium">${dailyHadith.collection}</span>
-                                <span>#${dailyHadith.number}</span>
-                            </div>
+                <!-- Hero Section -->
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div style="font-size: 4rem; margin-bottom: 0.5rem;">🕌</div>
+                    <h1 style="font-size: 2.5rem; font-weight: 700; color: var(--primary-color); margin-bottom: 0.5rem; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                        My Pocket Imam
+                    </h1>
+                    <p style="color: var(--text-muted); font-size: 1rem; margin-bottom: 0.25rem;">
+                        ${trans.appSubtitle || 'Apprenez et pratiquez vos prières quotidiennes'}
+                    </p>
+                    <p style="color: var(--primary-color); font-size: 0.85rem; opacity: 0.8;">
+                        ${trans.reciter || 'Récitateur'}: ${currentReciter?.name || 'Saad El Ghamidi'}
+                    </p>
+                    ${city ? `
+                        <p style="color: var(--primary-color); font-size: 0.85rem; opacity: 0.8;">
+                            ${city}${country ? ', ' + country : ''}
+                        </p>
+                    ` : ''}
+                </div>
+
+                <!-- Date Card -->
+                ${currentDate ? `
+                    <div style="
+                        background: var(--card-bg);
+                        border: 1px solid var(--border-color);
+                        border-radius: 16px;
+                        padding: 1rem 1.5rem;
+                        margin-bottom: 1.5rem;
+                        display: flex;
+                        align-items: center;
+                        gap: 1rem;
+                    ">
+                        <div style="font-size: 2rem;">📅</div>
+                        <div style="flex: 1; text-align: center;">
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem; font-family: 'Amiri', serif;" dir="rtl">
+                                ${currentDate.hijri.weekday.ar} - ${currentDate.hijri.day} ${currentDate.hijri.month.ar} ${currentDate.hijri.year}
+                            </p>
+                            <p style="font-size: 1.1rem; font-weight: 600; color: var(--primary-color);">
+                                ${currentDate.gregorian.weekday.en}, ${currentDate.gregorian.day} ${currentDate.gregorian.month.en} ${currentDate.gregorian.year}
+                            </p>
                         </div>
                     </div>
+                ` : ''}
+
+                <!-- Prayer Cards Grid -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                    ${topRowPrayers.map(key => renderPrayerCard(key)).join('')}
                 </div>
-            ` : ''}
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                    ${bottomRowPrayers.map(key => renderPrayerCard(key)).join('')}
+                    <div></div>
+                </div>
+
+                <!-- Hadith du jour -->
+                ${dailyHadith ? `
+                    <div style="
+                        margin-top: 2rem;
+                        background: var(--card-bg);
+                        border: 1px solid var(--border-color);
+                        border-radius: 16px;
+                        padding: 1.5rem;
+                    ">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                            <span style="font-size: 1.25rem;">📖</span>
+                            <span style="font-weight: 600; color: var(--primary-color); font-size: 0.9rem;">
+                                ${trans.hadithOfTheDay || 'Hadith du Jour'}
+                            </span>
+                        </div>
+                        <p style="
+                            font-size: 1rem; 
+                            line-height: 1.7; 
+                            color: var(--text-color); 
+                            ${dailyHadith.language === 'ara' || dailyHadith.language === 'urd' ? 'text-align: right; font-family: Amiri, serif; font-size: 1.1rem;' : 'text-align: left;'} 
+                            font-style: italic; 
+                            margin-bottom: 1rem;
+                        ">
+                            "${dailyHadith.text}"
+                        </p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+                            <span style="font-weight: 600; color: var(--primary-color); font-size: 0.85rem;">${dailyHadith.collection}</span>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">#${dailyHadith.number}</span>
+                        </div>
+                    </div>
+                ` : ''}
+            </div>
         </div>
     `;
     }
@@ -409,6 +541,32 @@ export class PrayersView {
                 this.engine.setRakaatSurah(index, surahId);
             });
         });
+
+        // Handle language dropdown toggle
+        const langToggle = container.querySelector('[data-action="toggle-lang-dropdown"]');
+        const langDropdown = container.querySelector('#lang-dropdown');
+        if (langToggle && langDropdown) {
+            langToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                langDropdown.classList.toggle('hidden');
+            });
+
+            // Handle language selection
+            langDropdown.querySelectorAll('[data-action="select-lang"]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const lang = btn.dataset.lang;
+                    this.pluginManager.get('translations').engine.changeLanguage(lang);
+                    langDropdown.classList.add('hidden');
+                });
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!langToggle.contains(e.target) && !langDropdown.contains(e.target)) {
+                    langDropdown.classList.add('hidden');
+                }
+            });
+        }
 
         // Close menu when clicking outside
         document.addEventListener('click', (e) => {

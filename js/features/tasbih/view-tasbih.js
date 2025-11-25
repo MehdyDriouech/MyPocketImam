@@ -5,7 +5,34 @@ export class TasbihView {
         this.engine = dependencies.engine;
         this.pluginManager = dependencies.pluginManager;
         
-        this.viewMode = 'counter'; // 'counter', 'history', 'presets'
+        this.viewMode = 'counter';
+        this.showAddForm = false;
+        this.addFormMode = 'single';
+        this.sequenceSteps = [];
+        
+        // Pour éviter les listeners multiples
+        this.boundHandleClick = null;
+        this.currentContainer = null;
+        
+        // Écouter les événements du moteur une seule fois
+        this.eventBus.on('tasbih:count-updated', () => {
+            if (this.viewMode === 'counter') {
+                this.updateProgressCircle();
+            }
+        });
+
+        this.eventBus.on('tasbih:target-reached', () => {
+            if (this.engine.isInSequence()) {
+                setTimeout(() => {
+                    if (this.engine.nextSequenceStep()) {
+                        this.render(this.currentContainer);
+                    } else {
+                        alert('🎉 Séquence terminée ! Masha Allah !');
+                        this.render(this.currentContainer);
+                    }
+                }, 500);
+            }
+        });
     }
 
     get translations() {
@@ -13,13 +40,12 @@ export class TasbihView {
     }
 
     render(container) {
+        this.currentContainer = container;
         const trans = this.translations.getAll();
         const rtl = this.translations.isRTL();
 
-        // Layout principal avec fond dégradé élégant
         container.innerHTML = `
             <div class="tasbih-container" style="min-height: 100vh; background: var(--bg-color); position: relative; overflow: hidden;">
-                <!-- Pattern de fond subtil -->
                 <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.02; background-image: repeating-linear-gradient(45deg, var(--primary-color) 0, var(--primary-color) 1px, transparent 0, transparent 50%); background-size: 10px 10px; pointer-events: none;"></div>
                 
                 <div class="max-w-md mx-auto h-full flex flex-col relative" style="padding: 1.5rem 1rem 0.5rem;">
@@ -43,15 +69,29 @@ export class TasbihView {
 
     renderHeader(trans, rtl) {
         return `
-            <div class="flex items-center justify-between mb-6" dir="${rtl ? 'rtl' : 'ltr'}" style="position: relative; z-index: 10;">
-                <button data-action="go-tools" class="btn btn-secondary" style="display: flex; align-items: center; gap: 0.5rem; font-weight: 500;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="${rtl ? 'M9 18l6-6-6-6' : 'M15 18l-6-6 6-6'}"/>
-                    </svg>
-                    <span>${trans.back || 'Retour'}</span>
-                </button>
-                <h1 class="text-xl font-bold" style="color: var(--heading-color); letter-spacing: -0.02em;">📿 ${trans.tasbihDigital || 'Tasbih Digital'}</h1>
-                <div style="width: 80px;"></div>
+            <div class="card mb-6" style="padding: 1rem 1.5rem; border-radius: 16px; background: var(--card-bg); border: 1px solid var(--border-color);">
+                <div style="display: flex; align-items: center; justify-content: space-between;" dir="${rtl ? 'rtl' : 'ltr'}">
+                    <button type="button" data-action="go-tools" style="
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        padding: 0.5rem 1rem;
+                        background: var(--bg-color);
+                        border: 1px solid var(--border-color);
+                        border-radius: 12px;
+                        color: var(--text-color);
+                        font-weight: 500;
+                        font-size: 0.9rem;
+                        cursor: pointer;
+                    ">
+                        <span>${rtl ? '▶' : '◀'}</span>
+                        <span>${trans.back || 'Retour'}</span>
+                    </button>
+                    <h1 style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color); margin: 0;">
+                        📿 ${trans.tasbihDigital || 'Tasbih Digital'}
+                    </h1>
+                    <div style="width: 90px;"></div>
+                </div>
             </div>
         `;
     }
@@ -63,6 +103,8 @@ export class TasbihView {
     }
 
     renderCounter(trans) {
+        const isSequenceMode = this.engine.isInSequence();
+        const sequenceInfo = this.engine.getSequenceInfo();
         const dhikr = this.engine.currentDhikr || { transliteration: 'Tasbih', arabic: 'تسبيح', meaning: 'Gloire à Allah' };
         const progress = Math.min((this.engine.count / (this.engine.target || 33)) * 100, 100);
         
@@ -71,108 +113,98 @@ export class TasbihView {
         const offset = circumference - (progress / 100) * circumference;
 
         return `
-            <div class="flex-1 flex flex-col items-center justify-center" style="gap: 2rem; animation: fadeIn 0.3s ease-in;">
+            <div class="flex-1 flex flex-col items-center justify-center" style="gap: 1.5rem;">
                 
-                <!-- Card Dhikr Info -->
+                ${isSequenceMode ? `
+                    <div style="width: 100%; max-width: 380px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 1rem; color: white;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="font-size: 1.25rem;">🔄</span>
+                                <span style="font-weight: 700; font-size: 0.9rem;">${sequenceInfo.name}</span>
+                            </div>
+                            <span style="background: rgba(255,255,255,0.2); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; font-weight: 600;">
+                                Étape ${sequenceInfo.currentStep + 1}/${sequenceInfo.totalSteps}
+                            </span>
+                        </div>
+                        <div style="display: flex; gap: 0.25rem;">
+                            ${sequenceInfo.steps.map((step, i) => `
+                                <div style="flex: 1; height: 6px; border-radius: 3px; background: ${i < sequenceInfo.currentStep ? 'rgba(255,255,255,0.9)' : i === sequenceInfo.currentStep ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.2)'};"></div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
                 <div class="card" style="width: 100%; max-width: 380px; padding: 1.5rem; text-align: center; border: 2px solid var(--primary-light); background: linear-gradient(135deg, var(--card-bg) 0%, var(--primary-light) 100%);">
-                    <p class="text-4xl font-arabic font-bold mb-2" style="color: var(--primary-color); line-height: 1.4;" dir="rtl">${dhikr.arabic}</p>
-                    <p class="text-lg font-semibold mb-1" style="color: var(--text-color);">${dhikr.transliteration}</p>
-                    <p class="text-sm italic" style="color: var(--text-muted);">${dhikr.meaning}</p>
+                    <p class="font-arabic" style="font-size: 2.5rem; font-weight: 700; color: var(--primary-color); line-height: 1.4; margin-bottom: 0.5rem;" dir="rtl">${dhikr.arabic}</p>
+                    <p style="font-size: 1.125rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.25rem;">${dhikr.transliteration}</p>
+                    <p style="font-size: 0.875rem; font-style: italic; color: var(--text-muted);">${dhikr.meaning}</p>
                 </div>
 
-                <!-- Zone de Tap avec cercle de progression -->
-                <div style="position: relative; width: 280px; height: 280px; display: flex; align-items: center; justify-center; margin: 1rem 0;">
-                    
-                    <!-- Anneau externe décoratif -->
+                <div style="position: relative; width: 260px; height: 260px; display: flex; align-items: center; justify-content: center;">
                     <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, var(--primary-light) 0%, transparent 50%); opacity: 0.3;"></div>
                     
-                    <!-- SVG Progress Circle -->
-                    <svg style="position: absolute; width: 100%; height: 100%; transform: rotate(-90deg); filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));" viewBox="0 0 240 240">
-                        <!-- Cercle de fond -->
+                    <svg style="position: absolute; width: 100%; height: 100%; transform: rotate(-90deg);" viewBox="0 0 240 240">
                         <circle cx="120" cy="120" r="${radius}" stroke="var(--border-color)" stroke-width="14" fill="none" opacity="0.3"/>
-                        <!-- Cercle de progression -->
                         <circle id="progress-ring" cx="120" cy="120" r="${radius}" 
-                                stroke="url(#gradient)" 
+                                stroke="var(--primary-color)" 
                                 stroke-width="14" 
                                 fill="none" 
                                 stroke-dasharray="${circumference}" 
                                 stroke-dashoffset="${offset}" 
                                 stroke-linecap="round"
                                 style="transition: stroke-dashoffset 0.3s ease-out;" />
-                        <defs>
-                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color: var(--primary-color); stop-opacity: 1" />
-                                <stop offset="100%" style="stop-color: var(--accent-color); stop-opacity: 1" />
-                            </linearGradient>
-                        </defs>
                     </svg>
 
-                    <!-- Bouton Tap Central -->
-                    <button data-action="tap" 
-                            class="tap-button"
-                            style="
-                                width: 200px; 
-                                height: 200px; 
-                                border-radius: 50%; 
-                                background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
-                                color: white;
-                                border: none;
-                                box-shadow: 0 8px 16px rgba(0,0,0,0.15), inset 0 -2px 8px rgba(0,0,0,0.1);
-                                cursor: pointer;
-                                display: flex;
-                                flex-direction: column;
-                                align-items: center;
-                                justify-content: center;
-                                transition: transform 0.1s ease, box-shadow 0.1s ease;
-                                position: relative;
-                                z-index: 10;
-                                user-select: none;
-                                -webkit-tap-highlight-color: transparent;
-                            "
-                            onmousedown="this.style.transform='scale(0.95)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.2)'"
-                            onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.15)'"
-                            ontouchstart="this.style.transform='scale(0.95)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.2)'"
-                            ontouchend="this.style.transform='scale(1)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.15)'">
-                        <span style="font-size: 0.75rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">TAP</span>
-                        <span id="counter-display" style="font-size: 4rem; font-weight: 700; font-family: 'Courier New', monospace; line-height: 1;">${this.engine.count}</span>
-                        <span style="font-size: 0.7rem; opacity: 0.8; margin-top: 0.25rem;">${trans.target || 'Objectif'}: ${this.engine.target}</span>
+                    <button type="button" data-action="tap" style="
+                        width: 180px; 
+                        height: 180px; 
+                        border-radius: 50%; 
+                        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+                        color: white;
+                        border: none;
+                        box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+                        cursor: pointer;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        position: relative;
+                        z-index: 10;
+                        user-select: none;
+                    ">
+                        <span style="font-size: 0.7rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.05em;">TAP</span>
+                        <span id="counter-display" style="font-size: 3.5rem; font-weight: 700; font-family: monospace; line-height: 1;">${this.engine.count}</span>
+                        <span style="font-size: 0.65rem; opacity: 0.8;">${trans.target || 'Objectif'}: ${this.engine.target}</span>
                     </button>
                 </div>
 
-                <!-- Stats Cards -->
                 <div style="width: 100%; max-width: 380px; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-                    <!-- Total Counter -->
-                    <div class="card" style="padding: 1rem; text-align: center; border-left: 4px solid var(--primary-color);">
-                        <p style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.25rem; font-weight: 600;">Total</p>
-                        <p id="total-count" style="font-size: 1.75rem; font-weight: 700; color: var(--primary-color); font-family: 'Courier New', monospace;">${this.engine.totalCount}</p>
+                    <div class="card" style="padding: 0.875rem; text-align: center; border-left: 4px solid var(--primary-color);">
+                        <p style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.25rem; font-weight: 600;">Total</p>
+                        <p id="total-count" style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color); font-family: monospace;">${this.engine.totalCount}</p>
                     </div>
-                    <!-- Progress -->
-                    <div class="card" style="padding: 1rem; text-align: center; border-left: 4px solid var(--accent-color);">
-                        <p style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.25rem; font-weight: 600;">Progrès</p>
-                        <p style="font-size: 1.75rem; font-weight: 700; color: var(--accent-color); font-family: 'Courier New', monospace;">${Math.round(progress)}%</p>
+                    <div class="card" style="padding: 0.875rem; text-align: center; border-left: 4px solid var(--accent-color);">
+                        <p style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.25rem; font-weight: 600;">Progrès</p>
+                        <p style="font-size: 1.5rem; font-weight: 700; color: var(--accent-color); font-family: monospace;">${Math.round(progress)}%</p>
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
-                <div style="width: 100%; max-width: 380px; display: flex; gap: 0.75rem; margin-top: 0.5rem;">
-                    <button data-action="reset-counter" class="btn" style="flex: 1; background: var(--card-bg); color: var(--text-color); border: 2px solid var(--border-color); display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-weight: 600;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
-                            <path d="M21 3v5h-5"/>
-                            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
-                            <path d="M3 21v-5h5"/>
-                        </svg>
-                        ${trans.reset || 'Réinitialiser'}
+                <div style="width: 100%; max-width: 380px; display: flex; gap: 0.75rem;">
+                    <button type="button" data-action="reset-counter" style="flex: 1; background: var(--card-bg); color: var(--text-color); border: 2px solid var(--border-color); padding: 0.75rem; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                        🔄 Reset
                     </button>
-                    <button data-action="view-presets" class="btn" style="flex: 1; background: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-weight: 600;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="7" height="7"/>
-                            <rect x="14" y="3" width="7" height="7"/>
-                            <rect x="14" y="14" width="7" height="7"/>
-                            <rect x="3" y="14" width="7" height="7"/>
-                        </svg>
-                        ${trans.presets || 'Dhikr'}
-                    </button>
+                    ${isSequenceMode ? `
+                        <button type="button" data-action="skip-step" style="flex: 1; background: #f59e0b; color: white; border: none; padding: 0.75rem; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                            ⏭️ Passer
+                        </button>
+                        <button type="button" data-action="stop-sequence" style="flex: 1; background: #ef4444; color: white; border: none; padding: 0.75rem; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                            ⏹️ Stop
+                        </button>
+                    ` : `
+                        <button type="button" data-action="view-presets" style="flex: 1; background: var(--primary-color); color: white; border: none; padding: 0.75rem; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                            📋 Dhikr
+                        </button>
+                    `}
                 </div>
             </div>
         `;
@@ -181,41 +213,24 @@ export class TasbihView {
     renderHistoryList(trans) {
         const history = this.engine.getHistory();
         return `
-            <div class="flex-1 overflow-y-auto" style="padding: 0 0.5rem; animation: fadeIn 0.3s ease-in;">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
-                    <h2 class="text-2xl font-bold" style="color: var(--heading-color);">
-                        📜 ${trans.history || 'Historique'}
-                    </h2>
-                    <span style="color: var(--text-muted); font-size: 0.875rem;">${history.length} session${history.length > 1 ? 's' : ''}</span>
-                </div>
+            <div class="flex-1 overflow-y-auto" style="padding: 0 0.5rem;">
+                <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--heading-color); margin-bottom: 1rem;">
+                    📜 ${trans.history || 'Historique'}
+                </h2>
                 
                 ${history.length === 0 ? 
                     `<div class="card" style="padding: 3rem 2rem; text-align: center;">
-                        <div style="font-size: 4rem; opacity: 0.3; margin-bottom: 1rem;">📜</div>
-                        <p style="color: var(--text-muted); font-size: 1rem;">${trans.noHistory || 'Aucune session enregistrée'}</p>
-                        <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem;">Complétez un dhikr pour commencer</p>
+                        <p style="color: var(--text-muted);">Aucune session enregistrée</p>
                     </div>` : 
                     `<div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                        ${history.map((h, index) => `
-                            <div class="card" style="padding: 1rem; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--primary-color); transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: default;"
-                                 onmouseover="this.style.transform='translateX(4px)'; this.style.boxShadow='var(--shadow-md)'"
-                                 onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='var(--shadow-sm)'">
-                                <div style="flex: 1;">
-                                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-                                        <span style="font-size: 1.25rem;">✨</span>
-                                        <p style="font-weight: 700; color: var(--text-color); font-size: 1rem;">${h.dhikr}</p>
-                                    </div>
-                                    <p style="font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <circle cx="12" cy="12" r="10"/>
-                                            <polyline points="12 6 12 12 16 14"/>
-                                        </svg>
-                                        ${new Date(h.date).toLocaleDateString()} à ${new Date(h.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                                    </p>
+                        ${history.map((h) => `
+                            <div class="card" style="padding: 1rem; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--primary-color);">
+                                <div>
+                                    <p style="font-weight: 700; color: var(--text-color);">${h.dhikr}</p>
+                                    <p style="font-size: 0.75rem; color: var(--text-muted);">${new Date(h.date).toLocaleDateString()}</p>
                                 </div>
-                                <div style="text-align: center; padding: 0.5rem 1rem; border-radius: 12px; background: var(--primary-light);">
-                                    <p style="font-size: 1.75rem; font-weight: 700; color: var(--primary-color); font-family: 'Courier New', monospace; line-height: 1;">${h.count}</p>
-                                    <p style="font-size: 0.65rem; color: var(--primary-color); opacity: 0.8; text-transform: uppercase; letter-spacing: 0.05em;">dhikr</p>
+                                <div style="padding: 0.5rem 1rem; border-radius: 12px; background: var(--primary-light);">
+                                    <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color); font-family: monospace;">${h.count}</p>
                                 </div>
                             </div>
                         `).join('')}
@@ -227,106 +242,284 @@ export class TasbihView {
 
     renderPresetsList(trans) {
         const presets = this.engine.getPresets();
+        const customDhikrs = this.engine.getCustomDhikrs();
+        const sequences = this.engine.getSequences();
+        
         return `
-            <div class="flex-1 overflow-y-auto" style="padding: 0 0.5rem; animation: fadeIn 0.3s ease-in;">
-                <div style="margin-bottom: 1.5rem;">
-                    <h2 class="text-2xl font-bold" style="color: var(--heading-color); margin-bottom: 0.5rem;">
-                        ✨ ${trans.presets || 'Dhikr Prédéfinis'}
+            <div class="flex-1 overflow-y-auto" style="padding: 0 0.5rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+                    <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--heading-color);">
+                        ✨ Dhikr & Séquences
                     </h2>
-                    <p style="color: var(--text-muted); font-size: 0.875rem;">Choisissez un dhikr pour commencer</p>
+                    <button type="button" id="btn-toggle-form" style="
+                        width: 44px;
+                        height: 44px;
+                        border-radius: 50%;
+                        background: var(--primary-color);
+                        color: white;
+                        border: none;
+                        font-size: 1.5rem;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                    ">
+                        ${this.showAddForm ? '✕' : '+'}
+                    </button>
                 </div>
-                
-                <div style="display: grid; gap: 1rem;">
-                    ${presets.map((p, index) => {
-                        const isActive = this.engine.currentDhikr?.id === p.id;
-                        const colors = ['#00695c', '#d4af37', '#7b1fa2', '#1976d2', '#c2185b', '#f57c00'];
-                        const color = colors[index % colors.length];
-                        
-                        return `
-                        <button data-action="select-preset" data-id="${p.id}" 
-                                class="preset-card"
-                                style="
-                                    text-align: left; 
-                                    padding: 1.25rem; 
-                                    border-radius: 16px; 
-                                    border: 2px solid ${isActive ? 'var(--primary-color)' : 'var(--border-color)'};
-                                    background: ${isActive ? 'var(--primary-light)' : 'var(--card-bg)'};
-                                    transition: all 0.2s ease;
-                                    cursor: pointer;
-                                    position: relative;
-                                    overflow: hidden;
-                                "
-                                onmouseover="if(!${isActive}) { this.style.borderColor='var(--primary-color)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-md)'; }"
-                                onmouseout="if(!${isActive}) { this.style.borderColor='var(--border-color)'; this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-sm)'; }">
-                            
-                            <!-- Décoration de fond -->
-                            <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: ${color}; opacity: 0.05; border-radius: 50%;"></div>
-                            
-                            <!-- Contenu -->
-                            <div style="position: relative; z-index: 1;">
-                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
-                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                        <div style="width: 40px; height: 40px; border-radius: 12px; background: ${color}; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; font-weight: 700;">
-                                            ${index + 1}
+
+                ${this.showAddForm ? this.renderAddForm(presets) : ''}
+
+                ${sequences.length > 0 ? `
+                    <div style="margin-bottom: 1.5rem;">
+                        <h3 style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.75rem; text-transform: uppercase;">
+                            🔄 Mes Séquences
+                        </h3>
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            ${sequences.map((seq) => `
+                                <div style="position: relative;">
+                                    <button type="button" data-action="start-sequence" data-id="${seq.id}" style="
+                                        width: 100%;
+                                        text-align: left; 
+                                        padding: 1rem; 
+                                        border-radius: 16px; 
+                                        border: 2px solid #667eea;
+                                        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+                                        cursor: pointer;
+                                    ">
+                                        <p style="font-weight: 700; color: var(--text-color); margin-bottom: 0.5rem;">🔄 ${seq.name}</p>
+                                        <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
+                                            ${seq.steps.map(step => `
+                                                <span style="background: var(--card-bg); border: 1px solid var(--border-color); padding: 0.125rem 0.5rem; border-radius: 12px; font-size: 0.7rem;">${step.transliteration} ×${step.count}</span>
+                                            `).join('')}
                                         </div>
-                                        <div>
-                                            <p style="font-size: 1.125rem; font-weight: 700; color: var(--text-color); margin-bottom: 0.125rem;">${p.transliteration}</p>
-                                            <p style="font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.25rem;">
-                                                🎯 ${trans.target || 'Objectif'}: <span style="font-weight: 600; color: var(--primary-color);">${p.target}x</span>
-                                            </p>
-                                        </div>
-                                    </div>
-                                    ${isActive ? `
-                                        <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary-color); display: flex; align-items: center; justify-content: center; color: white; font-size: 1rem;">
-                                            ✓
-                                        </div>
-                                    ` : ''}
+                                    </button>
+                                    <button type="button" data-action="delete-sequence" data-id="${seq.id}" style="
+                                        position: absolute; top: 0.5rem; right: 0.5rem;
+                                        width: 28px; height: 28px; border-radius: 50%;
+                                        background: #ef4444; color: white; border: none;
+                                        font-size: 0.75rem; cursor: pointer;
+                                    ">🗑️</button>
                                 </div>
-                                
-                                <p class="font-arabic" style="font-size: 1.75rem; color: var(--primary-color); font-weight: 600; margin-bottom: 0.5rem; text-align: right; line-height: 1.4;" dir="rtl">${p.arabic}</p>
-                                <p style="font-size: 0.875rem; color: var(--text-muted); font-style: italic; line-height: 1.4;">${p.meaning}</p>
-                            </div>
-                        </button>
-                    `}).join('')}
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${customDhikrs.length > 0 ? `
+                    <div style="margin-bottom: 1.5rem;">
+                        <h3 style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.75rem; text-transform: uppercase;">
+                            🌟 Mes Dhikrs
+                        </h3>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            ${customDhikrs.map((p) => this.renderDhikrCard(p, true)).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                <div>
+                    <h3 style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.75rem; text-transform: uppercase;">
+                        📿 Dhikrs Classiques
+                    </h3>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        ${presets.map((p) => this.renderDhikrCard(p, false)).join('')}
+                    </div>
                 </div>
             </div>
         `;
     }
 
-    renderBottomNav(trans) {
+    renderAddForm(presets) {
         return `
-            <div style="position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--border-color); box-shadow: 0 -4px 12px rgba(0,0,0,0.05); z-index: 100; backdrop-filter: blur(10px);">
+            <div class="card" style="padding: 1.5rem; margin-bottom: 1.5rem; border: 2px dashed var(--primary-color); background: var(--primary-light);">
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+                    <button type="button" id="btn-mode-single" style="
+                        flex: 1; padding: 0.75rem; border-radius: 12px; font-weight: 600; cursor: pointer;
+                        border: 2px solid ${this.addFormMode === 'single' ? 'var(--primary-color)' : 'var(--border-color)'};
+                        background: ${this.addFormMode === 'single' ? 'var(--primary-color)' : 'var(--card-bg)'};
+                        color: ${this.addFormMode === 'single' ? 'white' : 'var(--text-color)'};
+                    ">📿 Dhikr</button>
+                    <button type="button" id="btn-mode-sequence" style="
+                        flex: 1; padding: 0.75rem; border-radius: 12px; font-weight: 600; cursor: pointer;
+                        border: 2px solid ${this.addFormMode === 'sequence' ? '#667eea' : 'var(--border-color)'};
+                        background: ${this.addFormMode === 'sequence' ? '#667eea' : 'var(--card-bg)'};
+                        color: ${this.addFormMode === 'sequence' ? 'white' : 'var(--text-color)'};
+                    ">🔄 Séquence</button>
+                </div>
+
+                ${this.addFormMode === 'single' ? this.renderSingleDhikrForm() : this.renderSequenceForm(presets)}
+            </div>
+        `;
+    }
+
+    renderSingleDhikrForm() {
+        return `
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div>
+                    <label style="display: block; font-size: 0.7rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.25rem; text-transform: uppercase;">Texte Arabe</label>
+                    <input type="text" id="new-dhikr-arabic" placeholder="سُبْحَانَ اللّٰه" dir="rtl"
+                           style="width: 100%; padding: 0.75rem; border-radius: 12px; border: 2px solid var(--border-color); background: var(--card-bg); color: var(--text-color); font-size: 1.25rem; text-align: right;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.7rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.25rem; text-transform: uppercase;">Translitération</label>
+                    <input type="text" id="new-dhikr-translit" placeholder="SubhanAllah"
+                           style="width: 100%; padding: 0.75rem; border-radius: 12px; border: 2px solid var(--border-color); background: var(--card-bg); color: var(--text-color);">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.7rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.25rem; text-transform: uppercase;">Signification</label>
+                    <input type="text" id="new-dhikr-meaning" placeholder="Gloire à Allah"
+                           style="width: 100%; padding: 0.75rem; border-radius: 12px; border: 2px solid var(--border-color); background: var(--card-bg); color: var(--text-color);">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.7rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.25rem; text-transform: uppercase;">Objectif</label>
+                    <input type="number" id="new-dhikr-target" placeholder="33" min="1" value="33"
+                           style="width: 100%; padding: 0.75rem; border-radius: 12px; border: 2px solid var(--border-color); background: var(--card-bg); color: var(--text-color);">
+                </div>
+                <button type="button" id="btn-save-dhikr" style="
+                    width: 100%; padding: 1rem; border-radius: 12px;
+                    background: var(--primary-color); color: white; border: none;
+                    font-weight: 700; cursor: pointer;
+                ">💾 Enregistrer</button>
+            </div>
+        `;
+    }
+
+    renderSequenceForm(presets) {
+        const allDhikrs = [...this.engine.getCustomDhikrs(), ...presets];
+        
+        return `
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div>
+                    <label style="display: block; font-size: 0.7rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.25rem; text-transform: uppercase;">Nom de la séquence</label>
+                    <input type="text" id="sequence-name" placeholder="Ex: Tasbih après la prière"
+                           style="width: 100%; padding: 0.75rem; border-radius: 12px; border: 2px solid var(--border-color); background: var(--card-bg); color: var(--text-color);">
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 0.7rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase;">Étapes</label>
+                    
+                    <div id="sequence-steps-list" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.75rem; min-height: 50px;">
+                        ${this.sequenceSteps.length === 0 ? `
+                            <div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.875rem; background: var(--card-bg); border-radius: 12px; border: 2px dashed var(--border-color);">
+                                Aucune étape - Ajoutez-en ci-dessous
+                            </div>
+                        ` : this.sequenceSteps.map((step, i) => `
+                            <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color);">
+                                <span style="width: 24px; height: 24px; border-radius: 50%; background: #667eea; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700;">${i + 1}</span>
+                                <span style="flex: 1; font-weight: 600; color: var(--text-color);">${step.transliteration}</span>
+                                <span style="background: var(--primary-light); color: var(--primary-color); padding: 0.25rem 0.5rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600;">×${step.count}</span>
+                                <button type="button" class="btn-remove-step" data-index="${i}" style="width: 28px; height: 28px; border-radius: 50%; background: #ef4444; color: white; border: none; cursor: pointer; font-size: 0.875rem;">✕</button>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- Ajouter depuis liste existante -->
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+                        <select id="step-dhikr-select" style="flex: 2; padding: 0.75rem; border-radius: 12px; border: 2px solid var(--border-color); background: var(--card-bg); color: var(--text-color);">
+                            <option value="">-- Choisir un dhikr --</option>
+                            ${allDhikrs.map(d => `<option value="${d.id}">${d.transliteration}</option>`).join('')}
+                        </select>
+                        <input type="number" id="step-count-select" placeholder="33" min="1" value="33"
+                               style="flex: 1; padding: 0.75rem; border-radius: 12px; border: 2px solid var(--border-color); background: var(--card-bg); color: var(--text-color); text-align: center;">
+                        <button type="button" id="btn-add-step-select" style="padding: 0.75rem 1rem; border-radius: 12px; background: #667eea; color: white; border: none; font-weight: 700; cursor: pointer;">+</button>
+                    </div>
+
+                    <!-- OU Ajouter personnalisé -->
+                    <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem; margin: 0.5rem 0;">— ou écrire un dhikr personnalisé —</div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; padding: 0.75rem; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color);">
+                        <input type="text" id="step-custom-arabic" placeholder="Texte arabe" dir="rtl"
+                               style="width: 100%; padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); text-align: right;">
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="step-custom-translit" placeholder="Translitération"
+                                   style="flex: 2; padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color);">
+                            <input type="number" id="step-custom-count" placeholder="33" min="1" value="33"
+                                   style="flex: 1; padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); text-align: center;">
+                            <button type="button" id="btn-add-step-custom" style="padding: 0.5rem 1rem; border-radius: 8px; background: #10b981; color: white; border: none; font-weight: 700; cursor: pointer;">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="button" id="btn-save-sequence" style="
+                    width: 100%; padding: 1rem; border-radius: 12px;
+                    background: ${this.sequenceSteps.length >= 2 ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '#ccc'};
+                    color: white; border: none; font-weight: 700; cursor: ${this.sequenceSteps.length >= 2 ? 'pointer' : 'not-allowed'};
+                " ${this.sequenceSteps.length < 2 ? 'disabled' : ''}>
+                    💾 Enregistrer la séquence ${this.sequenceSteps.length < 2 ? '(min 2 étapes)' : ''}
+                </button>
+            </div>
+        `;
+    }
+
+    renderDhikrCard(p, isCustom) {
+        const isActive = this.engine.currentDhikr?.id === p.id && !this.engine.isInSequence();
+        
+        return `
+            <div style="position: relative;">
+                <button type="button" data-action="select-preset" data-id="${p.id}" style="
+                    width: 100%;
+                    text-align: left; 
+                    padding: 0.875rem; 
+                    border-radius: 12px; 
+                    border: 2px solid ${isActive ? 'var(--primary-color)' : 'var(--border-color)'};
+                    background: ${isActive ? 'var(--primary-light)' : 'var(--card-bg)'};
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                ">
+                    <div style="flex: 1;">
+                        <p style="font-weight: 700; color: var(--text-color); margin-bottom: 0.125rem;">${p.transliteration}</p>
+                        <p class="font-arabic" style="font-size: 1.125rem; color: var(--primary-color);" dir="rtl">${p.arabic}</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <p style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color);">${p.target}</p>
+                        <p style="font-size: 0.6rem; color: var(--text-muted);">fois</p>
+                    </div>
+                </button>
+                ${isCustom ? `
+                    <button type="button" data-action="delete-custom-dhikr" data-id="${p.id}" style="
+                        position: absolute; bottom: 0.5rem; right: 0.5rem;
+                        width: 24px; height: 24px; border-radius: 50%;
+                        background: #ef4444; color: white; border: none;
+                        font-size: 0.65rem; cursor: pointer;
+                    ">🗑️</button>
+                ` : ''}
+            </div>
+        `;
+    }
+
+    renderBottomNav(trans) {
+        const modes = [
+            { id: 'counter', icon: '🔘', label: 'Compteur' },
+            { id: 'presets', icon: '📋', label: 'Liste' },
+            { id: 'history', icon: '📜', label: 'Historique' }
+        ];
+        
+        return `
+            <div style="position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--border-color); z-index: 100;">
                 <div class="max-w-md mx-auto" style="display: flex; padding: 0.5rem;">
-                    ${['counter', 'presets', 'history'].map(mode => {
-                        const isActive = this.viewMode === mode;
-                        const icons = { counter: '🔘', presets: '📋', history: '📜' };
-                        const labels = { counter: 'Compteur', presets: 'Liste', history: 'Historique' };
-                        
-                        return `
-                        <button data-action="view-${mode}" 
-                                style="
-                                    flex: 1; 
-                                    padding: 0.75rem 0.5rem; 
-                                    display: flex; 
-                                    flex-direction: column; 
-                                    align-items: center; 
-                                    justify-content: center; 
-                                    gap: 0.25rem;
-                                    border-radius: 12px;
-                                    background: ${isActive ? 'var(--primary-light)' : 'transparent'};
-                                    color: ${isActive ? 'var(--primary-color)' : 'var(--text-muted)'};
-                                    font-weight: ${isActive ? '600' : '500'};
-                                    font-size: 0.75rem;
-                                    transition: all 0.2s ease;
-                                    cursor: pointer;
-                                    border: none;
-                                "
-                                onmouseover="if(!${isActive}) this.style.background='var(--bg-color)'"
-                                onmouseout="if(!${isActive}) this.style.background='transparent'">
-                            <span style="font-size: 1.5rem;">${icons[mode]}</span>
-                            <span style="letter-spacing: 0.02em;">${labels[mode]}</span>
+                    ${modes.map(mode => `
+                        <button type="button" data-action="view-${mode.id}" style="
+                            flex: 1; 
+                            padding: 0.75rem 0.5rem; 
+                            display: flex; 
+                            flex-direction: column; 
+                            align-items: center; 
+                            gap: 0.25rem;
+                            border-radius: 12px;
+                            background: ${this.viewMode === mode.id ? 'var(--primary-light)' : 'transparent'};
+                            color: ${this.viewMode === mode.id ? 'var(--primary-color)' : 'var(--text-muted)'};
+                            font-weight: ${this.viewMode === mode.id ? '600' : '500'};
+                            font-size: 0.75rem;
+                            cursor: pointer;
+                            border: none;
+                        ">
+                            <span style="font-size: 1.5rem;">${mode.icon}</span>
+                            <span>${mode.label}</span>
                         </button>
-                    `}).join('')}
+                    `).join('')}
                 </div>
             </div>
         `;
@@ -350,109 +543,216 @@ export class TasbihView {
     }
 
     attachEventListeners(container) {
-        // Variable pour éviter les doubles clics
-        let isProcessing = false;
-        
-        // Gestionnaire pour le bouton TAP (avec debounce)
-        const handleTap = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            if (isProcessing) return;
-            isProcessing = true;
-            
-            this.engine.increment();
-            
-            // Animation
-            const tapBtn = e.currentTarget;
-            tapBtn.style.animation = 'none';
-            setTimeout(() => {
-                tapBtn.style.animation = '';
-            }, 10);
-            
-            setTimeout(() => {
-                isProcessing = false;
-            }, 100);
-        };
-        
-        // Attacher l'événement au bouton TAP uniquement
+        // Gestionnaire pour le bouton TAP
         const tapButton = container.querySelector('[data-action="tap"]');
         if (tapButton) {
-            tapButton.addEventListener('click', handleTap);
+            let isProcessing = false;
+            tapButton.onclick = (e) => {
+                e.preventDefault();
+                if (isProcessing) return;
+                isProcessing = true;
+                
+                this.engine.increment();
+                tapButton.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    tapButton.style.transform = 'scale(1)';
+                    isProcessing = false;
+                }, 100);
+            };
         }
-        
-        // Gestionnaire pour les autres actions
-        container.addEventListener('click', (e) => {
-            // Ignorer si c'est le bouton tap
-            if (e.target.closest('[data-action="tap"]')) {
-                return;
-            }
 
-            const target = e.target.closest('[data-action]');
-            if (!target) return;
+        // Bouton toggle formulaire
+        const toggleFormBtn = container.querySelector('#btn-toggle-form');
+        if (toggleFormBtn) {
+            toggleFormBtn.onclick = (e) => {
+                e.preventDefault();
+                this.showAddForm = !this.showAddForm;
+                this.addFormMode = 'single';
+                this.sequenceSteps = [];
+                this.render(container);
+            };
+        }
 
-            const action = target.dataset.action;
+        // Boutons mode formulaire
+        const btnModeSingle = container.querySelector('#btn-mode-single');
+        const btnModeSequence = container.querySelector('#btn-mode-sequence');
+        if (btnModeSingle) {
+            btnModeSingle.onclick = () => {
+                this.addFormMode = 'single';
+                this.render(container);
+            };
+        }
+        if (btnModeSequence) {
+            btnModeSequence.onclick = () => {
+                this.addFormMode = 'sequence';
+                this.render(container);
+            };
+        }
 
-            switch(action) {
-                case 'go-tools':
-                    this.state.set('currentView', 'muslim-tools');
-                    this.eventBus.emit('view:change', 'muslim-tools');
-                    break;
-                case 'reset-counter':
-                    const trans = this.translations.getAll();
-                    if (this.engine.count > 0) {
-                        if (confirm('Réinitialiser le compteur ? La session sera sauvegardée dans l\'historique.')) {
+        // Sauvegarder dhikr simple
+        const btnSaveDhikr = container.querySelector('#btn-save-dhikr');
+        if (btnSaveDhikr) {
+            btnSaveDhikr.onclick = () => {
+                const arabic = container.querySelector('#new-dhikr-arabic').value.trim();
+                const translit = container.querySelector('#new-dhikr-translit').value.trim();
+                const meaning = container.querySelector('#new-dhikr-meaning').value.trim();
+                const target = parseInt(container.querySelector('#new-dhikr-target').value) || 33;
+                
+                if (!arabic || !translit) {
+                    alert('Veuillez remplir le texte arabe et la translitération.');
+                    return;
+                }
+                
+                this.engine.addCustomDhikr({ arabic, transliteration: translit, meaning: meaning || translit, target });
+                this.showAddForm = false;
+                this.render(container);
+            };
+        }
+
+        // Ajouter étape depuis sélection
+        const btnAddStepSelect = container.querySelector('#btn-add-step-select');
+        if (btnAddStepSelect) {
+            btnAddStepSelect.onclick = () => {
+                const select = container.querySelector('#step-dhikr-select');
+                const countInput = container.querySelector('#step-count-select');
+                const dhikrId = select.value;
+                const count = parseInt(countInput.value) || 33;
+                
+                if (!dhikrId) {
+                    alert('Sélectionnez un dhikr');
+                    return;
+                }
+                
+                const allDhikrs = [...this.engine.getCustomDhikrs(), ...this.engine.getPresets()];
+                const dhikr = allDhikrs.find(d => d.id === dhikrId);
+                
+                if (dhikr) {
+                    this.sequenceSteps.push({
+                        dhikrId: dhikr.id,
+                        transliteration: dhikr.transliteration,
+                        arabic: dhikr.arabic,
+                        meaning: dhikr.meaning,
+                        count
+                    });
+                    this.render(container);
+                }
+            };
+        }
+
+        // Ajouter étape personnalisée
+        const btnAddStepCustom = container.querySelector('#btn-add-step-custom');
+        if (btnAddStepCustom) {
+            btnAddStepCustom.onclick = () => {
+                const arabic = container.querySelector('#step-custom-arabic').value.trim();
+                const translit = container.querySelector('#step-custom-translit').value.trim();
+                const count = parseInt(container.querySelector('#step-custom-count').value) || 33;
+                
+                if (!translit) {
+                    alert('Veuillez au moins remplir la translitération');
+                    return;
+                }
+                
+                this.sequenceSteps.push({
+                    dhikrId: 'custom_' + Date.now(),
+                    transliteration: translit,
+                    arabic: arabic || translit,
+                    meaning: translit,
+                    count
+                });
+                this.render(container);
+            };
+        }
+
+        // Supprimer étape
+        container.querySelectorAll('.btn-remove-step').forEach(btn => {
+            btn.onclick = (e) => {
+                const index = parseInt(e.target.dataset.index);
+                this.sequenceSteps.splice(index, 1);
+                this.render(container);
+            };
+        });
+
+        // Sauvegarder séquence
+        const btnSaveSequence = container.querySelector('#btn-save-sequence');
+        if (btnSaveSequence && !btnSaveSequence.disabled) {
+            btnSaveSequence.onclick = () => {
+                const name = container.querySelector('#sequence-name').value.trim();
+                if (!name) {
+                    alert('Donnez un nom à la séquence');
+                    return;
+                }
+                if (this.sequenceSteps.length < 2) {
+                    alert('Ajoutez au moins 2 étapes');
+                    return;
+                }
+                
+                this.engine.addSequence({ name, steps: this.sequenceSteps });
+                this.showAddForm = false;
+                this.sequenceSteps = [];
+                this.render(container);
+            };
+        }
+
+        // Actions générales via data-action
+        container.querySelectorAll('[data-action]').forEach(el => {
+            const action = el.dataset.action;
+            
+            // Ignorer tap (déjà géré)
+            if (action === 'tap') return;
+            
+            el.onclick = (e) => {
+                e.preventDefault();
+                
+                switch(action) {
+                    case 'go-tools':
+                        this.state.set('currentView', 'muslim-tools');
+                        this.eventBus.emit('view:change', 'muslim-tools');
+                        break;
+                    case 'reset-counter':
+                        if (this.engine.count > 0 && confirm('Réinitialiser ?')) {
                             this.engine.reset();
                             this.render(container);
                         }
-                    }
-                    break;
-                case 'view-counter':
-                case 'view-presets':
-                case 'view-history':
-                    this.viewMode = action.replace('view-', '');
-                    this.render(container);
-                    break;
-                case 'select-preset':
-                    const id = target.dataset.id;
-                    this.engine.setDhikr(id);
-                    this.viewMode = 'counter';
-                    this.render(container);
-                    break;
-            }
-        });
-
-        this.eventBus.on('tasbih:count-updated', () => {
-            if (this.viewMode === 'counter') {
-                this.updateProgressCircle();
-            }
-        });
-
-        this.eventBus.on('tasbih:target-reached', () => {
-            const btn = container.querySelector('[data-action="tap"]');
-            if (btn) {
-                btn.style.animation = 'pulse 0.4s ease-in-out';
-                
-                // Confetti effect (simple)
-                const colors = ['#ffd700', '#00ff00', '#00bfff', '#ff69b4'];
-                for(let i = 0; i < 20; i++) {
-                    setTimeout(() => {
-                        const confetti = document.createElement('div');
-                        confetti.style.position = 'fixed';
-                        confetti.style.left = Math.random() * 100 + '%';
-                        confetti.style.top = '50%';
-                        confetti.style.width = '10px';
-                        confetti.style.height = '10px';
-                        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                        confetti.style.borderRadius = '50%';
-                        confetti.style.pointerEvents = 'none';
-                        confetti.style.zIndex = '9999';
-                        confetti.style.animation = 'confetti 1s ease-out forwards';
-                        document.body.appendChild(confetti);
-                        setTimeout(() => confetti.remove(), 1000);
-                    }, i * 30);
+                        break;
+                    case 'view-counter':
+                    case 'view-presets':
+                    case 'view-history':
+                        this.viewMode = action.replace('view-', '');
+                        this.showAddForm = false;
+                        this.render(container);
+                        break;
+                    case 'select-preset':
+                        this.engine.setDhikr(el.dataset.id);
+                        this.viewMode = 'counter';
+                        this.render(container);
+                        break;
+                    case 'delete-custom-dhikr':
+                        if (confirm('Supprimer ce dhikr ?')) {
+                            this.engine.deleteCustomDhikr(el.dataset.id);
+                            this.render(container);
+                        }
+                        break;
+                    case 'start-sequence':
+                        this.engine.startSequence(el.dataset.id);
+                        this.viewMode = 'counter';
+                        this.render(container);
+                        break;
+                    case 'delete-sequence':
+                        if (confirm('Supprimer cette séquence ?')) {
+                            this.engine.deleteSequence(el.dataset.id);
+                            this.render(container);
+                        }
+                        break;
+                    case 'skip-step':
+                        this.engine.skipToNextStep();
+                        this.render(container);
+                        break;
+                    case 'stop-sequence':
+                        this.engine.stopSequence();
+                        this.render(container);
+                        break;
                 }
-            }
+            };
         });
     }
 }

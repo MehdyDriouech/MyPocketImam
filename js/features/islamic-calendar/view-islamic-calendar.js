@@ -26,7 +26,7 @@ export class IslamicCalendarView {
                 <!-- Pattern de fond subtil -->
                 <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.02; background-image: repeating-linear-gradient(45deg, var(--primary-color) 0, var(--primary-color) 1px, transparent 0, transparent 50%); background-size: 10px 10px; pointer-events: none;"></div>
                 
-                <div class="max-w-4xl mx-auto" style="padding: 1.5rem 1rem 2rem;">
+                <div class="max-w-md mx-auto" style="padding: 1rem 1rem 2rem; margin-left: 15%; margin-right: 15%;">
                     ${this.renderHeader(trans, rtl)}
                     ${this.renderCurrentDateCard(trans)}
                     ${this.renderMonthCalendar(trans, rtl)}

@@ -84,7 +84,7 @@ export class NamesOfAllahView {
         </div>
 
         <div class="flex flex-col gap-6">
-            <button data-action="nav-list" class="card w-full p-6 hover:shadow-lg transition-all flex items-center justify-between group text-left" style="border-left: 8px solid var(--primary-color);">
+            <button data-action="nav-list" class="card w-full p-6 hover:shadow-lg transition-all flex items-center justify-between group text-left" style="border-left: 8px solid var(--primary-color); margin-top: 1%; margin-bottom: 1%;">
               <div>
                 <h3 class="text-xl font-bold group-hover:text-primary transition-colors">🔢 ${t.allNames || 'Tous les Noms'}</h3>
                 <p class="text-muted">${t.viewAll || 'Voir la liste complète'} (${total})</p>
@@ -92,7 +92,7 @@ export class NamesOfAllahView {
               <span class="text-2xl text-muted group-hover:text-primary">➔</span>
             </button>
     
-            <button data-action="nav-learning" class="card w-full p-6 hover:shadow-lg transition-all flex items-center justify-between group text-left" style="border-left: 8px solid #f59e0b;">
+            <button data-action="nav-learning" class="card w-full p-6 hover:shadow-lg transition-all flex items-center justify-between group text-left" style="border-left: 8px solid #f59e0b; margin-top: 1%; margin-bottom: 1%;">
               <div>
                 <h3 class="text-xl font-bold group-hover:text-amber-600 transition-colors">📚 ${t.learningMode || 'Mode Apprentissage'}</h3>
                 <div class="flex items-center gap-2 mt-1">
@@ -105,7 +105,7 @@ export class NamesOfAllahView {
               <span class="text-2xl text-muted group-hover:text-amber-500">➔</span>
             </button>
     
-            <button data-action="nav-favorites" class="card w-full p-6 hover:shadow-lg transition-all flex items-center justify-between group text-left" style="border-left: 8px solid #ef4444;">
+            <button data-action="nav-favorites" class="card w-full p-6 hover:shadow-lg transition-all flex items-center justify-between group text-left" style="border-left: 8px solid #ef4444; margin-top: 1%; margin-bottom: 1%;">
               <div>
                 <h3 class="text-xl font-bold group-hover:text-red-600 transition-colors">❤️ ${t.myFavorites || 'Mes Favoris'}</h3>
                 <p class="text-muted">${favorites} ${t.namesSaved || 'noms sauvegardés'}</p>

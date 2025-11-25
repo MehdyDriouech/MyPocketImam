@@ -39,28 +39,39 @@ export class TafsirEngine {
 
     // Récupérer le Tafsir pour un verset spécifique
     async getTafsirForVerse(surahNumber, ayahNumber) {
-        this.currentSurah = surahNumber;
-        this.currentAyah = ayahNumber;
+        this.currentSurah = parseInt(surahNumber);
+        this.currentAyah = parseInt(ayahNumber);
 
         // 1. Chercher en local
         if (!this.tafsirData) await this.loadTafsirData();
         
-        const surahData = this.tafsirData.find(s => s.surah === surahNumber);
-        if (surahData) {
-            const verseTafsir = surahData.tafsirs.find(t => t.ayah === ayahNumber);
-            if (verseTafsir) {
-                return {
-                    text: verseTafsir.text,
-                    source: verseTafsir.source,
-                    isLocal: true
-                };
+        // Chercher la sourate dans les données
+        const surahEntry = this.tafsirData.find(s => s.surah === this.currentSurah);
+        if (surahEntry && surahEntry.tafsirs) {
+            // La structure a une double imbrication : tafsirs[0].tafsirs contient les versets
+            for (const tafsirGroup of surahEntry.tafsirs) {
+                if (tafsirGroup.tafsirs && Array.isArray(tafsirGroup.tafsirs)) {
+                    // Chercher le verset dans ce groupe
+                    const verseTafsir = tafsirGroup.tafsirs.find(t => t.ayah === this.currentAyah);
+                    if (verseTafsir) {
+                        // Récupérer le texte selon la langue
+                        const lang = this.state.get('language') || 'fr';
+                        const textKey = `text_${lang}`;
+                        const text = verseTafsir[textKey] || verseTafsir.text_fr || verseTafsir.text;
+                        
+                        return {
+                            text: text,
+                            source: verseTafsir.source,
+                            isLocal: true
+                        };
+                    }
+                }
             }
         }
 
-        // 2. Fallback API (Simulation ou appel réel si API dispo)
-        // Pour l'instant, on retourne un message générique si pas trouvé
+        // 2. Fallback - message générique si pas trouvé
         return {
-            text: "Tafsir non disponible pour ce verset dans la version hors-ligne.",
+            text: "Tafsir non disponible pour ce verset dans la version hors-ligne. Nous travaillons à enrichir notre base de données.",
             source: "N/A",
             isLocal: false
         };
@@ -94,11 +105,15 @@ export class TafsirEngine {
         };
     }
 
-    nextAyah() {
+    async nextAyah() {
         // Logique pour passer au verset suivant
-        // Nécessite de connaître le nombre de versets de la sourate actuelle
         const coranEngine = this.pluginManager.get('coran').engine;
-        const surahData = coranEngine.getCurrentSurahData();
+        let surahData = coranEngine.getCurrentSurahData();
+        
+        // Si pas de données, les charger
+        if (!surahData || surahData.number !== this.currentSurah) {
+            surahData = await coranEngine.fetchSurah(this.currentSurah);
+        }
         
         if (surahData && this.currentAyah < surahData.arabic.numberOfAyahs) {
             this.currentAyah++;

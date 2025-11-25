@@ -224,7 +224,7 @@ export class SettingsView {
                     </a>
                 </div>
                 
-                <div class="card" style="background: #f0f9ff; border-color: #bae6fd;">
+                <div class="card" style="background: #f0f9ff; border-color: #bae6fd; margin-top: 2.5%; margin-bottom: 2.5%;">
                     <h3 class="settings-title" style="color: #0369a1; border-bottom-color: #bae6fd;">
                         <span>📂</span>
                         <span>${trans.openSource}</span>
