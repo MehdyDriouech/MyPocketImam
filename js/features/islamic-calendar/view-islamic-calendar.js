@@ -42,15 +42,13 @@ export class IslamicCalendarView {
 
     renderHeader(trans, rtl) {
         return `
-            <div class="flex items-center justify-between mb-8" dir="${rtl ? 'rtl' : 'ltr'}" style="position: relative; z-index: 10;">
-                <button data-action="go-tools" class="btn btn-secondary" style="display: flex; align-items: center; gap: 0.5rem; font-weight: 500;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="${rtl ? 'M9 18l6-6-6-6' : 'M15 18l-6-6 6-6'}"/>
-                    </svg>
+            <div class="app-header mb-6 rounded-xl" dir="${rtl ? 'rtl' : 'ltr'}">
+                <button data-action="go-tools" class="btn btn-secondary">
+                    <span>${rtl ? '◀' : '▶'}</span>
                     <span>${trans.back || 'Retour'}</span>
                 </button>
-                <h1 class="text-xl font-bold" style="color: var(--heading-color); letter-spacing: -0.02em;">🕌 ${trans.islamicCalendar || 'Calendrier Islamique'}</h1>
-                <button data-action="refresh-calendar" class="btn btn-icon" style="transition: transform 0.3s ease;" title="${trans.refresh || 'Actualiser'}">
+                <h1 class="app-title">${trans.islamicCalendar || 'Calendrier Islamique'}</h1>
+                <button data-action="refresh-calendar" class="btn btn-secondary" title="${trans.refresh || 'Actualiser'}">
                     🔄
                 </button>
             </div>

@@ -37,7 +37,9 @@ class PluginManager {
       'names-of-allah',
       'tasbih',
       'tafsir',
-      'qibla'
+      'qibla',
+      'zakat',
+      'ramadan'
     ];
     
     const initializedPlugins = new Set();

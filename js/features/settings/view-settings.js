@@ -91,6 +91,16 @@ export class SettingsView {
                     <h3 class="font-bold mb-2">${trans.qiblaDirection}</h3>
                     <p class="text-muted text-sm">${trans.qiblaDesc}</p>
                 </button>
+                <button data-action="go-zakat" class="card text-left hover:shadow-lg transition-all">
+                    <div class="mb-4" style="font-size: 3rem;">💰</div>
+                    <h3 class="font-bold mb-2">${trans.zakatCalculator || 'Calculateur Zakat'}</h3>
+                    <p class="text-muted text-sm">${trans.zakatDesc || 'Estimez votre Zakat'}</p>
+                </button>
+                <button data-action="go-ramadan" class="card text-left hover:shadow-lg transition-all">
+                    <div class="mb-4" style="font-size: 3rem;">🌙</div>
+                    <h3 class="font-bold mb-2">${trans.ramadanTracker || 'Tracker Ramadan'}</h3>
+                    <p class="text-muted text-sm">${trans.ramadanDesc || 'Suivi des 30 jours'}</p>
+                </button>
             </div>
         </div>
     `;
@@ -300,6 +310,14 @@ export class SettingsView {
                 case 'go-qibla':
                     this.state.set('currentView', 'qibla');
                     this.eventBus.emit('view:change', 'qibla');
+                    break;
+                case 'go-zakat':
+                    this.state.set('currentView', 'zakat');
+                    this.eventBus.emit('view:change', 'zakat');
+                    break;
+                case 'go-ramadan':
+                    this.state.set('currentView', 'ramadan');
+                    this.eventBus.emit('view:change', 'ramadan');
                     break;
                 case 'set-calculation':
                     this.engine.updateSetting('calculationMethod', parseInt(target.dataset.id));

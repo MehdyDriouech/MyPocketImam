@@ -33,6 +33,10 @@ import { QiblaEngine } from './features/qibla/engine-qibla.js';
 import { QiblaView } from './features/qibla/view-qibla.js';
 import { ThemeEngine } from './features/theme/engine-theme.js';
 import { ThemeView } from './features/theme/view-theme.js';
+import { ZakatEngine } from './features/zakat/engine-zakat.js';
+import { ZakatView } from './features/zakat/view-zakat.js';
+import { RamadanEngine } from './features/ramadan/engine-ramadan.js';
+import { RamadanView } from './features/ramadan/view-ramadan.js';
 
 class App {
   constructor() {
@@ -105,6 +109,10 @@ class App {
       viewPlugin = this.pluginManager.get('tasbih')?.view;
     } else if (currentView === 'qibla') {
       viewPlugin = this.pluginManager.get('qibla')?.view;
+    } else if (currentView === 'zakat') {
+      viewPlugin = this.pluginManager.get('zakat')?.view;
+    } else if (currentView === 'ramadan') {
+      viewPlugin = this.pluginManager.get('ramadan')?.view;
     }
 
     if (viewPlugin && container) {
@@ -268,6 +276,22 @@ class App {
       engine: themeEngine
     });
     this.pluginManager.register('theme', { engine: themeEngine, view: themeView });
+
+    // 18. Zakat Calculator
+    const zakatEngine = new ZakatEngine(dependencies);
+    const zakatView = new ZakatView({
+      ...dependencies,
+      engine: zakatEngine
+    });
+    this.pluginManager.register('zakat', { engine: zakatEngine, view: zakatView });
+
+    // 19. Ramadan Tracker
+    const ramadanEngine = new RamadanEngine(dependencies);
+    const ramadanView = new RamadanView({
+      ...dependencies,
+      engine: ramadanEngine
+    });
+    this.pluginManager.register('ramadan', { engine: ramadanEngine, view: ramadanView });
 
     // ... autres plugins à venir
   }
