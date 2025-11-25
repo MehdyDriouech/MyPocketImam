@@ -21,16 +21,30 @@ export class QiblaView {
                 <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.02; background-image: repeating-linear-gradient(45deg, var(--primary-color) 0, var(--primary-color) 1px, transparent 0, transparent 50%); background-size: 10px 10px; pointer-events: none;"></div>
                 
                 <div class="max-w-md mx-auto h-full flex flex-col" style="padding: 1.5rem 1rem; min-height: 100vh;">
-                    <!-- Header -->
-                    <div class="flex items-center justify-between mb-8" dir="${rtl ? 'rtl' : 'ltr'}" style="position: relative; z-index: 10;">
-                        <button data-action="go-back" class="btn btn-secondary" style="display: flex; align-items: center; gap: 0.5rem; font-weight: 500;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="${rtl ? 'M9 18l6-6-6-6' : 'M15 18l-6-6 6-6'}"/>
-                            </svg>
-                            <span>${trans.back || 'Retour'}</span>
-                        </button>
-                        <h1 class="text-xl font-bold" style="color: var(--heading-color); letter-spacing: -0.02em;">🕋 ${trans.qiblaDirection || 'Qibla'}</h1>
-                        <div style="width: 80px;"></div>
+                    <!-- Header Card (même style que les autres features) -->
+                    <div class="card mb-6" style="padding: 1rem 1.5rem; border-radius: 16px; background: var(--card-bg); border: 1px solid var(--border-color);">
+                        <div style="display: flex; align-items: center; justify-content: space-between;" dir="${rtl ? 'rtl' : 'ltr'}">
+                            <button type="button" data-action="go-back" style="
+                                display: flex;
+                                align-items: center;
+                                gap: 0.5rem;
+                                padding: 0.5rem 1rem;
+                                background: var(--bg-color);
+                                border: 1px solid var(--border-color);
+                                border-radius: 12px;
+                                color: var(--text-color);
+                                font-weight: 500;
+                                font-size: 0.9rem;
+                                cursor: pointer;
+                            ">
+                                <span>${rtl ? '▶' : '◀'}</span>
+                                <span>${trans.back || 'Retour'}</span>
+                            </button>
+                            <h1 style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color); margin: 0;">
+                                🕋 ${trans.qiblaDirection || 'Direction Qibla'}
+                            </h1>
+                            <div style="width: 90px;"></div>
+                        </div>
                     </div>
 
                     <!-- Compass Section -->

@@ -49,10 +49,7 @@ export class PillarsView {
                         <div class="flex items-start gap-4 pointer-events-none">
                             <div class="text-4xl flex-shrink-0">${this.engine.getPillarIcon(pillar.id)}</div>
                             <div class="flex-1">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <span class="px-2 py-1 rounded text-sm font-bold" style="background: var(--primary-light); color: var(--primary-dark);">${pillar.order}</span>
-                                    <h3 class="text-lg font-bold" style="color: var(--primary-dark);">${this.engine.getPillarLabel(pillar, lang)}</h3>
-                                </div>
+                                <h3 class="text-lg font-bold mb-2" style="color: var(--primary-dark);">${this.engine.getPillarLabel(pillar, lang)}</h3>
                                 <p class="text-sm text-muted line-clamp-2">${this.engine.getPillarDescription(pillar, lang)}</p>
                             </div>
                         </div>
