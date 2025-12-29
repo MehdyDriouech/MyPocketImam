@@ -1,0 +1,104 @@
+{
+  "iftar": [
+    {
+      "id": "iftar_1",
+      "arabic": "ذَهَبَ الظَّمَأُ وَابْتَلَّتِ العُرُوقُ وَثَبَتَ الأَجْرُ إِنْ شَاءَ اللهُ",
+      "transliteration": "Dhahaba adh-dhama'u wabtallatil-'urooqu wa thabatal-ajru in shaa Allah",
+      "translation": {
+        "fr": "La soif est partie, les veines sont humidifiées et la récompense est confirmée si Allah le veut.",
+        "en": "The thirst has gone, the veins are moistened and the reward is confirmed if Allah wills.",
+        "ar": "ذهب الظمأ وابتلت العروق وثبت الأجر إن شاء الله"
+      }
+    },
+    {
+      "id": "iftar_2",
+      "arabic": "اللَّهُمَّ لَكَ صُمْتُ وَعَلَى رِزْقِكَ أَفْطَرْتُ",
+      "transliteration": "Allahumma laka sumtu wa 'ala rizqika aftartu",
+      "translation": {
+        "fr": "Ô Allah, c'est pour Toi que j'ai jeûné et c'est avec Ta subsistance que je romps mon jeûne.",
+        "en": "O Allah, for You I have fasted and with Your provision I break my fast.",
+        "ar": "اللهم لك صمت وعلى رزقك أفطرت"
+      }
+    }
+  ],
+  "suhoor": [
+    {
+      "id": "suhoor_1",
+      "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ بِرَحْمَتِكَ الَّتِي وَسِعَتْ كُلَّ شَيْءٍ أَنْ تَغْفِرَ لِي",
+      "transliteration": "Allahumma inni as'aluka bi-rahmatika allati wasi'at kulla shay'in an taghfira li",
+      "translation": {
+        "fr": "Ô Allah, je Te demande par Ta miséricorde qui englobe toute chose de me pardonner.",
+        "en": "O Allah, I ask You by Your mercy which encompasses all things to forgive me.",
+        "ar": "اللهم إني أسألك برحمتك التي وسعت كل شيء أن تغفر لي"
+      }
+    },
+    {
+      "id": "suhoor_2",
+      "arabic": "نَوَيْتُ صَوْمَ غَدٍ عَنْ أَدَاءِ فَرْضِ شَهْرِ رَمَضَانَ هَذِهِ السَّنَةِ لِلَّهِ تَعَالَى",
+      "transliteration": "Nawaytu sawma ghadin 'an ada'i fardi shahri Ramadan hadhihi as-sanati lillahi ta'ala",
+      "translation": {
+        "fr": "J'ai l'intention de jeûner demain pour accomplir l'obligation du mois de Ramadan de cette année pour Allah le Très-Haut.",
+        "en": "I intend to fast tomorrow to fulfill the obligation of the month of Ramadan this year for Allah the Most High.",
+        "ar": "نويت صوم غد عن أداء فرض شهر رمضان هذه السنة لله تعالى"
+      }
+    }
+  ],
+  "laylatul_qadr": [
+    {
+      "id": "qadr_1",
+      "arabic": "اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ العَفْوَ فَاعْفُ عَنِّي",
+      "transliteration": "Allahumma innaka 'afuwwun tuhibbul-'afwa fa'fu 'anni",
+      "translation": {
+        "fr": "Ô Allah, Tu es Celui qui pardonne, Tu aimes le pardon, alors pardonne-moi.",
+        "en": "O Allah, You are the One who pardons, You love to pardon, so pardon me.",
+        "ar": "اللهم إنك عفو تحب العفو فاعف عني"
+      }
+    }
+  ],
+  "general": [
+    {
+      "id": "general_1",
+      "arabic": "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
+      "transliteration": "Rabbana atina fid-dunya hasanatan wa fil-akhirati hasanatan waqina 'adhaban-nar",
+      "translation": {
+        "fr": "Seigneur, accorde-nous une belle part ici-bas et une belle part dans l'au-delà et préserve-nous du châtiment du Feu.",
+        "en": "Our Lord, give us good in this world and good in the Hereafter and protect us from the punishment of the Fire.",
+        "ar": "ربنا آتنا في الدنيا حسنة وفي الآخرة حسنة وقنا عذاب النار"
+      }
+    },
+    {
+      "id": "general_2",
+      "arabic": "اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ",
+      "transliteration": "Allahumma a'inni 'ala dhikrika wa shukrika wa husni 'ibadatik",
+      "translation": {
+        "fr": "Ô Allah, aide-moi à T'invoquer, à Te remercier et à bien T'adorer.",
+        "en": "O Allah, help me to remember You, thank You and worship You properly.",
+        "ar": "اللهم أعني على ذكرك وشكرك وحسن عبادتك"
+      }
+    }
+  ],
+  "tips": {
+    "fr": [
+      "Faites le suhoor même si c'est peu, car il y a une bénédiction dedans.",
+      "Rompez le jeûne avec des dattes et de l'eau, comme le faisait le Prophète ﷺ.",
+      "Multipliez les bonnes actions pendant les 10 dernières nuits.",
+      "Lisez au moins une page du Coran chaque jour.",
+      "Donnez la sadaqa régulièrement, même un petit montant."
+    ],
+    "en": [
+      "Have suhoor even if it's little, for there is blessing in it.",
+      "Break your fast with dates and water, as the Prophet ﷺ used to do.",
+      "Multiply good deeds during the last 10 nights.",
+      "Read at least one page of Quran every day.",
+      "Give sadaqa regularly, even a small amount."
+    ],
+    "ar": [
+      "تسحروا ولو بقليل، فإن في السحور بركة.",
+      "افطروا على التمر والماء كما كان يفعل النبي ﷺ.",
+      "أكثروا من الأعمال الصالحة في العشر الأواخر.",
+      "اقرأوا صفحة واحدة على الأقل من القرآن كل يوم.",
+      "تصدقوا بانتظام، ولو بمبلغ صغير."
+    ]
+  }
+}
+

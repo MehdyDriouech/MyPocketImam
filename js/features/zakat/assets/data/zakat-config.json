@@ -1,0 +1,178 @@
+{
+  "nisab": {
+    "gold": {
+      "grams": 85,
+      "description": {
+        "fr": "Le nisab de l'or est de 85 grammes d'or pur (24 carats)",
+        "en": "The gold nisab is 85 grams of pure gold (24 karats)",
+        "ar": "نصاب الذهب هو 85 غراماً من الذهب الخالص (24 قيراط)"
+      }
+    },
+    "silver": {
+      "grams": 595,
+      "description": {
+        "fr": "Le nisab de l'argent est de 595 grammes d'argent pur",
+        "en": "The silver nisab is 595 grams of pure silver",
+        "ar": "نصاب الفضة هو 595 غراماً من الفضة الخالصة"
+      }
+    }
+  },
+  "rate": 2.5,
+  "categories": [
+    {
+      "id": "cash",
+      "icon": "💵",
+      "label": {
+        "fr": "Argent liquide",
+        "en": "Cash",
+        "ar": "النقد"
+      },
+      "description": {
+        "fr": "Espèces, comptes courants, comptes d'épargne",
+        "en": "Cash, checking accounts, savings accounts",
+        "ar": "النقد والحسابات الجارية وحسابات التوفير"
+      },
+      "fields": [
+        {
+          "id": "cash_in_hand",
+          "label": { "fr": "Espèces en main", "en": "Cash in hand", "ar": "النقد في اليد" }
+        },
+        {
+          "id": "bank_accounts",
+          "label": { "fr": "Comptes bancaires", "en": "Bank accounts", "ar": "الحسابات البنكية" }
+        },
+        {
+          "id": "savings",
+          "label": { "fr": "Épargne", "en": "Savings", "ar": "المدخرات" }
+        }
+      ]
+    },
+    {
+      "id": "gold_silver",
+      "icon": "🥇",
+      "label": {
+        "fr": "Or et Argent",
+        "en": "Gold & Silver",
+        "ar": "الذهب والفضة"
+      },
+      "description": {
+        "fr": "Bijoux, lingots, pièces d'or ou d'argent",
+        "en": "Jewelry, bullion, gold or silver coins",
+        "ar": "المجوهرات والسبائك والعملات الذهبية أو الفضية"
+      },
+      "fields": [
+        {
+          "id": "gold_value",
+          "label": { "fr": "Valeur de l'or", "en": "Gold value", "ar": "قيمة الذهب" }
+        },
+        {
+          "id": "silver_value",
+          "label": { "fr": "Valeur de l'argent", "en": "Silver value", "ar": "قيمة الفضة" }
+        }
+      ]
+    },
+    {
+      "id": "business",
+      "icon": "🏪",
+      "label": {
+        "fr": "Commerce",
+        "en": "Business Assets",
+        "ar": "التجارة"
+      },
+      "description": {
+        "fr": "Stock de marchandises, créances clients",
+        "en": "Merchandise inventory, accounts receivable",
+        "ar": "مخزون البضائع والذمم المدينة"
+      },
+      "fields": [
+        {
+          "id": "inventory",
+          "label": { "fr": "Stock de marchandises", "en": "Inventory", "ar": "المخزون" }
+        },
+        {
+          "id": "receivables",
+          "label": { "fr": "Créances à recevoir", "en": "Receivables", "ar": "الذمم المدينة" }
+        }
+      ]
+    },
+    {
+      "id": "investments",
+      "icon": "📈",
+      "label": {
+        "fr": "Investissements",
+        "en": "Investments",
+        "ar": "الاستثمارات"
+      },
+      "description": {
+        "fr": "Actions, obligations, fonds, crypto-monnaies",
+        "en": "Stocks, bonds, funds, cryptocurrencies",
+        "ar": "الأسهم والسندات والصناديق والعملات المشفرة"
+      },
+      "fields": [
+        {
+          "id": "stocks",
+          "label": { "fr": "Actions/Obligations", "en": "Stocks/Bonds", "ar": "الأسهم/السندات" }
+        },
+        {
+          "id": "crypto",
+          "label": { "fr": "Crypto-monnaies", "en": "Cryptocurrencies", "ar": "العملات المشفرة" }
+        },
+        {
+          "id": "other_investments",
+          "label": { "fr": "Autres investissements", "en": "Other investments", "ar": "استثمارات أخرى" }
+        }
+      ]
+    },
+    {
+      "id": "debts_owed",
+      "icon": "📋",
+      "label": {
+        "fr": "Créances (qu'on vous doit)",
+        "en": "Debts Owed to You",
+        "ar": "الديون المستحقة لك"
+      },
+      "description": {
+        "fr": "Argent que des personnes vous doivent et que vous êtes sûr de récupérer",
+        "en": "Money that people owe you and that you are sure to recover",
+        "ar": "الأموال التي يدين لك بها الآخرون والتي تتوقع استردادها"
+      },
+      "fields": [
+        {
+          "id": "loans_given",
+          "label": { "fr": "Prêts accordés", "en": "Loans given", "ar": "القروض الممنوحة" }
+        }
+      ]
+    }
+  ],
+  "deductions": {
+    "id": "debts_to_pay",
+    "icon": "➖",
+    "label": {
+      "fr": "Dettes à déduire",
+      "en": "Debts to Deduct",
+      "ar": "الديون المستحقة عليك"
+    },
+    "description": {
+      "fr": "Dettes immédiates que vous devez payer (échéances proches)",
+      "en": "Immediate debts you must pay (upcoming payments)",
+      "ar": "الديون الفورية التي يجب عليك سدادها"
+    },
+    "fields": [
+      {
+        "id": "immediate_debts",
+        "label": { "fr": "Dettes immédiates", "en": "Immediate debts", "ar": "الديون الفورية" }
+      }
+    ]
+  },
+  "disclaimer": {
+    "fr": "⚠️ AVERTISSEMENT : Ce calculateur est un outil pédagogique pour vous aider à estimer votre Zakat. Il ne remplace pas l'avis d'un savant qualifié. Les résultats sont des estimations et ne constituent pas une fatwa ou un avis religieux officiel. Pour des cas complexes, consultez un érudit de confiance.",
+    "en": "⚠️ DISCLAIMER: This calculator is an educational tool to help you estimate your Zakat. It does not replace the advice of a qualified scholar. The results are estimates and do not constitute a fatwa or official religious ruling. For complex cases, consult a trusted scholar.",
+    "ar": "⚠️ تنبيه: هذه الآلة الحاسبة أداة تعليمية لمساعدتك في تقدير زكاتك. لا تحل محل مشورة عالم مؤهل. النتائج تقديرية ولا تشكل فتوى أو حكماً دينياً رسمياً. للحالات المعقدة، استشر عالماً موثوقاً."
+  },
+  "intro": {
+    "fr": "La Zakat est l'un des cinq piliers de l'Islam. Elle purifie la richesse et aide ceux dans le besoin. Elle est obligatoire pour tout musulman dont les biens atteignent le nisab (seuil minimum) pendant une année lunaire complète.",
+    "en": "Zakat is one of the five pillars of Islam. It purifies wealth and helps those in need. It is obligatory for every Muslim whose wealth reaches the nisab (minimum threshold) for a complete lunar year.",
+    "ar": "الزكاة أحد أركان الإسلام الخمسة. تُطهّر المال وتساعد المحتاجين. وهي فريضة على كل مسلم بلغ ماله النصاب لمدة حول قمري كامل."
+  }
+}
+
