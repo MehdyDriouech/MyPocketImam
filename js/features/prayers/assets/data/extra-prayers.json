@@ -1,0 +1,515 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-12-30",
+  "localeDefault": "fr",
+  "groups": [
+    {
+      "id": "situation",
+      "order": 1,
+      "label": {
+        "fr": "Situations particulières"
+      }
+    },
+    {
+      "id": "daily",
+      "order": 2,
+      "label": {
+        "fr": "Vie quotidienne"
+      }
+    },
+    {
+      "id": "need",
+      "order": 3,
+      "label": {
+        "fr": "Besoin / demande"
+      }
+    }
+  ],
+  "statuses": [
+    {
+      "id": "fard_contextual",
+      "label": {
+        "fr": "Obligatoire contextuelle"
+      }
+    },
+    {
+      "id": "fard_collective",
+      "label": {
+        "fr": "Obligatoire collective (fard kifaya)"
+      }
+    },
+    {
+      "id": "sunnah_muakkada",
+      "label": {
+        "fr": "Sunnah fortement recommandée"
+      }
+    },
+    {
+      "id": "sunnah",
+      "label": {
+        "fr": "Sunnah recommandée"
+      }
+    },
+    {
+      "id": "nafl",
+      "label": {
+        "fr": "Surérogatoire (nafl)"
+      }
+    }
+  ],
+  "prayers": [
+    {
+      "id": "extra_jumuah",
+      "order": 1,
+      "groupId": "situation",
+      "statusId": "fard_contextual",
+      "prayerKey": "jumuah",
+      "replacesFardPrayer": "dohr",
+      "defaultRakaat": 2,
+      "minRakaat": 2,
+      "maxRakaat": 2,
+      "behaviorFlags": {
+        "isCongregationalOnly": true,
+        "hasKhutba": true,
+        "hasQunut": false,
+        "hasExtraTakbir": false
+      },
+      "timing": {
+        "timingType": "around_dhuhr",
+        "anchor": "dhuhr",
+        "dayFilter": ["friday"]
+      },
+      "ui": {
+        "shortLabel": { "fr": "Joumou'a" },
+        "fullLabel": { "fr": "Salat-ul-Joumou'a (prière du vendredi)" },
+        "badgeKey": "friday_fard",
+        "iconKey": "extra_friday"
+      },
+      "summary": {
+        "fr": "Prière obligatoire du vendredi qui remplace Dohr, en deux rakaʿāt derrière l'imam, précédées de deux prêches (khutbas)."
+      },
+      "notes": {
+        "fr": "Destinée principalement aux hommes résidents, en congrégation dans une mosquée ou lieu de rassemblement. On écoute les deux khutbas en silence avant de prier deux rakaʿāt comme Dohr, à voix haute pour l'imam."
+      }
+    },
+    {
+      "id": "extra_witr",
+      "order": 2,
+      "groupId": "daily",
+      "statusId": "sunnah_muakkada",
+      "prayerKey": "witr",
+      "replacesFardPrayer": null,
+      "defaultRakaat": 3,
+      "minRakaat": 1,
+      "maxRakaat": 11,
+      "behaviorFlags": {
+        "isCongregationalOnly": false,
+        "isNightPrayer": true,
+        "hasKhutba": false,
+        "hasQunut": true,
+        "hasExtraTakbir": false
+      },
+      "timing": {
+        "timingType": "after_isha_until_fajr",
+        "anchor": "isha",
+        "dayFilter": null
+      },
+      "ui": {
+        "shortLabel": { "fr": "Witr" },
+        "fullLabel": { "fr": "Salat-ul-Witr (prière impaire de clôture)" },
+        "badgeKey": "sunnah_muakkada",
+        "iconKey": "extra_witr"
+      },
+      "summary": {
+        "fr": "Prière impaire fortement recommandée en fin de nuit ou après ʿIshā, souvent pratiquée en 3 rakaʿāt."
+      },
+      "notes": {
+        "fr": "Se prie en 1, 3, 5, 7… rakaʿāt impaires. La forme répandue est 3 rakaʿāt avec invocation du qunût dans la dernière rakaʿa."
+      }
+    },
+    {
+      "id": "extra_eid",
+      "order": 3,
+      "groupId": "situation",
+      "statusId": "sunnah_muakkada",
+      "prayerKey": "eid",
+      "replacesFardPrayer": null,
+      "defaultRakaat": 2,
+      "minRakaat": 2,
+      "maxRakaat": 2,
+      "behaviorFlags": {
+        "isCongregationalOnly": true,
+        "hasKhutba": true,
+        "hasExtraTakbir": true
+      },
+      "timing": {
+        "timingType": "eid_morning",
+        "anchor": "after_sunrise",
+        "dayFilter": ["eid_al_fitr", "eid_al_adha"]
+      },
+      "ui": {
+        "shortLabel": { "fr": "Prière de l'Aïd" },
+        "fullLabel": { "fr": "Salat des deux fêtes (Aïd al-Fitr et Aïd al-Adha)" },
+        "badgeKey": "eid_prayer",
+        "iconKey": "extra_eid"
+      },
+      "summary": {
+        "fr": "Prière de deux rakaʿāt en congrégation, réalisée le matin des deux fêtes avec des takbīrs supplémentaires."
+      },
+      "notes": {
+        "fr": "Pas d'adhān ni d'iqāma. On vient tôt en multipliant les takbīrs. Deux rakaʿāt avec takbīrs supplémentaires dans chaque rakaʿa, suivies d'un sermon (khutba) après la prière."
+      }
+    },
+    {
+      "id": "extra_janazah",
+      "order": 4,
+      "groupId": "situation",
+      "statusId": "fard_collective",
+      "prayerKey": "janazah",
+      "replacesFardPrayer": null,
+      "defaultRakaat": 0,
+      "minRakaat": 0,
+      "maxRakaat": 0,
+      "behaviorFlags": {
+        "noRukuNoSujud": true,
+        "isCongregationalPreferred": true,
+        "hasKhutba": false
+      },
+      "timing": {
+        "timingType": "funeral",
+        "anchor": null,
+        "dayFilter": null
+      },
+      "ui": {
+        "shortLabel": { "fr": "Janazah" },
+        "fullLabel": { "fr": "Salat al-Janazah (prière funéraire)" },
+        "badgeKey": "fard_kifaya",
+        "iconKey": "extra_janazah"
+      },
+      "summary": {
+        "fr": "Prière funéraire collective, sans rukūʿ ni sujūd, effectuée debout pour demander la miséricorde d'Allah pour le défunt."
+      },
+      "notes": {
+        "fr": "Schéma de base : 1er takbīr (Fātiha), 2e takbīr (salāt Ibrāhīmiyya), 3e takbīr (duʿā' pour le défunt), 4e takbīr (invocation brève), puis salām."
+      }
+    },
+    {
+      "id": "extra_kusuf",
+      "order": 5,
+      "groupId": "situation",
+      "statusId": "sunnah_muakkada",
+      "prayerKey": "kusuf",
+      "replacesFardPrayer": null,
+      "defaultRakaat": 2,
+      "minRakaat": 2,
+      "maxRakaat": 2,
+      "behaviorFlags": {
+        "hasDoubleRukuPerRakaat": true,
+        "isCongregationalPreferred": true
+      },
+      "timing": {
+        "timingType": "during_eclipse",
+        "anchor": null,
+        "dayFilter": null
+      },
+      "ui": {
+        "shortLabel": { "fr": "Prière de l'éclipse" },
+        "fullLabel": { "fr": "Salat al-Kusūf / Khusūf (éclipse)" },
+        "badgeKey": "special_event",
+        "iconKey": "extra_eclipse"
+      },
+      "summary": {
+        "fr": "Prière spéciale de deux rakaʿāt lors d'une éclipse, avec deux rukūʿ dans chaque rakaʿa."
+      },
+      "notes": {
+        "fr": "Pendant l'éclipse, on multiplie le dhikr, les duʿā' et l'istighfār. Chaque rakaʿa comporte deux stations de rukūʿ avant les deux sujūd prolongés."
+      }
+    },
+    {
+      "id": "extra_duha",
+      "order": 6,
+      "groupId": "daily",
+      "statusId": "sunnah",
+      "prayerKey": "duha",
+      "replacesFardPrayer": null,
+      "defaultRakaat": 2,
+      "minRakaat": 2,
+      "maxRakaat": 8,
+      "behaviorFlags": {
+        "isDaytimePrayer": true
+      },
+      "timing": {
+        "timingType": "between_sunrise_and_zenith",
+        "anchor": "after_sunrise",
+        "dayFilter": null
+      },
+      "ui": {
+        "shortLabel": { "fr": "Duha" },
+        "fullLabel": { "fr": "Salat ad-Duha (prière de la matinée)" },
+        "badgeKey": "day_nafl",
+        "iconKey": "extra_duha"
+      },
+      "summary": {
+        "fr": "Prière surérogatoire de la matinée, au minimum deux rakaʿāt, priée après le lever du soleil et avant le zénith."
+      },
+      "notes": {
+        "fr": "Se prie comme des prières de sunnah ordinaires, souvent par séries de deux rakaʿāt. Moment recommandé : vers le milieu de la matinée."
+      }
+    },
+    {
+      "id": "extra_nafilah",
+      "order": 7,
+      "groupId": "daily",
+      "statusId": "nafl",
+      "prayerKey": "nafilah",
+      "replacesFardPrayer": null,
+      "defaultRakaat": 2,
+      "minRakaat": 2,
+      "maxRakaat": 0,
+      "behaviorFlags": {
+        "isGenericNafl": true
+      },
+      "timing": {
+        "timingType": "generic",
+        "anchor": null,
+        "dayFilter": null
+      },
+      "ui": {
+        "shortLabel": { "fr": "Nafilah" },
+        "fullLabel": { "fr": "Prières surérogatoires (Nafilah)" },
+        "badgeKey": "generic_nafl",
+        "iconKey": "extra_nafl"
+      },
+      "summary": {
+        "fr": "Toutes les prières surérogatoires non obligatoires réalisées en plus des prières prescrites."
+      },
+      "notes": {
+        "fr": "Intention dans le cœur du type « nafl / sunnah de… ». En général par deux rakaʿāt, en dehors des trois temps interdits : après Fajr, au zénith, juste avant Maghrib."
+      }
+    },
+    {
+      "id": "extra_tahiyyat_masjid",
+      "order": 8,
+      "groupId": "daily",
+      "statusId": "sunnah",
+      "prayerKey": "tahiyyat_al_masjid",
+      "replacesFardPrayer": null,
+      "defaultRakaat": 2,
+      "minRakaat": 2,
+      "maxRakaat": 2,
+      "behaviorFlags": {
+        "isLinkedToMosqueEntry": true
+      },
+      "timing": {
+        "timingType": "on_mosque_entry",
+        "anchor": null,
+        "dayFilter": null
+      },
+      "ui": {
+        "shortLabel": { "fr": "Tahiyyat al-Masjid" },
+        "fullLabel": { "fr": "Salutation de la mosquée (Tahiyyat-ul-masjid)" },
+        "badgeKey": "mosque_entry",
+        "iconKey": "extra_mosque"
+      },
+      "summary": {
+        "fr": "Deux rakaʿāt de salutation de la mosquée à l'entrée, avant de s'asseoir."
+      },
+      "notes": {
+        "fr": "Se prient comme deux rakaʿāt normales avec l'intention de saluer la mosquée. Si l'on rejoint directement une prière obligatoire, celle-ci tient lieu de Tahiyyat selon de nombreux savants."
+      }
+    },
+    {
+      "id": "extra_istikhara",
+      "order": 9,
+      "groupId": "need",
+      "statusId": "nafl",
+      "prayerKey": "istikhara",
+      "replacesFardPrayer": null,
+      "defaultRakaat": 2,
+      "minRakaat": 2,
+      "maxRakaat": 2,
+      "behaviorFlags": {
+        "isDecisionPrayer": true
+      },
+      "timing": {
+        "timingType": "when_needed",
+        "anchor": null,
+        "dayFilter": null
+      },
+      "ui": {
+        "shortLabel": { "fr": "Istikhara" },
+        "fullLabel": { "fr": "Salat al-Istikhara (prière de consultation)" },
+        "badgeKey": "decision",
+        "iconKey": "extra_istikhara"
+      },
+      "summary": {
+        "fr": "Prière de consultation pour demander à Allah de guider vers le meilleur choix dans une affaire permise."
+      },
+      "notes": {
+        "fr": "On fait deux rakaʿāt nafl, puis on récite la duʿā' authentique d'istikhara en mentionnant l'affaire concernée. Ensuite, on s'oriente vers la solution qu'Allah facilite, même sans rêve particulier."
+      }
+    },
+    {
+      "id": "extra_haajah",
+      "order": 10,
+      "groupId": "need",
+      "statusId": "nafl",
+      "prayerKey": "haajah",
+      "replacesFardPrayer": null,
+      "defaultRakaat": 2,
+      "minRakaat": 2,
+      "maxRakaat": 2,
+      "behaviorFlags": {
+        "isNeedPrayer": true
+      },
+      "timing": {
+        "timingType": "when_needed",
+        "anchor": null,
+        "dayFilter": null
+      },
+      "ui": {
+        "shortLabel": { "fr": "Salat al-Hājah" },
+        "fullLabel": { "fr": "Prière du besoin (Salat al-Hājah / al-Istijabah)" },
+        "badgeKey": "need",
+        "iconKey": "extra_need"
+      },
+      "summary": {
+        "fr": "Prière pour exposer à Allah un besoin précis, matériel ou spirituel, et Lui demander secours."
+      },
+      "notes": {
+        "fr": "On accomplit deux rakaʿāt nafl, puis on loue Allah, on prie sur le Prophète ﷺ et on fait une duʿā' spécifique ou toute invocation licite en détaillant son besoin."
+      }
+    },
+    {
+      "id": "extra_tarawih",
+      "order": 11,
+      "groupId": "daily",
+      "statusId": "sunnah_muakkada",
+      "prayerKey": "tarawih",
+      "replacesFardPrayer": null,
+      "defaultRakaat": 8,
+      "minRakaat": 8,
+      "maxRakaat": 20,
+      "behaviorFlags": {
+        "isNightPrayer": true,
+        "isRamadanOnly": true,
+        "isCongregationalPreferred": true
+      },
+      "timing": {
+        "timingType": "after_isha_in_ramadan",
+        "anchor": "isha",
+        "dayFilter": ["ramadan"]
+      },
+      "ui": {
+        "shortLabel": { "fr": "Tarawih" },
+        "fullLabel": { "fr": "Salat at-Tarawih (nuits de Ramadan)" },
+        "badgeKey": "ramadan",
+        "iconKey": "extra_tarawih"
+      },
+      "summary": {
+        "fr": "Prière de nuit du mois de Ramadan, après ʿIshā, priée en congrégation ou seul, généralement en 8 ou 20 rakaʿāt."
+      },
+      "notes": {
+        "fr": "Se prie par deux rakaʿāt, avec récitation prolongée du Coran. Witr vient en clôture de la nuit."
+      }
+    },
+    {
+      "id": "extra_khawf",
+      "order": 12,
+      "groupId": "situation",
+      "statusId": "fard_contextual",
+      "prayerKey": "khawf",
+      "replacesFardPrayer": null,
+      "defaultRakaat": 2,
+      "minRakaat": 2,
+      "maxRakaat": 2,
+      "behaviorFlags": {
+        "isDangerMode": true,
+        "isBattleScenario": true
+      },
+      "timing": {
+        "timingType": "during_danger",
+        "anchor": null,
+        "dayFilter": null
+      },
+      "ui": {
+        "shortLabel": { "fr": "Prière de la peur" },
+        "fullLabel": { "fr": "Salat al-Khawf (prière en cas de danger)" },
+        "badgeKey": "danger",
+        "iconKey": "extra_khawf"
+      },
+      "summary": {
+        "fr": "Prière permise lorsque l'on craint pour sa vie, afin de préserver les obligations tout en restant en alerte."
+      },
+      "notes": {
+        "fr": "L'assemblée se divise en deux groupes, l'un prie avec l'imam pendant que l'autre surveille, puis ils alternent. En cas de danger extrême, la prière peut se faire en marchant, par signes."
+      }
+    },
+    {
+      "id": "extra_tasbih",
+      "order": 13,
+      "groupId": "need",
+      "statusId": "nafl",
+      "prayerKey": "tasbih",
+      "replacesFardPrayer": null,
+      "defaultRakaat": 4,
+      "minRakaat": 4,
+      "maxRakaat": 4,
+      "behaviorFlags": {
+        "isDhikrFocused": true
+      },
+      "timing": {
+        "timingType": "anytime_except_forbidden",
+        "anchor": null,
+        "dayFilter": null
+      },
+      "ui": {
+        "shortLabel": { "fr": "Salat al-Tasbih" },
+        "fullLabel": { "fr": "Prière d'exaltation (Salat al-Tasbih)" },
+        "badgeKey": "dhikr",
+        "iconKey": "extra_tasbih"
+      },
+      "summary": {
+        "fr": "Prière surérogatoire où un tasbih particulier est répété de nombreuses fois sur quatre rakaʿāt."
+      },
+      "notes": {
+        "fr": "Texte fréquent : « Subḥānallāh wal-ḥamdu lillāh wa lā ilāha illallāh wa Allāhu akbar ». Chaque rakaʿa comporte 75 tasbihs répartis avant et après la récitation, en rukūʿ, en qiyām et dans les sujūd."
+      }
+    },
+    {
+      "id": "extra_mousafir",
+      "order": 14,
+      "groupId": "situation",
+      "statusId": "fard_contextual",
+      "prayerKey": "mousafir",
+      "replacesFardPrayer": null,
+      "defaultRakaat": 2,
+      "minRakaat": 2,
+      "maxRakaat": 2,
+      "behaviorFlags": {
+        "isTravelMode": true,
+        "affectsFardPrayers": true,
+        "allowsQasr": true,
+        "allowsJam": true
+      },
+      "timing": {
+        "timingType": "travel",
+        "anchor": null,
+        "dayFilter": null
+      },
+      "ui": {
+        "shortLabel": { "fr": "Prière du voyageur" },
+        "fullLabel": { "fr": "Salat du Mousafir (voyageur)" },
+        "badgeKey": "travel",
+        "iconKey": "extra_travel"
+      },
+      "summary": {
+        "fr": "Régime de prière pour le voyageur qui lui permet de raccourcir certaines prières obligatoires et, dans certains cas, de les regrouper."
+      },
+      "notes": {
+        "fr": "Dhohr, ʿAsr et ʿIshā sont raccourcies de 4 à 2 rakaʿāt quand les conditions du voyage sont réunies. Fajr et Maghrib restent inchangées. Possibilité de regrouper Dhohr/ʿAsr et Maghrib/ʿIshā selon les cas."
+      }
+    }
+  ]
+}
+

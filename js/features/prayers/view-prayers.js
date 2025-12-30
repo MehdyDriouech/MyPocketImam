@@ -30,6 +30,13 @@ export class PrayersView {
             case 'prayer-complete':
                 container.innerHTML = this.renderPrayerComplete();
                 break;
+            case 'prayer-extra-menu':
+                console.log('PrayersView: Rendering prayer-extra-menu');
+                container.innerHTML = this.renderExtraPrayersMenu();
+                break;
+            case 'prayer-extra-detail':
+                container.innerHTML = this.renderExtraPrayerDetail();
+                break;
             default:
                 // Fallback ou autres vues gérées par d'autres plugins (Settings, etc)
                 // Mais si le plugin manager nous appelle, c'est que nous sommes responsables
@@ -37,7 +44,10 @@ export class PrayersView {
                 break;
         }
 
-        this.attachEventListeners(container.firstElementChild);
+        // Attacher les event listeners au conteneur principal
+        // container est l'élément #app, et innerHTML crée les éléments enfants
+        // On doit attacher les listeners au conteneur lui-même pour capturer les événements de tous les enfants
+        this.attachEventListeners(container);
     }
 
     renderHome() {
@@ -249,7 +259,34 @@ export class PrayersView {
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
                     ${bottomRowPrayers.map(key => renderPrayerCard(key)).join('')}
-                    <div></div>
+                    <button data-action="go-extra-prayers-menu" 
+                            class="prayer-card-home"
+                            style="
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                text-align: center;
+                                padding: 1.5rem 1rem;
+                                background: var(--card-bg);
+                                border: 2px dashed var(--primary-color);
+                                border-radius: 16px;
+                                transition: all 0.2s ease;
+                                cursor: pointer;
+                                min-height: 160px;
+                            "
+                            onmouseover="this.style.borderStyle='solid'; this.style.background='var(--primary-light)';"
+                            onmouseout="this.style.borderStyle='dashed'; this.style.background='var(--card-bg)';">
+                        <div style="font-size: 3.5rem; margin-bottom: 0.75rem; line-height: 1;">
+                            📿
+                        </div>
+                        <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color); margin-bottom: 0.25rem;">
+                            ${trans.extraPrayers || 'Prières supplémentaires'}
+                        </h3>
+                        <p style="font-size: 0.8rem; color: var(--primary-color); opacity: 0.7;">
+                            ${trans.extraPrayersSubtitle || '14 prières spéciales'}
+                        </p>
+                    </button>
                 </div>
 
                 <!-- Hadith du jour -->
@@ -476,12 +513,395 @@ export class PrayersView {
     `;
     }
 
+    renderExtraPrayersMenu() {
+        console.log('PrayersView: renderExtraPrayersMenu called');
+        const trans = this.translations.getAll();
+        const rtl = this.translations.isRTL();
+        const dirAttr = rtl ? 'rtl' : 'ltr';
+        
+        const groups = this.engine.getExtraPrayersByGroup();
+        console.log('PrayersView: groups:', groups);
+        const currentLang = this.state.get('language') || 'fr';
+
+        if (!groups || Object.keys(groups).length === 0) {
+            console.log('PrayersView: No groups found, showing loading message');
+            return `
+                <div class="container" dir="${dirAttr}">
+                    <div class="app-header mb-8 rounded-xl">
+                        <button data-action="go-home" class="btn btn-secondary">
+                            <span>${rtl ? '◀' : '▶'}</span>
+                            <span>${trans.back || 'Retour'}</span>
+                        </button>
+                        <h1 class="app-title">${trans.extraPrayers || 'Prières supplémentaires'}</h1>
+                        <div style="width: 24px;"></div>
+                    </div>
+                    <div class="card text-center">
+                        <p style="color: var(--text-muted);">${trans.loading || 'Chargement...'}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        const renderPrayerCard = (prayer) => {
+            const badge = this.engine.getBadgeLabel(prayer.ui.badgeKey);
+            const icon = this.engine.getIconEmoji(prayer.ui.iconKey);
+            const shortLabel = prayer.ui.shortLabel[currentLang] || prayer.ui.shortLabel.fr || prayer.id;
+            const rakaatText = prayer.defaultRakaat === 0 
+                ? 'Sans rakaʿāt' 
+                : prayer.minRakaat === prayer.maxRakaat 
+                    ? `${prayer.defaultRakaat} rakaʿāt`
+                    : `${prayer.minRakaat}-${prayer.maxRakaat} rakaʿāt`;
+
+            return `
+                <button data-action="view-extra-prayer" data-prayer-id="${prayer.id}" 
+                        style="
+                            display: flex;
+                            flex-direction: column;
+                            align-items: flex-start;
+                            padding: 1.25rem;
+                            background: var(--card-bg);
+                            border: 1px solid var(--border-color);
+                            border-radius: 12px;
+                            transition: all 0.2s ease;
+                            cursor: pointer;
+                            width: 100%;
+                            text-align: left;
+                        "
+                        onmouseover="this.style.borderColor='var(--primary-color)'; this.style.transform='translateY(-2px)';"
+                        onmouseout="this.style.borderColor='var(--border-color)'; this.style.transform='translateY(0)';">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; width: 100%; margin-bottom: 0.5rem;">
+                        <div style="font-size: 2rem;">${icon}</div>
+                        <div style="flex: 1;">
+                            <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--primary-color); margin: 0 0 0.25rem 0;">
+                                ${shortLabel}
+                            </h3>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                <span style="
+                                    display: inline-flex;
+                                    align-items: center;
+                                    gap: 0.25rem;
+                                    padding: 0.25rem 0.5rem;
+                                    background: var(--primary-light);
+                                    border-radius: 6px;
+                                    font-size: 0.75rem;
+                                    font-weight: 500;
+                                    color: var(--primary-color);
+                                ">
+                                    <span>${badge.emoji}</span>
+                                    <span>${badge.label}</span>
+                                </span>
+                                <span style="font-size: 0.85rem; color: var(--text-muted);">
+                                    ${rakaatText}
+                                </span>
+                            </div>
+                        </div>
+                        <span style="font-size: 1.25rem; color: var(--text-muted);">${rtl ? '◀' : '▶'}</span>
+                    </div>
+                </button>
+            `;
+        };
+
+        return `
+            <div class="container" dir="${dirAttr}">
+                <div class="app-header mb-8 rounded-xl">
+                    <button data-action="go-home" class="btn btn-secondary">
+                        <span>${rtl ? '◀' : '▶'}</span>
+                        <span>${trans.back || 'Retour'}</span>
+                    </button>
+                    <h1 class="app-title">${trans.extraPrayers || 'Prières supplémentaires'}</h1>
+                    <div style="width: 24px;"></div>
+                </div>
+
+                <div style="display: flex; flex-col; gap: 2rem;">
+                    ${Object.values(groups).map(group => {
+                        const groupLabel = group.label[currentLang] || group.label.fr || group.id;
+                        return `
+                            <div class="mb-6">
+                                <h2 style="
+                                    font-size: 1.5rem;
+                                    font-weight: 700;
+                                    color: var(--primary-color);
+                                    margin-bottom: 1rem;
+                                    padding-bottom: 0.5rem;
+                                    border-bottom: 2px solid var(--primary-color);
+                                ">
+                                    ${groupLabel}
+                                </h2>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+                                    ${group.prayers.map(prayer => renderPrayerCard(prayer)).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    renderExtraPrayerDetail() {
+        const trans = this.translations.getAll();
+        const rtl = this.translations.isRTL();
+        const dirAttr = rtl ? 'rtl' : 'ltr';
+        const currentLang = this.state.get('language') || 'fr';
+        
+        const prayerId = this.state.get('selectedExtraPrayer');
+        if (!prayerId) {
+            // Rediriger vers le menu si aucune prière sélectionnée
+            this.state.set('currentView', 'prayer-extra-menu');
+            return this.renderExtraPrayersMenu();
+        }
+
+        const prayer = this.engine.getExtraPrayerById(prayerId);
+        if (!prayer) {
+            return `
+                <div class="container" dir="${dirAttr}">
+                    <div class="app-header mb-8 rounded-xl">
+                        <button data-action="go-extra-prayers-menu" class="btn btn-secondary">
+                            <span>${rtl ? '◀' : '▶'}</span>
+                            <span>${trans.back || 'Retour'}</span>
+                        </button>
+                        <h1 class="app-title">${trans.extraPrayer || 'Prière supplémentaire'}</h1>
+                        <div style="width: 24px;"></div>
+                    </div>
+                    <div class="card text-center">
+                        <p style="color: var(--text-muted);">${trans.prayerNotFound || 'Prière non trouvée'}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        const status = this.engine.getExtraPrayerStatus(prayer.statusId);
+        const group = this.engine.getExtraPrayerGroup(prayer.groupId);
+        const badge = this.engine.getBadgeLabel(prayer.ui.badgeKey);
+        const icon = this.engine.getIconEmoji(prayer.ui.iconKey);
+        
+        const fullLabel = prayer.ui.fullLabel[currentLang] || prayer.ui.fullLabel.fr || prayer.id;
+        const summary = prayer.summary[currentLang] || prayer.summary.fr || '';
+        const notes = prayer.notes[currentLang] || prayer.notes.fr || '';
+        const statusLabel = status ? (status.label[currentLang] || status.label.fr || status.id) : '';
+        const groupLabel = group ? (group.label[currentLang] || group.label.fr || group.id) : '';
+
+        // Formatage des rakaʿāt
+        let rakaatInfo = '';
+        if (prayer.defaultRakaat === 0) {
+            rakaatInfo = 'Sans rakaʿāt (prière spéciale)';
+        } else if (prayer.minRakaat === prayer.maxRakaat) {
+            rakaatInfo = `${prayer.defaultRakaat} rakaʿāt`;
+        } else {
+            rakaatInfo = `${prayer.minRakaat} à ${prayer.maxRakaat} rakaʿāt (par défaut: ${prayer.defaultRakaat})`;
+        }
+
+        // Informations sur le timing
+        let timingInfo = '';
+        if (prayer.timing) {
+            const timingType = prayer.timing.timingType;
+            const timingLabels = {
+                'around_dhuhr': 'Autour de Dohr',
+                'after_isha_until_fajr': 'Après ʿIshā jusqu\'à Fajr',
+                'eid_morning': 'Matin des fêtes',
+                'funeral': 'Lors d\'un décès',
+                'during_eclipse': 'Pendant une éclipse',
+                'between_sunrise_and_zenith': 'Entre le lever du soleil et le zénith',
+                'generic': 'À tout moment (hors temps interdits)',
+                'on_mosque_entry': 'À l\'entrée de la mosquée',
+                'when_needed': 'Quand le besoin se fait sentir',
+                'after_isha_in_ramadan': 'Après ʿIshā pendant le Ramadan',
+                'during_danger': 'En situation de danger',
+                'anytime_except_forbidden': 'À tout moment (hors temps interdits)',
+                'travel': 'En voyage'
+            };
+            timingInfo = timingLabels[timingType] || timingType;
+        }
+
+        // Flags comportementaux pertinents
+        const behaviorNotes = [];
+        if (prayer.behaviorFlags) {
+            if (prayer.behaviorFlags.isCongregationalOnly) {
+                behaviorNotes.push('En congrégation uniquement');
+            } else if (prayer.behaviorFlags.isCongregationalPreferred) {
+                behaviorNotes.push('Préférable en congrégation');
+            }
+            if (prayer.behaviorFlags.hasKhutba) {
+                behaviorNotes.push('Avec sermon (khutba)');
+            }
+            if (prayer.behaviorFlags.hasQunut) {
+                behaviorNotes.push('Avec invocation du qunût');
+            }
+            if (prayer.behaviorFlags.hasExtraTakbir) {
+                behaviorNotes.push('Avec takbīrs supplémentaires');
+            }
+            if (prayer.behaviorFlags.noRukuNoSujud) {
+                behaviorNotes.push('Sans rukūʿ ni sujūd');
+            }
+            if (prayer.behaviorFlags.hasDoubleRukuPerRakaat) {
+                behaviorNotes.push('Deux rukūʿ par rakaʿa');
+            }
+            if (prayer.behaviorFlags.isRamadanOnly) {
+                behaviorNotes.push('Uniquement pendant le Ramadan');
+            }
+            if (prayer.replacesFardPrayer) {
+                behaviorNotes.push(`Remplace la prière ${prayer.replacesFardPrayer}`);
+            }
+        }
+
+        return `
+            <div class="container" dir="${dirAttr}">
+                <div class="app-header mb-8 rounded-xl">
+                    <button data-action="go-extra-prayers-menu" class="btn btn-secondary">
+                        <span>${rtl ? '◀' : '▶'}</span>
+                        <span>${trans.back || 'Retour'}</span>
+                    </button>
+                    <h1 class="app-title" style="font-size: 1.25rem;">${fullLabel}</h1>
+                    <div style="width: 24px;"></div>
+                </div>
+
+                <!-- En-tête avec icône et badge -->
+                <div class="card mb-6" style="background: var(--primary-light); border: 2px solid var(--primary-color);">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="font-size: 3rem;">${icon}</div>
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                                <span style="
+                                    display: inline-flex;
+                                    align-items: center;
+                                    gap: 0.5rem;
+                                    padding: 0.5rem 1rem;
+                                    background: var(--primary-color);
+                                    color: white;
+                                    border-radius: 8px;
+                                    font-size: 0.9rem;
+                                    font-weight: 600;
+                                ">
+                                    <span>${badge.emoji}</span>
+                                    <span>${badge.label}</span>
+                                </span>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">
+                                ${statusLabel ? `Statut: ${statusLabel}` : ''}
+                                ${groupLabel ? ` • ${groupLabel}` : ''}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Résumé -->
+                ${summary ? `
+                    <div class="card mb-6">
+                        <h2 style="
+                            font-size: 1.25rem;
+                            font-weight: 700;
+                            color: var(--primary-color);
+                            margin-bottom: 1rem;
+                        ">
+                            📖 ${trans.summary || 'Résumé'}
+                        </h2>
+                        <p style="
+                            font-size: 1rem;
+                            line-height: 1.7;
+                            color: var(--text-color);
+                        ">
+                            ${summary}
+                        </p>
+                    </div>
+                ` : ''}
+
+                <!-- Notes -->
+                ${notes ? `
+                    <div class="card mb-6">
+                        <h2 style="
+                            font-size: 1.25rem;
+                            font-weight: 700;
+                            color: var(--primary-color);
+                            margin-bottom: 1rem;
+                        ">
+                            📝 ${trans.notes || 'Notes'}
+                        </h2>
+                        <p style="
+                            font-size: 1rem;
+                            line-height: 1.7;
+                            color: var(--text-color);
+                        ">
+                            ${notes}
+                        </p>
+                    </div>
+                ` : ''}
+
+                <!-- Informations -->
+                <div class="card mb-6">
+                    <h2 style="
+                        font-size: 1.25rem;
+                        font-weight: 700;
+                        color: var(--primary-color);
+                        margin-bottom: 1rem;
+                    ">
+                        ℹ️ ${trans.information || 'Informations'}
+                    </h2>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div>
+                            <strong style="color: var(--primary-color);">${trans.rakaats || 'Rakaʿāt'}:</strong>
+                            <span style="margin-left: 0.5rem;">${rakaatInfo}</span>
+                        </div>
+                        ${timingInfo ? `
+                            <div>
+                                <strong style="color: var(--primary-color);">${trans.timing || 'Moment'}:</strong>
+                                <span style="margin-left: 0.5rem;">${timingInfo}</span>
+                            </div>
+                        ` : ''}
+                        ${behaviorNotes.length > 0 ? `
+                            <div>
+                                <strong style="color: var(--primary-color);">${trans.characteristics || 'Caractéristiques'}:</strong>
+                                <ul style="margin: 0.5rem 0 0 1.5rem; padding: 0;">
+                                    ${behaviorNotes.map(note => `<li style="margin-bottom: 0.25rem;">${note}</li>`).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <!-- Bouton guidage (désactivé pour l'instant) -->
+                <div class="card mb-6" style="background: var(--card-bg); border: 1px dashed var(--border-color);">
+                    <button data-action="start-extra-prayer-guidance" 
+                            disabled
+                            style="
+                                width: 100%;
+                                padding: 1rem;
+                                background: var(--card-bg);
+                                border: 1px solid var(--border-color);
+                                border-radius: 8px;
+                                color: var(--text-muted);
+                                font-size: 1rem;
+                                font-weight: 500;
+                                cursor: not-allowed;
+                                opacity: 0.6;
+                            ">
+                        ▶ ${trans.startGuidance || 'Démarrer le guidage'} (${trans.comingSoon || 'Bientôt disponible'})
+                    </button>
+                </div>
+
+                <!-- Bouton retour -->
+                <button data-action="go-extra-prayers-menu" class="btn btn-secondary w-full">
+                    ${rtl ? '◀' : '▶'} ${trans.back || 'Retour au menu'}
+                </button>
+            </div>
+        `;
+    }
+
     attachEventListeners(container) {
+        if (!container) {
+            console.warn('PrayersView: container is null or undefined');
+            return;
+        }
+        
         container.addEventListener('click', (e) => {
             const target = e.target.closest('[data-action]');
             if (!target) return;
 
             const action = target.dataset.action;
+            
+            // Debug: log les actions pour vérifier que les event listeners fonctionnent
+            if (action === 'go-extra-prayers-menu') {
+                console.log('PrayersView: go-extra-prayers-menu clicked');
+            }
 
             switch (action) {
                 case 'select-prayer':
@@ -546,6 +966,23 @@ export class PrayersView {
                 case 'finish-prayer':
                     this.state.set('currentView', 'home');
                     this.eventBus.emit('view:change', 'home');
+                    break;
+                case 'go-extra-prayers-menu':
+                    console.log('PrayersView: Setting currentView to prayer-extra-menu');
+                    const extraPrayersData = this.state.get('extraPrayersData');
+                    console.log('PrayersView: extraPrayersData:', extraPrayersData);
+                    this.state.set('currentView', 'prayer-extra-menu');
+                    this.eventBus.emit('view:change', 'prayer-extra-menu');
+                    break;
+                case 'view-extra-prayer':
+                    const prayerId = target.dataset.prayerId;
+                    this.engine.startExtraPrayer(prayerId);
+                    this.eventBus.emit('view:change', 'prayer-extra-detail');
+                    break;
+                case 'start-extra-prayer-guidance':
+                    // TODO: Intégration future du guidage pas-à-pas pour les prières supplémentaires
+                    // Pour l'instant, cette action est désactivée
+                    console.log('Guidage pas-à-pas pour prières supplémentaires - à venir');
                     break;
             }
         });

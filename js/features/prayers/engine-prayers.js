@@ -12,8 +12,9 @@ export class PrayersEngine {
       return this.pluginManager.get('translations').engine;
   }
 
-  init() {
-    // Rien de spécial à initialiser
+  async init() {
+    // Charger les prières supplémentaires
+    await this.loadExtraPrayers();
   }
   
   getPositionImage(stepId, avatarGender = 'boy') {
@@ -209,6 +210,179 @@ export class PrayersEngine {
     // Pas de vue 'prayer-complete' explicite dans le render original (c'était une modale ou juste fin)
     // Mais le prompt suggère une vue de fin
     this.state.set('currentView', 'prayer-complete');
+  }
+
+  // ========== PRIÈRES SUPPLÉMENTAIRES ==========
+
+  /**
+   * Charge les données des prières supplémentaires depuis le JSON
+   */
+  async loadExtraPrayers() {
+    try {
+      const response = await fetch('js/features/prayers/assets/data/extra-prayers.json');
+      if (!response.ok) {
+        console.warn('Could not load extra-prayers.json');
+        this.state.set('extraPrayersData', null);
+        return;
+      }
+      const data = await response.json();
+      this.state.set('extraPrayersData', data);
+    } catch (error) {
+      console.error('Error loading extra prayers:', error);
+      this.state.set('extraPrayersData', null);
+    }
+  }
+
+  /**
+   * Retourne toutes les prières supplémentaires
+   * @returns {Array} Liste des prières supplémentaires
+   */
+  getExtraPrayers() {
+    const data = this.state.get('extraPrayersData');
+    if (!data || !data.prayers) return [];
+    return data.prayers.sort((a, b) => a.order - b.order);
+  }
+
+  /**
+   * Retourne les prières supplémentaires groupées par catégorie
+   * @returns {Object} Objet avec les groupes comme clés
+   */
+  getExtraPrayersByGroup() {
+    const data = this.state.get('extraPrayersData');
+    if (!data || !data.prayers || !data.groups) return {};
+
+    const groups = {};
+    data.groups.forEach(group => {
+      groups[group.id] = {
+        ...group,
+        prayers: []
+      };
+    });
+
+    data.prayers.forEach(prayer => {
+      if (groups[prayer.groupId]) {
+        groups[prayer.groupId].prayers.push(prayer);
+      }
+    });
+
+    // Trier les prières par order dans chaque groupe
+    Object.keys(groups).forEach(groupId => {
+      groups[groupId].prayers.sort((a, b) => a.order - b.order);
+    });
+
+    // Trier les groupes par order
+    const sortedGroups = {};
+    data.groups.sort((a, b) => a.order - b.order).forEach(group => {
+      sortedGroups[group.id] = groups[group.id];
+    });
+
+    return sortedGroups;
+  }
+
+  /**
+   * Retourne une prière supplémentaire par son ID
+   * @param {string} prayerId - ID de la prière
+   * @returns {Object|null} Prière ou null
+   */
+  getExtraPrayerById(prayerId) {
+    const prayers = this.getExtraPrayers();
+    return prayers.find(p => p.id === prayerId) || null;
+  }
+
+  /**
+   * Retourne le statut d'une prière par son ID
+   * @param {string} statusId - ID du statut
+   * @returns {Object|null} Statut ou null
+   */
+  getExtraPrayerStatus(statusId) {
+    const data = this.state.get('extraPrayersData');
+    if (!data || !data.statuses) return null;
+    return data.statuses.find(s => s.id === statusId) || null;
+  }
+
+  /**
+   * Retourne le groupe d'une prière par son ID
+   * @param {string} groupId - ID du groupe
+   * @returns {Object|null} Groupe ou null
+   */
+  getExtraPrayerGroup(groupId) {
+    const data = this.state.get('extraPrayersData');
+    if (!data || !data.groups) return null;
+    return data.groups.find(g => g.id === groupId) || null;
+  }
+
+  /**
+   * Mapping des badges vers emoji et libellé
+   * @param {string} badgeKey - Clé du badge
+   * @returns {Object} { emoji, label }
+   */
+  getBadgeLabel(badgeKey) {
+    const badges = {
+      'friday_fard': { emoji: '🕌', label: 'Obligatoire' },
+      'sunnah_muakkada': { emoji: '⭐', label: 'Sunnah fortement recommandée' },
+      'fard_kifaya': { emoji: '👥', label: 'Obligatoire collective' },
+      'eid_prayer': { emoji: '🎉', label: 'Prière de fête' },
+      'special_event': { emoji: '🌙', label: 'Événement spécial' },
+      'day_nafl': { emoji: '☀️', label: 'Surérogatoire' },
+      'generic_nafl': { emoji: '📿', label: 'Surérogatoire' },
+      'mosque_entry': { emoji: '🕌', label: 'Sunnah' },
+      'decision': { emoji: '🤲', label: 'Consultation' },
+      'need': { emoji: '🙏', label: 'Besoin' },
+      'ramadan': { emoji: '🌙', label: 'Ramadan' },
+      'danger': { emoji: '⚠️', label: 'Situation de danger' },
+      'dhikr': { emoji: '📿', label: 'Dhikr' },
+      'travel': { emoji: '✈️', label: 'Voyage' }
+    };
+    return badges[badgeKey] || { emoji: '📿', label: 'Prière' };
+  }
+
+  /**
+   * Mapping des icônes vers emoji
+   * @param {string} iconKey - Clé de l'icône
+   * @returns {string} Emoji
+   */
+  getIconEmoji(iconKey) {
+    const icons = {
+      'extra_friday': '🕌',
+      'extra_witr': '🌙',
+      'extra_eid': '🎉',
+      'extra_janazah': '⚰️',
+      'extra_eclipse': '🌙',
+      'extra_duha': '☀️',
+      'extra_nafl': '📿',
+      'extra_mosque': '🕌',
+      'extra_istikhara': '🤲',
+      'extra_need': '🙏',
+      'extra_tarawih': '🌙',
+      'extra_khawf': '⚠️',
+      'extra_tasbih': '📿',
+      'extra_travel': '✈️'
+    };
+    return icons[iconKey] || '📿';
+  }
+
+  /**
+   * Prépare le démarrage d'une prière supplémentaire
+   * Structure préparée pour l'intégration future du guidage pas-à-pas
+   * @param {string} prayerId - ID de la prière supplémentaire
+   */
+  startExtraPrayer(prayerId) {
+    const prayer = this.getExtraPrayerById(prayerId);
+    if (!prayer) {
+      console.warn(`Extra prayer not found: ${prayerId}`);
+      return;
+    }
+
+    // TODO: Intégration future avec le moteur de guidage pas-à-pas
+    // Pour l'instant, on stocke simplement la prière sélectionnée
+    // et on affiche la vue de détail
+    this.state.set('selectedExtraPrayer', prayerId);
+    this.state.set('currentView', 'prayer-extra-detail');
+
+    // Structure préparée pour le guidage :
+    // - Certaines prières supplémentaires pourront utiliser le moteur existant
+    // - D'autres nécessiteront des étapes spéciales (ex: Janazah sans rukūʿ/sujūd)
+    // - Le champ behaviorFlags indique les particularités à gérer
   }
 }
 
