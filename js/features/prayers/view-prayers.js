@@ -4,6 +4,8 @@ export class PrayersView {
         this.eventBus = dependencies.eventBus;
         this.engine = dependencies.engine;
         this.pluginManager = dependencies.pluginManager;
+        this.clickHandler = null; // Référence au handler pour pouvoir le supprimer
+        this.attachedListeners = new Set(); // Track des listeners attachés pour éviter les doublons
     }
 
     get translations() {
@@ -31,7 +33,6 @@ export class PrayersView {
                 container.innerHTML = this.renderPrayerComplete();
                 break;
             case 'prayer-extra-menu':
-                console.log('PrayersView: Rendering prayer-extra-menu');
                 container.innerHTML = this.renderExtraPrayersMenu();
                 break;
             case 'prayer-extra-detail':
@@ -47,6 +48,7 @@ export class PrayersView {
         // Attacher les event listeners au conteneur principal
         // container est l'élément #app, et innerHTML crée les éléments enfants
         // On doit attacher les listeners au conteneur lui-même pour capturer les événements de tous les enfants
+        // Mais on ne doit l'attacher qu'une seule fois pour éviter l'accumulation
         this.attachEventListeners(container);
     }
 
@@ -514,17 +516,14 @@ export class PrayersView {
     }
 
     renderExtraPrayersMenu() {
-        console.log('PrayersView: renderExtraPrayersMenu called');
         const trans = this.translations.getAll();
         const rtl = this.translations.isRTL();
         const dirAttr = rtl ? 'rtl' : 'ltr';
         
         const groups = this.engine.getExtraPrayersByGroup();
-        console.log('PrayersView: groups:', groups);
         const currentLang = this.state.get('language') || 'fr';
 
         if (!groups || Object.keys(groups).length === 0) {
-            console.log('PrayersView: No groups found, showing loading message');
             return `
                 <div class="container" dir="${dirAttr}">
                     <div class="app-header mb-8 rounded-xl">
@@ -892,16 +891,20 @@ export class PrayersView {
             return;
         }
         
-        container.addEventListener('click', (e) => {
+        // N'attacher le listener principal qu'une seule fois
+        // Utiliser un identifiant unique pour éviter les doublons
+        const listenerId = 'prayers-view-main-click';
+        if (this.attachedListeners.has(listenerId)) {
+            // Le listener est déjà attaché, pas besoin de le réattacher
+            return;
+        }
+        
+        // Créer le handler une seule fois
+        this.clickHandler = (e) => {
             const target = e.target.closest('[data-action]');
             if (!target) return;
 
             const action = target.dataset.action;
-            
-            // Debug: log les actions pour vérifier que les event listeners fonctionnent
-            if (action === 'go-extra-prayers-menu') {
-                console.log('PrayersView: go-extra-prayers-menu clicked');
-            }
 
             switch (action) {
                 case 'select-prayer':
@@ -927,9 +930,24 @@ export class PrayersView {
                     const menu = container.querySelector('#language-menu');
                     if (menu) menu.classList.toggle('hidden');
                     break;
-                case 'select-language':
+                case 'toggle-lang-dropdown':
+                    e.stopPropagation();
+                    const langDropdown = container.querySelector('#lang-dropdown');
+                    if (langDropdown) {
+                        langDropdown.classList.toggle('hidden');
+                    }
+                    break;
+                case 'select-lang':
                     const lang = target.dataset.lang;
                     this.pluginManager.get('translations').engine.changeLanguage(lang);
+                    const langDropdown2 = container.querySelector('#lang-dropdown');
+                    if (langDropdown2) {
+                        langDropdown2.classList.add('hidden');
+                    }
+                    break;
+                case 'select-language':
+                    const langOld = target.dataset.lang;
+                    this.pluginManager.get('translations').engine.changeLanguage(langOld);
                     break;
                 case 'start-guidance':
                     this.state.set('currentView', 'prayer-guidance');
@@ -968,9 +986,6 @@ export class PrayersView {
                     this.eventBus.emit('view:change', 'home');
                     break;
                 case 'go-extra-prayers-menu':
-                    console.log('PrayersView: Setting currentView to prayer-extra-menu');
-                    const extraPrayersData = this.state.get('extraPrayersData');
-                    console.log('PrayersView: extraPrayersData:', extraPrayersData);
                     this.state.set('currentView', 'prayer-extra-menu');
                     this.eventBus.emit('view:change', 'prayer-extra-menu');
                     break;
@@ -982,68 +997,69 @@ export class PrayersView {
                 case 'start-extra-prayer-guidance':
                     // TODO: Intégration future du guidage pas-à-pas pour les prières supplémentaires
                     // Pour l'instant, cette action est désactivée
-                    console.log('Guidage pas-à-pas pour prières supplémentaires - à venir');
                     break;
             }
-        });
+        };
+        
+        // Attacher le listener
+        container.addEventListener('click', this.clickHandler);
+        this.attachedListeners.add(listenerId);
 
-        // Handle Select changes separately
-        const selects = container.querySelectorAll('select[data-action="update-surah"]');
-        selects.forEach(select => {
-            select.addEventListener('change', (e) => {
-                const index = parseInt(e.target.dataset.index);
-                const surahId = e.target.value;
-                this.engine.setRakaatSurah(index, surahId);
-            });
-        });
-
-        // Handle reciter selection
-        const reciterSelect = container.querySelector('select[data-action="change-reciter"]');
-        if (reciterSelect) {
-            reciterSelect.addEventListener('change', (e) => {
-                const reciterId = e.target.value;
-                const settingsEngine = this.pluginManager.get('settings')?.engine;
-                if (settingsEngine) {
-                    settingsEngine.updateSetting('selectedReciter', reciterId);
-                    this.eventBus.emit('view:refresh');
+        // Handle Select changes separately - utiliser la délégation d'événements
+        // Pas besoin d'attacher des listeners individuels, le click handler principal les gère
+        // Mais pour les selects, on doit gérer l'événement 'change' séparément
+        // On utilise aussi la délégation pour éviter l'accumulation
+        const selectChangeId = 'prayers-view-select-change';
+        if (!this.attachedListeners.has(selectChangeId)) {
+            container.addEventListener('change', (e) => {
+                const target = e.target;
+                
+                // Handle surah selection
+                if (target.dataset.action === 'update-surah') {
+                    const index = parseInt(target.dataset.index);
+                    const surahId = target.value;
+                    this.engine.setRakaatSurah(index, surahId);
+                    return;
+                }
+                
+                // Handle reciter selection
+                if (target.dataset.action === 'change-reciter') {
+                    const reciterId = target.value;
+                    const settingsEngine = this.pluginManager.get('settings')?.engine;
+                    if (settingsEngine) {
+                        settingsEngine.updateSetting('selectedReciter', reciterId);
+                        this.eventBus.emit('view:refresh');
+                    }
+                    return;
                 }
             });
+            this.attachedListeners.add(selectChangeId);
         }
 
-        // Handle language dropdown toggle
-        const langToggle = container.querySelector('[data-action="toggle-lang-dropdown"]');
-        const langDropdown = container.querySelector('#lang-dropdown');
-        if (langToggle && langDropdown) {
-            langToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                langDropdown.classList.toggle('hidden');
-            });
-
-            // Handle language selection
-            langDropdown.querySelectorAll('[data-action="select-lang"]').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const lang = btn.dataset.lang;
-                    this.pluginManager.get('translations').engine.changeLanguage(lang);
-                    langDropdown.classList.add('hidden');
-                });
-            });
-
-            // Close dropdown when clicking outside
+        // Handle language dropdown toggle - utiliser la délégation
+        // Le click handler principal gère déjà les clics, mais on doit gérer spécifiquement le toggle
+        // On utilise un listener document-level pour le "click outside" qui doit être unique
+        const langDropdownOutsideId = 'prayers-view-lang-outside';
+        if (!this.attachedListeners.has(langDropdownOutsideId)) {
             document.addEventListener('click', (e) => {
-                if (!langToggle.contains(e.target) && !langDropdown.contains(e.target)) {
-                    langDropdown.classList.add('hidden');
+                const langToggle = container.querySelector('[data-action="toggle-lang-dropdown"]');
+                const langDropdown = container.querySelector('#lang-dropdown');
+                
+                if (langToggle && langDropdown) {
+                    if (!langToggle.contains(e.target) && !langDropdown.contains(e.target)) {
+                        langDropdown.classList.add('hidden');
+                    }
+                }
+                
+                // Handle old language menu if it exists
+                const menu = container.querySelector('#language-menu');
+                const toggleBtn = container.querySelector('[data-action="toggle-language-menu"]');
+                if (menu && !menu.classList.contains('hidden') && !menu.contains(e.target) && toggleBtn && !toggleBtn.contains(e.target)) {
+                    menu.classList.add('hidden');
                 }
             });
+            this.attachedListeners.add(langDropdownOutsideId);
         }
-
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            const menu = container.querySelector('#language-menu');
-            const toggleBtn = container.querySelector('[data-action="toggle-language-menu"]');
-            if (menu && !menu.classList.contains('hidden') && !menu.contains(e.target) && !toggleBtn.contains(e.target)) {
-                menu.classList.add('hidden');
-            }
-        });
     }
 }
 
