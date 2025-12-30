@@ -6,6 +6,8 @@ export class PrayersView {
         this.pluginManager = dependencies.pluginManager;
         this.clickHandler = null; // Référence au handler pour pouvoir le supprimer
         this.attachedListeners = new Set(); // Track des listeners attachés pour éviter les doublons
+        this.guidedModeTimeout = null; // Timeout pour le mode guidé
+        this.setupGuidedModeListeners();
     }
 
     get translations() {
@@ -16,8 +18,138 @@ export class PrayersView {
         return this.pluginManager.get('config').engine;
     }
 
+    /**
+     * Configure les listeners pour le mode guidé automatique
+     */
+    setupGuidedModeListeners() {
+        // Écouter la fin de l'audio pour passer automatiquement à l'étape suivante
+        this.eventBus.on('audio:ended', () => {
+            if (this.state.get('guidedMode')) {
+                this.handleGuidedModeNext();
+            }
+        });
+    }
+
+    /**
+     * Gère le passage automatique à l'étape suivante en mode guidé
+     */
+    handleGuidedModeNext() {
+        // Nettoyer le timeout existant si présent
+        if (this.guidedModeTimeout) {
+            clearTimeout(this.guidedModeTimeout);
+            this.guidedModeTimeout = null;
+        }
+
+        // Vérifier si on est en mode guidé
+        if (!this.state.get('guidedMode')) {
+            return;
+        }
+
+        // Obtenir l'étape actuelle pour vérifier pauseAfter
+        const steps = this.engine.getCurrentSteps();
+        const currentStepIndex = this.state.get('currentStepIndex');
+        const currentStep = steps[currentStepIndex];
+
+        if (!currentStep) {
+            return;
+        }
+
+        // Utiliser pauseAfter si défini, sinon 5 secondes par défaut
+        const delay = currentStep.pauseAfter || 5000;
+
+        // Programmer le passage à l'étape suivante
+        this.guidedModeTimeout = setTimeout(() => {
+            if (this.state.get('guidedMode')) {
+                this.advanceToNextStep();
+            }
+            this.guidedModeTimeout = null;
+        }, delay);
+    }
+
+    /**
+     * Avance à l'étape suivante (utilisé par le mode guidé)
+     */
+    advanceToNextStep() {
+        const isExtraPrayer = this.state.get('isExtraPrayer');
+        const steps = this.engine.getCurrentSteps();
+        const currentStepIndex = this.state.get('currentStepIndex');
+        const isLastStep = currentStepIndex === steps.length - 1;
+
+        if (isLastStep) {
+            // Vérifier si on peut passer à la rakaʿa suivante
+            if (isExtraPrayer) {
+                const extraPrayerConfig = this.state.get('extraPrayerConfig') || {};
+                const totalRakaats = extraPrayerConfig.rakaats || 2;
+                const currentRakaat = this.state.get('currentRakaat');
+                
+                if (currentRakaat < totalRakaats && this.engine.nextRakaat()) {
+                    this.eventBus.emit('view:refresh');
+                } else {
+                    // Fin de la prière, désactiver le mode guidé
+                    this.state.set('guidedMode', false);
+                    this.eventBus.emit('view:refresh');
+                }
+            } else {
+                const PRAYERS = this.config.getPrayers();
+                const selectedPrayer = this.state.get('selectedPrayer');
+                const currentRakaat = this.state.get('currentRakaat');
+                
+                if (currentRakaat < PRAYERS[selectedPrayer].rakaats && this.engine.nextRakaat()) {
+                    this.eventBus.emit('view:refresh');
+                } else {
+                    // Fin de la prière, désactiver le mode guidé
+                    this.state.set('guidedMode', false);
+                    this.eventBus.emit('view:refresh');
+                }
+            }
+        } else {
+            // Passer à l'étape suivante
+            if (this.engine.nextStep()) {
+                this.eventBus.emit('view:refresh');
+            }
+        }
+    }
+
+    /**
+     * Démarre le mode guidé pour l'étape actuelle
+     */
+    startGuidedModeForCurrentStep() {
+        // Nettoyer le timeout existant
+        if (this.guidedModeTimeout) {
+            clearTimeout(this.guidedModeTimeout);
+            this.guidedModeTimeout = null;
+        }
+
+        const audioFile = this.engine.getCurrentAudioFile();
+        const steps = this.engine.getCurrentSteps();
+        const currentStepIndex = this.state.get('currentStepIndex');
+        const currentStep = steps[currentStepIndex];
+
+        if (!currentStep) {
+            return;
+        }
+
+        // Si l'étape a un audio, le lancer automatiquement
+        if (audioFile && !audioFile.startsWith('[PLACEHOLDER]')) {
+            this.eventBus.emit('audio:play', audioFile);
+        } else {
+            // Pas d'audio, utiliser le timeout directement
+            this.handleGuidedModeNext();
+        }
+    }
+
     render(container) {
         const currentView = this.state.get('currentView');
+
+        // Si on est en mode guidé et qu'on est sur une vue de guidage, relancer le mode guidé
+        if (this.state.get('guidedMode') && (currentView === 'prayer-guidance' || currentView === 'prayer-extra-guidance')) {
+            // Utiliser setTimeout pour s'assurer que le DOM est rendu avant de démarrer
+            setTimeout(() => {
+                if (this.state.get('guidedMode')) {
+                    this.startGuidedModeForCurrentStep();
+                }
+            }, 100);
+        }
 
         switch (currentView) {
             case 'home':
@@ -37,6 +169,12 @@ export class PrayersView {
                 break;
             case 'prayer-extra-detail':
                 container.innerHTML = this.renderExtraPrayerDetail();
+                break;
+            case 'prayer-extra-guidance':
+                container.innerHTML = this.renderExtraPrayerGuidance();
+                break;
+            case 'prayer-extra-config':
+                container.innerHTML = this.renderExtraPrayerConfig();
                 break;
             default:
                 // Fallback ou autres vues gérées par d'autres plugins (Settings, etc)
@@ -420,6 +558,13 @@ export class PrayersView {
     }
 
     renderPrayerGuidance() {
+        // Vérifier si c'est une prière supplémentaire
+        const selectedExtraPrayer = this.state.get('selectedExtraPrayer');
+        if (selectedExtraPrayer) {
+            return this.renderExtraPrayerGuidance();
+        }
+
+        // Code existant pour les prières obligatoires
         const trans = this.translations.getAll();
         if (!trans.prayers) return '';
         const PRAYERS = this.config.getPrayers();
@@ -437,6 +582,7 @@ export class PrayersView {
         const rtl = this.translations.isRTL();
         const dirAttr = rtl ? 'rtl' : 'ltr';
         const isPlaying = this.state.get('isPlaying');
+        const guidedMode = this.state.get('guidedMode') || false;
 
         const selectedPrayer = this.state.get('selectedPrayer');
         const currentRakaat = this.state.get('currentRakaat');
@@ -453,9 +599,15 @@ export class PrayersView {
                 <h1 class="text-xl font-bold" style="color: var(--primary-color)">${trans.prayers[selectedPrayer] || PRAYERS[selectedPrayer].name}</h1>
                 <p class="text-muted">${trans.rakaat} ${currentRakaat}/${PRAYERS[selectedPrayer].rakaats}</p>
             </div>
-            <button data-action="go-home" class="btn btn-secondary">
-                <span>🏠</span>
-            </button>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <button data-action="toggle-guided-mode" class="btn ${guidedMode ? 'btn-primary' : 'btn-secondary'}" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                    <span>${guidedMode ? '⏸️' : '▶️'}</span>
+                    <span>${guidedMode ? (trans.guidedModeActive || 'Mode guidé') : (trans.guidedMode || 'Mode guidé')}</span>
+                </button>
+                <button data-action="go-home" class="btn btn-secondary">
+                    <span>🏠</span>
+                </button>
+            </div>
         </div>
         
         <div class="card mb-8 text-center">
@@ -501,6 +653,261 @@ export class PrayersView {
         ` : ''}
 
       </div>
+    `;
+    }
+
+    renderExtraPrayerGuidance() {
+        const trans = this.translations.getAll();
+        const selectedExtraPrayer = this.state.get('selectedExtraPrayer');
+        
+        if (!selectedExtraPrayer) {
+            return '<div class="container"><div class="card"><p style="color: red;">Erreur: Aucune prière supplémentaire sélectionnée</p></div></div>';
+        }
+
+        const prayer = this.engine.getExtraPrayerById(selectedExtraPrayer);
+        if (!prayer) {
+            return '<div class="container"><div class="card"><p style="color: red;">Erreur: Prière supplémentaire non trouvée</p></div></div>';
+        }
+
+        const steps = this.engine.getCurrentSteps();
+        const currentStepIndex = this.state.get('currentStepIndex');
+        const currentStep = steps[currentStepIndex];
+
+        if (!currentStep) {
+            return `<div class="container"><div class="card"><p style="color: red;">Erreur: Aucune étape trouvée (index: ${currentStepIndex}, total: ${steps.length})</p><p>Prière: ${selectedExtraPrayer}</p></div></div>`;
+        }
+
+        const avatarGender = this.state.get('avatarGender');
+        const imageUrl = this.engine.getPositionImage(currentStep.id, avatarGender);
+        const rtl = this.translations.isRTL();
+        const dirAttr = rtl ? 'rtl' : 'ltr';
+        const isPlaying = this.state.get('isPlaying');
+        const guidedMode = this.state.get('guidedMode') || false;
+
+        const currentRakaat = this.state.get('currentRakaat');
+        const extraPrayerConfig = this.state.get('extraPrayerConfig') || {};
+        const totalRakaats = extraPrayerConfig.rakaats || prayer.defaultRakaat;
+        const isLastStep = currentRakaat === totalRakaats && currentStepIndex === steps.length - 1;
+        const audioFile = this.engine.getCurrentAudioFile();
+        const currentLang = this.state.get('language') || 'fr';
+        const prayerName = prayer.ui.fullLabel[currentLang] || prayer.ui.fullLabel.fr || prayer.ui.shortLabel[currentLang] || prayer.ui.shortLabel.fr;
+
+        // Gérer les placeholders dans les textes
+        const formatText = (text) => {
+            if (!text) return '';
+            if (text.startsWith('[PLACEHOLDER]')) {
+                return `<span style="font-style: italic; color: var(--text-muted);">${text}</span>`;
+            }
+            return text;
+        };
+
+        return `
+      <div class="container" dir="${dirAttr}">
+        <div class="app-header mb-6 rounded-xl">
+            <button data-action="go-extra-prayer-detail" class="btn btn-secondary">
+                <span>⚙️ ${trans.config || 'Config'}</span>
+            </button>
+            <div class="text-center">
+                <h1 class="text-xl font-bold" style="color: var(--primary-color)">${prayerName}</h1>
+                <p class="text-muted">${trans.rakaat || 'Rakaʿāt'} ${currentRakaat}/${totalRakaats}</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <button data-action="toggle-guided-mode" class="btn ${guidedMode ? 'btn-primary' : 'btn-secondary'}" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                    <span>${guidedMode ? '⏸️' : '▶️'}</span>
+                    <span>${guidedMode ? (trans.guidedModeActive || 'Mode guidé') : (trans.guidedMode || 'Mode guidé')}</span>
+                </button>
+                <button data-action="go-home" class="btn btn-secondary">
+                    <span>🏠</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="card mb-8 text-center">
+            <div class="flex justify-center items-center mb-8">
+                <img src="${imageUrl}" alt="${currentStep.name}" class="prayer-image" style="max-height: 400px; object-fit: contain;">
+            </div>
+            
+            <div class="space-y-4">
+                <h2 class="text-2xl font-bold" style="color: var(--heading-color)">${formatText(currentStep.name)}</h2>
+                
+                <div class="p-6 rounded-xl space-y-3" style="background: var(--primary-light);">
+                    ${currentStep.arabic ? `<p class="text-3xl font-arabic leading-loose">${currentStep.arabic}</p>` : ''}
+                    ${currentStep.transliteration ? `<p class="text-lg font-medium" style="color: var(--primary-color)">${formatText(currentStep.transliteration)}</p>` : ''}
+                    ${currentStep.translation ? `<p class="text-md text-muted">${formatText(currentStep.translation)}</p>` : ''}
+                </div>
+                
+                ${audioFile ? `
+                    <div class="mt-4">
+                        <button data-action="toggle-audio" class="btn btn-primary px-8 py-3 rounded-full shadow-lg mx-auto">
+                            <span>${isPlaying ? '⏸️' : '🔊'}</span>
+                            <span>${isPlaying ? trans.pause || 'Pause' : trans.listenRecitation || 'Écouter la récitation'}</span>
+                        </button>
+                    </div>
+                ` : currentStep.audioFile && currentStep.audioFile.startsWith('[PLACEHOLDER]') ? `
+                    <div class="mt-4">
+                        <button disabled class="btn btn-secondary px-8 py-3 rounded-full mx-auto" style="opacity: 0.6; cursor: not-allowed;">
+                            <span>🔊</span>
+                            <span>${trans.audioComingSoon || '[PLACEHOLDER] Audio à venir'}</span>
+                        </button>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+        
+        <div class="flex gap-4">
+            <button data-action="prev-step" ${currentRakaat === 1 && currentStepIndex === 0 ? 'disabled' : ''} class="btn btn-secondary flex-1 py-4 disabled:opacity-50">
+                ${rtl ? '►' : '◄'} ${trans.previous || 'Précédent'}
+            </button>
+            <button data-action="next-step" ${isLastStep ? 'disabled' : ''} class="btn btn-primary flex-1 py-4 disabled:opacity-50">
+                ${trans.next || 'Suivant'} ${rtl ? '◄' : '►'}
+            </button>
+        </div>
+
+        ${isLastStep ? `
+            <div class="mt-6 p-6 rounded-xl text-center" style="background: var(--primary-light); border: 2px solid var(--primary-color);">
+                <button data-action="finish-prayer" class="btn btn-primary px-6 py-3">
+                    ${trans.returnHome || 'Retour à l\'accueil'}
+                </button>
+            </div>
+        ` : ''}
+
+      </div>
+    `;
+    }
+
+    renderExtraPrayerConfig() {
+        const trans = this.translations.getAll();
+        const selectedExtraPrayer = this.state.get('selectedExtraPrayer');
+        if (!selectedExtraPrayer) {
+            return '<div>Error: No extra prayer selected</div>';
+        }
+
+        const prayer = this.engine.getExtraPrayerById(selectedExtraPrayer);
+        if (!prayer) {
+            return '<div>Error: Extra prayer not found</div>';
+        }
+
+        const SURAHS = this.config.getSurahs();
+        const RECITERS = this.config.getReciters();
+        const rtl = this.translations.isRTL();
+        const dirAttr = rtl ? 'rtl' : 'ltr';
+        const currentLang = this.state.get('language') || 'fr';
+        const prayerName = prayer.ui.fullLabel[currentLang] || prayer.ui.fullLabel.fr || prayer.ui.shortLabel[currentLang] || prayer.ui.shortLabel.fr;
+        
+        const extraPrayerConfig = this.state.get('extraPrayerConfig') || {};
+        const selectedRakaats = extraPrayerConfig.rakaats || prayer.defaultRakaat;
+        const rakaatConfig = this.state.get('rakaatConfig') || [];
+
+        // Générer les options de rakaʿāt selon la prière
+        let rakaatOptions = [];
+        if (prayer.id === 'extra_witr') {
+            // Witr : 1, 3, 5, 7, 9, 11
+            rakaatOptions = [1, 3, 5, 7, 9, 11];
+        } else if (prayer.id === 'extra_tarawih') {
+            // Tarawih : 8 ou 20
+            rakaatOptions = [8, 20];
+        } else if (prayer.id === 'extra_duha') {
+            // Duha : 2, 4, 6, 8
+            rakaatOptions = [2, 4, 6, 8];
+        } else {
+            // Par défaut, utiliser defaultRakaat
+            rakaatOptions = [prayer.defaultRakaat];
+        }
+
+        // Initialiser rakaatConfig si nécessaire
+        if (rakaatConfig.length !== selectedRakaats) {
+            const newRakaatConfig = [];
+            for (let i = 1; i <= selectedRakaats; i++) {
+                newRakaatConfig.push({
+                    rakaat: i,
+                    secondarySurah: SURAHS.find(s => s.id === 'ikhlas') || SURAHS[1]
+                });
+            }
+            this.state.set('rakaatConfig', newRakaatConfig);
+        }
+
+        const currentRakaatConfig = this.state.get('rakaatConfig') || [];
+
+        return `
+        <div class="container" dir="${dirAttr}">
+            <div class="app-header mb-8 rounded-xl">
+                <button data-action="go-extra-prayer-detail" class="btn btn-secondary">
+                    <span>${rtl ? '◀' : '▶'}</span>
+                    <span>${trans.back || 'Retour'}</span>
+                </button>
+                <h1 class="app-title">${trans.configuration || 'Configuration'} ${prayerName}</h1>
+                <div style="width: 24px;"></div>
+            </div>
+            
+            <div class="card mb-6" style="background: var(--primary-color);">
+                <div class="flex items-center gap-3">
+                    <div style="font-size: 2rem;">🎙️</div>
+                    <div style="flex: 1;">
+                        <label class="block text-sm mb-2" style="color: rgba(255, 255, 255, 0.9);">${trans.reciter || 'Récitateur'}</label>
+                        <select data-action="change-reciter" class="input-field" style="background: white; color: var(--text-color); border: 2px solid rgba(255, 255, 255, 0.3);">
+                            ${RECITERS.map(reciter => `
+                                <option value="${reciter.id}" ${this.state.get('selectedReciter') === reciter.id ? 'selected' : ''}>
+                                    ${reciter.name}
+                                </option>
+                            `).join('')}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            ${rakaatOptions.length > 1 ? `
+                <div class="card mb-6">
+                    <label class="block text-sm font-medium mb-2" style="color: var(--text-color);">
+                        ${trans.numberOfRakaats || 'Nombre de rakaʿāt'}
+                    </label>
+                    <select data-action="change-extra-rakaats" class="input-field">
+                        ${rakaatOptions.map(num => `
+                            <option value="${num}" ${selectedRakaats === num ? 'selected' : ''}>
+                                ${num} ${trans.rakaats || 'rakaʿāt'}
+                            </option>
+                        `).join('')}
+                    </select>
+                </div>
+            ` : ''}
+            
+            <div class="flex flex-col gap-4 mb-8">
+                ${currentRakaatConfig.map((config, index) => `
+                    <div class="card">
+                        <div class="mb-4">
+                            <h3 class="text-xl font-bold" style="color: var(--heading-color);">${trans.rakaat || 'Rakaʿāt'} ${config.rakaat}</h3>
+                        </div>
+                        <div class="mb-4 p-4 rounded-xl" style="background: var(--primary-light); border: 1px solid var(--primary-color);">
+                            <div class="flex items-center justify-between gap-4">
+                                <p class="font-bold" style="color: var(--primary-dark); margin: 0;">${trans.mandatorySurah || 'Sourate obligatoire'}</p>
+                                <p class="text-xl font-arabic ${rtl ? 'text-left' : 'text-right'}" dir="rtl" style="color: var(--primary-dark); font-weight: 600; margin: 0;">${SURAHS[0].arabic}</p>
+                            </div>
+                        </div>
+                        ${config.rakaat <= 2 ? `
+                            <div>
+                                <label class="block text-sm font-medium mb-2" style="color: var(--text-color);">${trans.secondarySurah || 'Sourate secondaire'}</label>
+                                <select data-action="update-surah" data-index="${index}" class="input-field">
+                                    ${SURAHS.filter(s => !s.mandatory).map(surah => `
+                                        <option value="${surah.id}" ${config.secondarySurah?.id === surah.id ? 'selected' : ''}>
+                                            ${trans.surahs?.[surah.id] || surah.name} - ${surah.arabic} (${surah.number})
+                                        </option>
+                                    `).join('')}
+                                </select>
+                            </div>
+                        ` : `
+                            <div class="p-4 rounded-xl" style="background: var(--card-bg); border: 1px solid var(--border-color);">
+                                <p class="text-sm italic" style="color: var(--text-color);">
+                                    ℹ️ ${trans.infoRakaat34 || 'Al-Fatiha uniquement pour les rakaʿāt 3 et suivantes'}
+                                </p>
+                            </div>
+                        `}
+                    </div>
+                `).join('')}
+            </div>
+            
+            <button data-action="start-extra-prayer-guidance" class="btn btn-primary w-full py-4 text-xl shadow-lg">
+                ▶ ${trans.startGuidance || 'Démarrer le guidage'}
+            </button>
+        </div>
     `;
     }
 
@@ -857,25 +1264,30 @@ export class PrayersView {
                     </div>
                 </div>
 
-                <!-- Bouton guidage (désactivé pour l'instant) -->
-                <div class="card mb-6" style="background: var(--card-bg); border: 1px dashed var(--border-color);">
-                    <button data-action="start-extra-prayer-guidance" 
-                            disabled
-                            style="
-                                width: 100%;
-                                padding: 1rem;
-                                background: var(--card-bg);
-                                border: 1px solid var(--border-color);
-                                border-radius: 8px;
-                                color: var(--text-muted);
-                                font-size: 1rem;
-                                font-weight: 500;
-                                cursor: not-allowed;
-                                opacity: 0.6;
-                            ">
-                        ▶ ${trans.startGuidance || 'Démarrer le guidage'} (${trans.comingSoon || 'Bientôt disponible'})
-                    </button>
-                </div>
+                <!-- Bouton guidage ou configuration -->
+                ${prayerId === 'extra_mousafir' ? `
+                    <div class="card mb-6" style="background: var(--card-bg); border: 1px dashed var(--border-color);">
+                        <p style="color: var(--text-muted); text-align: center; padding: 1rem;">
+                            ${trans.mousafirInfo || '[PLACEHOLDER] Cette prière modifie les prières obligatoires (raccourcissement et regroupement). Le guidage s\'applique aux prières obligatoires en mode voyageur.'}
+                        </p>
+                    </div>
+                ` : prayerId === 'extra_witr' || prayerId === 'extra_tarawih' || prayerId === 'extra_duha' ? `
+                    <div class="card mb-6">
+                        <button data-action="go-extra-prayer-config" 
+                                data-prayer-id="${prayerId}"
+                                class="btn btn-primary w-full py-4 text-xl shadow-lg">
+                            ⚙️ ${trans.configuration || 'Configuration'}
+                        </button>
+                    </div>
+                ` : `
+                    <div class="card mb-6">
+                        <button data-action="start-extra-prayer-guidance" 
+                                data-prayer-id="${prayerId}"
+                                class="btn btn-primary w-full py-4 text-xl shadow-lg">
+                            ▶ ${trans.startGuidance || 'Démarrer le guidage'}
+                        </button>
+                    </div>
+                `}
 
                 <!-- Bouton retour -->
                 <button data-action="go-extra-prayers-menu" class="btn btn-secondary w-full">
@@ -912,6 +1324,12 @@ export class PrayersView {
                     this.eventBus.emit('view:change', 'prayer-config');
                     break;
                 case 'go-home':
+                    // Nettoyer le mode guidé et les timeouts
+                    if (this.guidedModeTimeout) {
+                        clearTimeout(this.guidedModeTimeout);
+                        this.guidedModeTimeout = null;
+                    }
+                    this.state.set('guidedMode', false);
                     this.state.set('currentView', 'home');
                     this.eventBus.emit('view:change', 'home');
                     break;
@@ -954,6 +1372,12 @@ export class PrayersView {
                     this.eventBus.emit('view:change', 'prayer-guidance');
                     break;
                 case 'go-config':
+                    // Nettoyer le mode guidé et les timeouts
+                    if (this.guidedModeTimeout) {
+                        clearTimeout(this.guidedModeTimeout);
+                        this.guidedModeTimeout = null;
+                    }
+                    this.state.set('guidedMode', false);
                     this.state.set('currentView', 'prayer-config');
                     this.eventBus.emit('view:change', 'prayer-config');
                     break;
@@ -966,37 +1390,113 @@ export class PrayersView {
                     }
                     break;
                 case 'prev-step':
+                    // Nettoyer le timeout du mode guidé si présent
+                    if (this.guidedModeTimeout) {
+                        clearTimeout(this.guidedModeTimeout);
+                        this.guidedModeTimeout = null;
+                    }
                     if (this.engine.previousStep()) {
                         this.eventBus.emit('view:refresh');
+                        // Redémarrer le mode guidé si activé
+                        if (this.state.get('guidedMode')) {
+                            setTimeout(() => this.startGuidedModeForCurrentStep(), 100);
+                        }
                     }
                     break;
                 case 'next-step':
+                    // Nettoyer le timeout du mode guidé si présent
+                    if (this.guidedModeTimeout) {
+                        clearTimeout(this.guidedModeTimeout);
+                        this.guidedModeTimeout = null;
+                    }
                     if (!this.engine.nextStep()) {
                         if (!this.engine.nextRakaat()) {
                             // Fin de prière (le bouton termine apparaitra)
+                            this.state.set('guidedMode', false);
                         } else {
                             this.eventBus.emit('view:refresh');
+                            // Redémarrer le mode guidé si activé
+                            if (this.state.get('guidedMode')) {
+                                setTimeout(() => this.startGuidedModeForCurrentStep(), 100);
+                            }
                         }
                     } else {
                         this.eventBus.emit('view:refresh');
+                        // Redémarrer le mode guidé si activé
+                        if (this.state.get('guidedMode')) {
+                            setTimeout(() => this.startGuidedModeForCurrentStep(), 100);
+                        }
                     }
                     break;
+                case 'toggle-guided-mode':
+                    const currentGuidedMode = this.state.get('guidedMode') || false;
+                    this.state.set('guidedMode', !currentGuidedMode);
+                    
+                    if (!currentGuidedMode) {
+                        // Activer le mode guidé
+                        this.startGuidedModeForCurrentStep();
+                    } else {
+                        // Désactiver le mode guidé
+                        if (this.guidedModeTimeout) {
+                            clearTimeout(this.guidedModeTimeout);
+                            this.guidedModeTimeout = null;
+                        }
+                        // Arrêter l'audio si en cours
+                        if (this.state.get('isPlaying')) {
+                            this.eventBus.emit('audio:pause');
+                        }
+                    }
+                    this.eventBus.emit('view:refresh');
+                    break;
                 case 'finish-prayer':
+                    // Nettoyer le mode guidé et les timeouts
+                    if (this.guidedModeTimeout) {
+                        clearTimeout(this.guidedModeTimeout);
+                        this.guidedModeTimeout = null;
+                    }
+                    this.state.set('guidedMode', false);
                     this.state.set('currentView', 'home');
                     this.eventBus.emit('view:change', 'home');
                     break;
                 case 'go-extra-prayers-menu':
+                    // Nettoyer le mode guidé et les timeouts
+                    if (this.guidedModeTimeout) {
+                        clearTimeout(this.guidedModeTimeout);
+                        this.guidedModeTimeout = null;
+                    }
+                    this.state.set('guidedMode', false);
                     this.state.set('currentView', 'prayer-extra-menu');
                     this.eventBus.emit('view:change', 'prayer-extra-menu');
+                    break;
+                case 'go-extra-prayer-detail':
+                    // Nettoyer le mode guidé et les timeouts
+                    if (this.guidedModeTimeout) {
+                        clearTimeout(this.guidedModeTimeout);
+                        this.guidedModeTimeout = null;
+                    }
+                    this.state.set('guidedMode', false);
+                    this.state.set('currentView', 'prayer-extra-detail');
+                    this.eventBus.emit('view:change', 'prayer-extra-detail');
                     break;
                 case 'view-extra-prayer':
                     const prayerId = target.dataset.prayerId;
                     this.engine.startExtraPrayer(prayerId);
                     this.eventBus.emit('view:change', 'prayer-extra-detail');
                     break;
+                case 'go-extra-prayer-config':
+                    const configPrayerId = target.dataset.prayerId || this.state.get('selectedExtraPrayer');
+                    if (configPrayerId) {
+                        this.state.set('selectedExtraPrayer', configPrayerId);
+                        this.state.set('currentView', 'prayer-extra-config');
+                        this.eventBus.emit('view:change', 'prayer-extra-config');
+                    }
+                    break;
                 case 'start-extra-prayer-guidance':
-                    // TODO: Intégration future du guidage pas-à-pas pour les prières supplémentaires
-                    // Pour l'instant, cette action est désactivée
+                    const extraPrayerId = target.dataset.prayerId || this.state.get('selectedExtraPrayer');
+                    if (extraPrayerId) {
+                        this.engine.startExtraPrayerGuidance(extraPrayerId);
+                        this.eventBus.emit('view:change', 'prayer-extra-guidance');
+                    }
                     break;
             }
         };
@@ -1029,6 +1529,33 @@ export class PrayersView {
                     if (settingsEngine) {
                         settingsEngine.updateSetting('selectedReciter', reciterId);
                         this.eventBus.emit('view:refresh');
+                    }
+                    return;
+                }
+                
+                // Handle extra prayer rakaats selection
+                if (target.dataset.action === 'change-extra-rakaats') {
+                    const newRakaats = parseInt(target.value);
+                    const currentExtraPrayer = this.state.get('selectedExtraPrayer');
+                    if (currentExtraPrayer) {
+                        const SURAHS = this.config.getSurahs();
+                        const newRakaatConfig = [];
+                        for (let i = 1; i <= newRakaats; i++) {
+                            newRakaatConfig.push({
+                                rakaat: i,
+                                secondarySurah: SURAHS.find(s => s.id === 'ikhlas') || SURAHS[1]
+                            });
+                        }
+                        this.state.update({
+                            extraPrayerConfig: {
+                                rakaats: newRakaats
+                            },
+                            rakaatConfig: newRakaatConfig
+                        });
+                        // Différer le re-render pour permettre au select de se fermer naturellement
+                        setTimeout(() => {
+                            this.eventBus.emit('view:refresh');
+                        }, 100);
                     }
                     return;
                 }
