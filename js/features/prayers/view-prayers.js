@@ -1268,15 +1268,28 @@ export class PrayersView {
                 ${prayerId === 'extra_mousafir' ? `
                     <div class="card mb-6" style="background: var(--card-bg); border: 1px dashed var(--border-color);">
                         <p style="color: var(--text-muted); text-align: center; padding: 1rem;">
-                            ${trans.mousafirInfo || '[PLACEHOLDER] Cette prière modifie les prières obligatoires (raccourcissement et regroupement). Le guidage s\'applique aux prières obligatoires en mode voyageur.'}
+                            ${trans.mousafirInfo || 'Cette prière modifie les prières obligatoires (raccourcissement et regroupement). Activez le mode voyageur dans les paramètres pour l\'appliquer aux prières Dhohr, Asr et Isha.'}
                         </p>
                     </div>
-                ` : prayerId === 'extra_witr' || prayerId === 'extra_tarawih' || prayerId === 'extra_duha' ? `
+                ` : prayer.defaultRakaat > 0 && !prayer.behaviorFlags?.noRukuNoSujud ? `
+                    <!-- Prières avec rak'at : proposer la configuration des sourates -->
                     <div class="card mb-6">
                         <button data-action="go-extra-prayer-config" 
                                 data-prayer-id="${prayerId}"
                                 class="btn btn-primary w-full py-4 text-xl shadow-lg">
-                            ⚙️ ${trans.configuration || 'Configuration'}
+                            ⚙️ ${trans.configureAndStart || 'Configurer et démarrer'}
+                        </button>
+                    </div>
+                    <p class="text-center text-sm mb-4" style="color: var(--text-muted);">
+                        ${trans.configureNote || 'Choisissez le récitateur et les sourates pour chaque rak\'a'}
+                    </p>
+                ` : prayer.defaultRakaat === 0 || prayer.behaviorFlags?.noRukuNoSujud ? `
+                    <!-- Prières spéciales sans rak'at (ex: Janazah) : guidage direct -->
+                    <div class="card mb-6">
+                        <button data-action="start-extra-prayer-guidance" 
+                                data-prayer-id="${prayerId}"
+                                class="btn btn-primary w-full py-4 text-xl shadow-lg">
+                            ▶ ${trans.startGuidance || 'Démarrer le guidage'}
                         </button>
                     </div>
                 ` : `

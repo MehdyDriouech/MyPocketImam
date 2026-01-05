@@ -230,7 +230,16 @@ export class PrayersEngine {
     // Initialiser la config des rakaats
     const PRAYERS = this.config.getPrayers();
     const SURAHS = this.config.getSurahs();
-    const rakaats = PRAYERS[prayerKey].rakaats;
+    let rakaats = PRAYERS[prayerKey].rakaats;
+    
+    // Appliquer le Qasr (raccourcissement) si le mode voyageur est activé
+    const travelMode = this.state.get('travelMode');
+    if (travelMode?.enabled && travelMode?.qasrEnabled) {
+      // Dhohr, 'Asr et 'Isha passent de 4 à 2 rak'at
+      if (['dohr', 'asr', 'isha'].includes(prayerKey) && rakaats === 4) {
+        rakaats = 2;
+      }
+    }
     
     const rakaatConfig = [];
     for (let i = 1; i <= rakaats; i++) {
@@ -245,7 +254,8 @@ export class PrayersEngine {
       currentView: 'prayer-config',
       currentRakaat: 1,
       currentStepIndex: 0,
-      rakaatConfig: rakaatConfig
+      rakaatConfig: rakaatConfig,
+      isQasrApplied: travelMode?.enabled && travelMode?.qasrEnabled && ['dohr', 'asr', 'isha'].includes(prayerKey)
     });
   }
 
@@ -264,6 +274,76 @@ export class PrayersEngine {
     // Pas de vue 'prayer-complete' explicite dans le render original (c'était une modale ou juste fin)
     // Mais le prompt suggère une vue de fin
     this.state.set('currentView', 'prayer-complete');
+  }
+
+  // ========== MODE VOYAGEUR (MOUSAFIR) ==========
+
+  /**
+   * Active ou désactive le mode voyageur
+   * @param {boolean} enabled - Activer/désactiver le mode
+   * @param {Object} options - Options de configuration
+   * @param {boolean} options.qasrEnabled - Activer le raccourcissement (4→2 rak'at)
+   * @param {boolean} options.jamEnabled - Activer le regroupement des prières
+   * @param {string} options.jamType - Type de regroupement ('taqdim' ou 'takhir')
+   */
+  setTravelMode(enabled, options = {}) {
+    const travelMode = {
+      enabled: enabled,
+      qasrEnabled: options.qasrEnabled !== false, // Par défaut: true si mode activé
+      jamEnabled: options.jamEnabled || false,
+      jamType: options.jamType || null // 'taqdim' (avancer) ou 'takhir' (retarder)
+    };
+    
+    this.state.set('travelMode', travelMode);
+    
+    // Log pour debug
+    if (enabled) {
+      console.log('Mode voyageur activé:', travelMode);
+    } else {
+      console.log('Mode voyageur désactivé');
+    }
+  }
+
+  /**
+   * Récupère l'état actuel du mode voyageur
+   * @returns {Object} Configuration du mode voyageur
+   */
+  getTravelMode() {
+    return this.state.get('travelMode') || {
+      enabled: false,
+      qasrEnabled: true,
+      jamEnabled: false,
+      jamType: null
+    };
+  }
+
+  /**
+   * Vérifie si une prière peut être raccourcie (Qasr)
+   * @param {string} prayerKey - Clé de la prière
+   * @returns {boolean} True si la prière peut être raccourcie
+   */
+  canApplyQasr(prayerKey) {
+    const PRAYERS = this.config.getPrayers();
+    // Seules Dhohr, 'Asr et 'Isha (4 rak'at) peuvent être raccourcies
+    return ['dohr', 'asr', 'isha'].includes(prayerKey) && PRAYERS[prayerKey]?.rakaats === 4;
+  }
+
+  /**
+   * Vérifie si deux prières peuvent être regroupées (Jam')
+   * @param {string} prayer1 - Première prière
+   * @param {string} prayer2 - Deuxième prière
+   * @returns {boolean} True si les prières peuvent être regroupées
+   */
+  canCombinePrayers(prayer1, prayer2) {
+    // Dhohr + 'Asr peuvent être combinées
+    if ((prayer1 === 'dohr' && prayer2 === 'asr') || (prayer1 === 'asr' && prayer2 === 'dohr')) {
+      return true;
+    }
+    // Maghrib + 'Isha peuvent être combinées
+    if ((prayer1 === 'maghreb' && prayer2 === 'isha') || (prayer1 === 'isha' && prayer2 === 'maghreb')) {
+      return true;
+    }
+    return false;
   }
 
   // ========== PRIÈRES SUPPLÉMENTAIRES ==========
@@ -547,6 +627,8 @@ export class PrayersEngine {
         return this.getWitrFinalSteps();
       case 'extra_janazah':
         return []; // Janazah n'a pas d'étapes finales standard
+      case 'extra_istikhara':
+        return this.getIstikharaFinalSteps();
       default:
         // Pour la plupart, réutiliser les étapes finales standard
         return this.getFinalSteps();
@@ -670,77 +752,125 @@ export class PrayersEngine {
   // Ces méthodes seront implémentées dans les phases suivantes
 
   /**
-   * Étapes pour Witr (avec qunût)
+   * Étapes pour Witr (avec Qunût - méthode Hanafi)
+   * Le Qunût se récite DEBOUT, APRÈS la récitation, AVANT le ruku dans la dernière rak'a
    * @returns {Array} Liste des étapes
    */
   getWitrSteps() {
-    // Witr réutilise les étapes standard
-    return this.getPrayerSteps();
-  }
-
-  /**
-   * Étapes finales pour Witr (avec qunût avant tashahhud)
-   * @returns {Array} Liste des étapes finales
-   */
-  getWitrFinalSteps() {
     const t = this.translations.getAll() || {};
     const tr = (key) => t[key] || key;
 
-    // Qunût avant tashahhud dans la dernière rakaʿa
-    const qunûtStep = {
-      id: 'qunût_witr',
-      name: tr('qunûtInvocation') || '[PLACEHOLDER] Invocation du qunût',
-      arabic: 'اللَّهُمَّ اهْدِنِي فِيمَنْ هَدَيْتَ',
-      transliteration: 'Allahumma ihdini fi man hadayta',
-      translation: tr('qunûtTranslation') || '[PLACEHOLDER] O Allah, guide me among those You have guided',
+    // Étape du Takbir du Qunût (lever les mains comme takbir d'ouverture)
+    const takbirQunut = {
+      id: 'takbir_qunut',
+      name: tr('takbirQunut'),
+      arabic: 'اللَّهُ أَكْبَرُ',
+      transliteration: 'Allahu Akbar',
+      translation: tr('takbirQunutTranslation'),
       position: 'standing',
-      action: tr('qunûtAction') || '[PLACEHOLDER] Réciter l\'invocation du qunût',
-      audioFile: '[PLACEHOLDER] qunût invocation',
-      pauseAfter: 2000,
+      action: tr('takbirQunutAction'),
+      audioFile: 'js/features/prayers/assets/audio/guidance/takbir.mp3',
+      pauseAfter: 500,
       lastRakaatOnly: true
     };
 
-    // Étapes finales standard après le qunût
-    const finalSteps = this.getFinalSteps();
-    
-    // Insérer le qunût avant le tashahhud
-    const tashahhudIndex = finalSteps.findIndex(step => step.id === 'tashahhud');
-    if (tashahhudIndex >= 0) {
-      return [
-        ...finalSteps.slice(0, tashahhudIndex),
-        qunûtStep,
-        ...finalSteps.slice(tashahhudIndex)
-      ];
+    // Étape de la Du'a al-Qunût complète
+    const duaQunut = {
+      id: 'dua_qunut',
+      name: tr('duaQunut'),
+      arabic: 'اللَّهُمَّ اهْدِنِي فِيمَنْ هَدَيْتَ، وَعَافِنِي فِيمَنْ عَافَيْتَ، وَتَوَلَّنِي فِيمَنْ تَوَلَّيْتَ، وَبَارِكْ لِي فِيمَا أَعْطَيْتَ، وَقِنِي شَرَّ مَا قَضَيْتَ، فَإِنَّكَ تَقْضِي وَلَا يُقْضَى عَلَيْكَ، وَإِنَّهُ لَا يَذِلُّ مَنْ وَالَيْتَ، وَلَا يَعِزُّ مَنْ عَادَيْتَ، تَبَارَكْتَ رَبَّنَا وَتَعَالَيْتَ',
+      transliteration: 'Allahumma ihdini fiman hadayt, wa \'afini fiman \'afayt, wa tawallani fiman tawallayt, wa barik li fima a\'tayt, wa qini sharra ma qadayt, fa innaka taqdi wa la yuqda \'alayk, wa innahu la yadhillu man walayt, wa la ya\'izzu man \'adayt, tabarakta Rabbana wa ta\'alayt',
+      translation: tr('duaQunutTranslation'),
+      position: 'standing',
+      action: tr('duaQunutAction'),
+      audioFile: '[AUDIO_PENDING] qunut_dua.mp3',
+      pauseAfter: 3000,
+      lastRakaatOnly: true
+    };
+
+    // Récupérer les étapes standard
+    const standardSteps = this.getPrayerSteps();
+    const steps = [];
+
+    // Insérer le Qunût AVANT le takbir_ruku dans la dernière rak'a
+    for (const step of standardSteps) {
+      if (step.id === 'takbir_ruku') {
+        // Insérer takbir_qunut et dua_qunut avant takbir_ruku
+        steps.push(takbirQunut);
+        steps.push(duaQunut);
+      }
+      steps.push(step);
     }
-    
-    // Si tashahhud non trouvé, ajouter qunût au début
-    return [qunûtStep, ...finalSteps];
+
+    return steps;
   }
 
   /**
-   * Étapes pour Joumou'a (avec mention khutbas)
+   * Étapes finales pour Witr
+   * Les étapes finales sont standard (tashahhud, salam)
+   * @returns {Array} Liste des étapes finales
+   */
+  getWitrFinalSteps() {
+    // Le Qunût est déjà inclus dans getWitrSteps() avant le ruku
+    // Les étapes finales sont donc standard
+    return this.getFinalSteps();
+  }
+
+  /**
+   * Étapes finales pour Istikhara
+   * La du'a d'Istikhara se récite APRÈS le salam, pas pendant la prière
+   * @returns {Array} Liste des étapes finales
+   */
+  getIstikharaFinalSteps() {
+    const t = this.translations.getAll() || {};
+    const tr = (key) => t[key] || key;
+
+    // Étapes finales standard (tashahhud, salat ibrahimiya, invocation, salam)
+    const standardFinal = this.getFinalSteps();
+
+    // Du'a d'Istikhara complète - à réciter APRÈS le salam
+    const duaIstikhara = {
+      id: 'dua_istikhara',
+      name: tr('duaIstikhara'),
+      arabic: 'اللَّهُمَّ إِنِّي أَسْتَخِيرُكَ بِعِلْمِكَ وَأَسْتَقْدِرُكَ بِقُدْرَتِكَ وَأَسْأَلُكَ مِنْ فَضْلِكَ الْعَظِيمِ فَإِنَّكَ تَقْدِرُ وَلَا أَقْدِرُ وَتَعْلَمُ وَلَا أَعْلَمُ وَأَنْتَ عَلَّامُ الْغُيُوبِ، اللَّهُمَّ إِنْ كُنْتَ تَعْلَمُ أَنَّ هَذَا الْأَمْرَ خَيْرٌ لِي فِي دِينِي وَمَعَاشِي وَعَاقِبَةِ أَمْرِي فَاقْدُرْهُ لِي وَيَسِّرْهُ لِي ثُمَّ بَارِكْ لِي فِيهِ، وَإِنْ كُنْتَ تَعْلَمُ أَنَّ هَذَا الْأَمْرَ شَرٌّ لِي فِي دِينِي وَمَعَاشِي وَعَاقِبَةِ أَمْرِي فَاصْرِفْهُ عَنِّي وَاصْرِفْنِي عَنْهُ وَاقْدُرْ لِيَ الْخَيْرَ حَيْثُ كَانَ ثُمَّ أَرْضِنِي بِهِ',
+      transliteration: 'Allahumma inni astakhiruka bi\'ilmik, wa astaqdiruka biqudratik, wa as\'aluka min fadlikal-\'azim, fa innaka taqdiru wa la aqdir, wa ta\'lamu wa la a\'lam, wa anta \'allamul-ghuyub. Allahumma in kunta ta\'lamu anna hadhal-amra khayrun li fi dini wa ma\'ashi wa \'aqibati amri, faqdurhu li wa yassirhu li thumma barik li fih. Wa in kunta ta\'lamu anna hadhal-amra sharrun li fi dini wa ma\'ashi wa \'aqibati amri, fasrifhu \'anni wasrifni \'anhu, waqdur liyal-khayra haythu kana thumma ardini bih',
+      translation: tr('duaIstikharaTranslation'),
+      position: 'sitting',
+      action: tr('duaIstikharaAction'),
+      audioFile: '[AUDIO_PENDING] istikhara_dua.mp3',
+      pauseAfter: 5000,
+      afterSalam: true // Flag spécial pour indiquer que c'est après le salam
+    };
+
+    // Ajouter la du'a d'Istikhara après le salam
+    return [...standardFinal, duaIstikhara];
+  }
+
+  /**
+   * Étapes pour Joumou'a (prière du vendredi - 2 rak'at en congrégation)
+   * Précédée de deux khutbas (prêches) que l'on écoute en silence
    * @returns {Array} Liste des étapes
    */
   getJumuahSteps() {
     const t = this.translations.getAll() || {};
     const tr = (key) => t[key] || key;
 
-    // Ajouter une étape pré-prière pour rappeler les khutbas
+    // Rappel informatif sur les khutbas (affiché avant la prière)
     const khutbaReminder = {
       id: 'khutba_reminder',
-      name: tr('khutbaReminder') || '[PLACEHOLDER] Rappel des khutbas',
+      name: tr('khutbaReminder'),
       arabic: '',
       transliteration: '',
-      translation: tr('khutbaReminderText') || '[PLACEHOLDER] Écoutez les deux khutbas en silence avant de commencer la prière',
-      position: 'standing',
-      action: tr('khutbaReminderAction') || '[PLACEHOLDER] Écouter les prêches',
-      audioFile: '[PLACEHOLDER] khutba reminder',
-      pauseAfter: 2000,
+      translation: tr('khutbaReminderText'),
+      position: 'sitting', // On est assis pendant les khutbas
+      action: tr('khutbaReminderAction'),
+      pauseAfter: 3000,
       firstRakaatOnly: true,
-      beforePrayer: true // Flag pour afficher avant la prière
+      beforePrayer: true,
+      isInformational: true // Flag pour afficher différemment dans l'UI
     };
 
-    // Réutiliser les étapes standard
+    // Réutiliser les étapes standard (2 rak'at)
     const standardSteps = this.getPrayerSteps();
     
     // Insérer le rappel des khutbas au début
@@ -748,67 +878,65 @@ export class PrayersEngine {
   }
 
   /**
-   * Étapes pour Aïd (avec takbīrs supplémentaires)
+   * Étapes pour Aïd (avec takbīrs supplémentaires - méthode Shafi'i/Maliki)
+   * R1: 7 takbīrs AVANT la Fatiha (après takbir d'ouverture et du'a d'ouverture)
+   * R2: 5 takbīrs AVANT la Fatiha (après s'être relevé)
    * @returns {Array} Liste des étapes
    */
   getEidSteps() {
     const t = this.translations.getAll() || {};
     const tr = (key) => t[key] || key;
 
-    // Takbīrs supplémentaires après le takbīr d'ouverture (rakaʿa 1 : 6 takbīrs)
+    // 7 Takbīrs supplémentaires dans la 1ère rak'a (AVANT la Fatiha)
     const extraTakbirsRakaat1 = {
-      id: 'extra_takbirs_rakaat1',
-      name: tr('extraTakbirs') || '[PLACEHOLDER] Takbīrs supplémentaires',
-      arabic: 'اللَّهُ أَكْبَرُ',
-      transliteration: 'Allahu Akbar',
-      translation: tr('extraTakbirsText') || '[PLACEHOLDER] Réciter 6 takbīrs supplémentaires',
+      id: 'extra_takbirs_r1',
+      name: tr('extraTakbirsEid'),
+      arabic: 'اللَّهُ أَكْبَرُ (×7)',
+      transliteration: 'Allahu Akbar (7 fois)',
+      translation: tr('extraTakbirsR1Text'),
       position: 'standing',
-      action: tr('extraTakbirsAction') || '[PLACEHOLDER] Réciter les takbīrs supplémentaires',
-      audioFile: '[PLACEHOLDER] extra takbirs',
-      pauseAfter: 2000,
+      action: tr('extraTakbirsR1Action'),
+      audioFile: '[AUDIO_PENDING] eid_takbirs_7.mp3',
+      pauseAfter: 3000,
       firstRakaatOnly: true
     };
 
-    // Takbīrs supplémentaires après le takbīr rukūʿ (rakaʿa 2 : 5 takbīrs)
-    // Dans la deuxième rakaʿa uniquement, après s'être relevé du rukūʿ
+    // 5 Takbīrs supplémentaires dans la 2ème rak'a (AVANT la Fatiha)
     const extraTakbirsRakaat2 = {
-      id: 'extra_takbirs_rakaat2',
-      name: tr('extraTakbirs') || '[PLACEHOLDER] Takbīrs supplémentaires',
-      arabic: 'اللَّهُ أَكْبَرُ',
-      transliteration: 'Allahu Akbar',
-      translation: tr('extraTakbirsText2') || '[PLACEHOLDER] Réciter 5 takbīrs supplémentaires',
+      id: 'extra_takbirs_r2',
+      name: tr('extraTakbirsEid'),
+      arabic: 'اللَّهُ أَكْبَرُ (×5)',
+      transliteration: 'Allahu Akbar (5 fois)',
+      translation: tr('extraTakbirsR2Text'),
       position: 'standing',
-      action: tr('extraTakbirsAction') || '[PLACEHOLDER] Réciter les takbīrs supplémentaires',
-      audioFile: '[PLACEHOLDER] extra takbirs',
-      pauseAfter: 2000,
-      secondRakaatOnly: true // Uniquement dans la 2e rakaʿa
+      action: tr('extraTakbirsR2Action'),
+      audioFile: '[AUDIO_PENDING] eid_takbirs_5.mp3',
+      pauseAfter: 2500,
+      secondRakaatOnly: true
     };
 
-    // Réutiliser les étapes standard
+    // Récupérer les étapes standard
     const standardSteps = this.getPrayerSteps();
     
-    // Insérer les takbīrs supplémentaires aux bons endroits
+    // Insérer les takbīrs supplémentaires AVANT la Fatiha
     const steps = [];
     for (const step of standardSteps) {
-      steps.push(step);
-      
-      // Après takbīr ouverture (première rakaʿa uniquement)
-      if (step.id === 'takbir_ouverture') {
+      // Insérer les takbīrs AVANT la Fatiha
+      if (step.id === 'fatiha') {
+        // R1: 7 takbīrs (sera filtré par firstRakaatOnly)
         steps.push(extraTakbirsRakaat1);
-      }
-      
-      // Après rukūʿ dans la deuxième rakaʿa uniquement
-      // On insère après apres_qiyam, mais le flag secondRakaatOnly filtrera
-      if (step.id === 'apres_qiyam') {
+        // R2: 5 takbīrs (sera filtré par secondRakaatOnly)
         steps.push(extraTakbirsRakaat2);
       }
+      steps.push(step);
     }
     
     return steps;
   }
 
   /**
-   * Étapes pour Janazah (sans rukūʿ/sujūd)
+   * Étapes pour Janazah (prière funéraire - 4 takbirs, sans rukūʿ/sujūd)
+   * Structure: Takbir 1 + Fatiha → Takbir 2 + Salat Ibrahimiya → Takbir 3 + Du'a défunt → Takbir 4 + Du'a brève → Salam
    * @returns {Array} Liste des étapes
    */
   getJanazahSteps() {
@@ -816,59 +944,112 @@ export class PrayersEngine {
     const tr = (key) => t[key] || key;
 
     return [
+      // TAKBIR 1
       {
         id: 'takbir1_janazah',
-        name: tr('takbir1Janazah') || '[PLACEHOLDER] Premier takbīr',
+        name: tr('janazahTakbir1'),
         arabic: 'اللَّهُ أَكْبَرُ',
         transliteration: 'Allahu Akbar',
-        translation: tr('takbir1JanazahText') || '[PLACEHOLDER] Réciter Al-Fatiha',
+        translation: tr('janazahTakbir1Desc'),
         position: 'standing',
-        action: tr('takbir1JanazahAction') || '[PLACEHOLDER] Réciter Al-Fatiha',
-        audioFile: '[PLACEHOLDER] janazah takbir1',
-        pauseAfter: 2000
-      },
-      {
-        id: 'takbir2_janazah',
-        name: tr('takbir2Janazah') || '[PLACEHOLDER] Deuxième takbīr',
-        arabic: 'اللَّهُ أَكْبَرُ',
-        transliteration: 'Allahu Akbar',
-        translation: tr('takbir2JanazahText') || '[PLACEHOLDER] Réciter la prière sur le Prophète (Salāt Ibrāhīmiyya)',
-        position: 'standing',
-        action: tr('takbir2JanazahAction') || '[PLACEHOLDER] Réciter la prière sur le Prophète',
-        audioFile: '[PLACEHOLDER] janazah takbir2',
-        pauseAfter: 2000
-      },
-      {
-        id: 'takbir3_janazah',
-        name: tr('takbir3Janazah') || '[PLACEHOLDER] Troisième takbīr',
-        arabic: 'اللَّهُ أَكْبَرُ',
-        transliteration: 'Allahu Akbar',
-        translation: tr('takbir3JanazahText') || '[PLACEHOLDER] Faire une invocation pour le défunt',
-        position: 'standing',
-        action: tr('takbir3JanazahAction') || '[PLACEHOLDER] Faire une invocation pour le défunt',
-        audioFile: '[PLACEHOLDER] janazah takbir3',
-        pauseAfter: 2000
-      },
-      {
-        id: 'takbir4_janazah',
-        name: tr('takbir4Janazah') || '[PLACEHOLDER] Quatrième takbīr',
-        arabic: 'اللَّهُ أَكْبَرُ',
-        transliteration: 'Allahu Akbar',
-        translation: tr('takbir4JanazahText') || '[PLACEHOLDER] Faire une invocation brève puis salām',
-        position: 'standing',
-        action: tr('takbir4JanazahAction') || '[PLACEHOLDER] Invocation brève puis salām',
-        audioFile: '[PLACEHOLDER] janazah takbir4',
+        action: tr('janazahTakbir1Action'),
+        audioFile: 'js/features/prayers/assets/audio/guidance/takbir.mp3',
         pauseAfter: 1000
       },
+      // AL-FATIHA (après Takbir 1)
+      {
+        id: 'fatiha_janazah',
+        name: tr('reciteFatiha'),
+        arabic: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ۝ الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ ۝ الرَّحْمَٰنِ الرَّحِيمِ ۝ مَالِكِ يَوْمِ الدِّينِ ۝ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ۝ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ۝ صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ',
+        transliteration: 'Bismillahir-rahmanir-rahim. Alhamdulillahi rabbil \'alamin. Ar-rahmanir-rahim. Maliki yawmid-din. Iyyaka na\'budu wa iyyaka nasta\'in. Ihdinas-siratal-mustaqim. Siratal-ladhina an\'amta \'alayhim ghayril-maghdubi \'alayhim walad-dallin',
+        translation: tr('janazahFatihaDesc'),
+        position: 'standing',
+        action: tr('janazahFatihaAction'),
+        surahType: 'fatiha',
+        pauseAfter: 2000
+      },
+      // TAKBIR 2
+      {
+        id: 'takbir2_janazah',
+        name: tr('janazahTakbir2'),
+        arabic: 'اللَّهُ أَكْبَرُ',
+        transliteration: 'Allahu Akbar',
+        translation: tr('janazahTakbir2Desc'),
+        position: 'standing',
+        action: tr('janazahTakbir2Action'),
+        audioFile: 'js/features/prayers/assets/audio/guidance/takbir.mp3',
+        pauseAfter: 1000
+      },
+      // SALAT IBRAHIMIYA (après Takbir 2)
+      {
+        id: 'salat_ibrahimiya_janazah',
+        name: tr('ibrahimicPrayer'),
+        arabic: 'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ',
+        transliteration: 'Allahumma salli \'ala Muhammad wa \'ala ali Muhammad kama sallayta \'ala Ibrahim wa \'ala ali Ibrahim innaka hamidun majid. Allahumma barik \'ala Muhammad wa \'ala ali Muhammad kama barakta \'ala Ibrahim wa \'ala ali Ibrahim innaka hamidun majid',
+        translation: tr('janazahSalatIbrahimiyaDesc'),
+        position: 'standing',
+        action: tr('janazahSalatIbrahimiyaAction'),
+        audioFile: 'js/features/prayers/assets/audio/guidance/ibrahamique apres tashaoud1.mp3',
+        pauseAfter: 2000
+      },
+      // TAKBIR 3
+      {
+        id: 'takbir3_janazah',
+        name: tr('janazahTakbir3'),
+        arabic: 'اللَّهُ أَكْبَرُ',
+        transliteration: 'Allahu Akbar',
+        translation: tr('janazahTakbir3Desc'),
+        position: 'standing',
+        action: tr('janazahTakbir3Action'),
+        audioFile: 'js/features/prayers/assets/audio/guidance/takbir.mp3',
+        pauseAfter: 1000
+      },
+      // DU'A POUR LE DÉFUNT (après Takbir 3) - Version adulte
+      {
+        id: 'dua_mayyit',
+        name: tr('janazahDuaForDeceased'),
+        arabic: 'اللَّهُمَّ اغْفِرْ لَهُ وَارْحَمْهُ، وَعَافِهِ وَاعْفُ عَنْهُ، وَأَكْرِمْ نُزُلَهُ، وَوَسِّعْ مُدْخَلَهُ، وَاغْسِلْهُ بِالْمَاءِ وَالثَّلْجِ وَالْبَرَدِ، وَنَقِّهِ مِنَ الْخَطَايَا كَمَا نَقَّيْتَ الثَّوْبَ الْأَبْيَضَ مِنَ الدَّنَسِ، وَأَبْدِلْهُ دَارًا خَيْرًا مِنْ دَارِهِ، وَأَهْلًا خَيْرًا مِنْ أَهْلِهِ، وَأَدْخِلْهُ الْجَنَّةَ، وَأَعِذْهُ مِنْ عَذَابِ الْقَبْرِ وَعَذَابِ النَّارِ',
+        transliteration: 'Allahumma-ghfir lahu warhamhu, wa \'afihi wa\'fu \'anhu, wa akrim nuzulahu, wa wassi\' mudkhalahu, waghsilhu bil-ma\'i wath-thalji wal-barad, wa naqqihi minal-khataya kama naqqaytath-thawbal-abyada minad-danas, wa abdilhu daran khayran min darihi, wa ahlan khayran min ahlihi, wa adkhilhul-jannah, wa a\'idhhu min \'adhabil-qabri wa \'adhabin-nar',
+        translation: tr('janazahDuaForDeceasedDesc'),
+        position: 'standing',
+        action: tr('janazahDuaForDeceasedAction'),
+        audioFile: '[AUDIO_PENDING] janazah_dua_mayyit.mp3',
+        pauseAfter: 3000,
+        hasGenderVariant: true // Flag pour future extension homme/femme/enfant
+      },
+      // TAKBIR 4
+      {
+        id: 'takbir4_janazah',
+        name: tr('janazahTakbir4'),
+        arabic: 'اللَّهُ أَكْبَرُ',
+        transliteration: 'Allahu Akbar',
+        translation: tr('janazahTakbir4Desc'),
+        position: 'standing',
+        action: tr('janazahTakbir4Action'),
+        audioFile: 'js/features/prayers/assets/audio/guidance/takbir.mp3',
+        pauseAfter: 1000
+      },
+      // DU'A BRÈVE (après Takbir 4)
+      {
+        id: 'dua_brief_janazah',
+        name: tr('janazahBriefDua'),
+        arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+        transliteration: 'Rabbana atina fid-dunya hasanah wa fil-akhirati hasanah wa qina \'adhaban-nar',
+        translation: tr('janazahBriefDuaDesc'),
+        position: 'standing',
+        action: tr('janazahBriefDuaAction'),
+        pauseAfter: 1500
+      },
+      // SALAM (un seul vers la droite ou deux selon les écoles)
       {
         id: 'salam_janazah',
-        name: tr('salamJanazah') || '[PLACEHOLDER] Salām',
+        name: tr('janazahSalam'),
         arabic: 'السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ',
         transliteration: 'As-salamu \'alaykum wa rahmatullah',
-        translation: tr('salamJanazahText') || '[PLACEHOLDER] Paix et miséricorde d\'Allah',
+        translation: tr('janazahSalamDesc'),
         position: 'standing',
-        action: tr('salamJanazahAction') || '[PLACEHOLDER] Tourner la tête à droite puis à gauche',
-        audioFile: '[PLACEHOLDER] janazah salam',
+        action: tr('janazahSalamAction'),
+        audioFile: 'js/features/prayers/assets/audio/guidance/salam final part1.mp3',
         pauseAfter: 0
       }
     ];
@@ -909,29 +1090,30 @@ export class PrayersEngine {
   }
 
   /**
-   * Étapes pour Khawf (mode danger)
+   * Étapes pour Khawf (prière en cas de danger)
+   * Plusieurs formes selon le niveau de danger
    * @returns {Array} Liste des étapes
    */
   getKhawfSteps() {
     const t = this.translations.getAll() || {};
     const tr = (key) => t[key] || key;
 
-    // Ajouter une étape pré-prière pour expliquer le mode danger
+    // Instructions détaillées sur les formes de Salat al-Khawf
     const khawfInstructions = {
       id: 'khawf_instructions',
-      name: tr('khawfInstructions') || '[PLACEHOLDER] Instructions pour la prière en cas de danger',
+      name: tr('khawfInstructions'),
       arabic: '',
       transliteration: '',
-      translation: tr('khawfInstructionsText') || '[PLACEHOLDER] L\'assemblée se divise en deux groupes. Un groupe prie avec l\'imam pendant que l\'autre surveille, puis ils alternent.',
+      translation: tr('khawfInstructionsText'),
       position: 'standing',
-      action: tr('khawfInstructionsAction') || '[PLACEHOLDER] Lire les instructions',
-      audioFile: '[PLACEHOLDER] khawf instructions',
-      pauseAfter: 3000,
+      action: tr('khawfInstructionsAction'),
+      pauseAfter: 5000,
       firstRakaatOnly: true,
-      beforePrayer: true
+      beforePrayer: true,
+      isInformational: true
     };
 
-    // Réutiliser les étapes standard
+    // Réutiliser les étapes standard (forme de base)
     const standardSteps = this.getPrayerSteps();
     
     // Insérer les instructions au début
@@ -939,43 +1121,263 @@ export class PrayersEngine {
   }
 
   /**
-   * Étapes pour Tasbih (dhikr spécial)
+   * Étapes pour Salat al-Tasbih (prière d'exaltation)
+   * Distribution correcte: 75 tasbih par rak'a selon le hadith (Abu Dawud)
+   * 15 après thana + 10 après récitation + 10 en ruku + 10 après qiyam + 10 en sujud1 + 10 en jalsa + 10 en sujud2 = 75
    * @returns {Array} Liste des étapes
    */
   getTasbihSteps() {
     const t = this.translations.getAll() || {};
     const tr = (key) => t[key] || key;
 
-    // Le tasbīh spécial à répéter
-    const tasbihText = tr('tasbihText') || '[PLACEHOLDER] Subḥānallāh wal-ḥamdu lillāh wa lā ilāha illallāh wa Allāhu akbar';
-    
-    // Étape de tasbīh à ajouter après chaque position
-    const tasbihDhikr = {
-      id: 'tasbih_dhikr',
-      name: tr('tasbihDhikr') || '[PLACEHOLDER] Réciter le tasbīh',
-      arabic: 'سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ',
-      transliteration: 'Subhanallahi wal-hamdu lillah',
-      translation: tasbihText,
-      position: 'standing',
-      action: tr('tasbihDhikrAction') || '[PLACEHOLDER] Réciter 75 fois le tasbīh (réparti sur la rakaʿa)',
-      audioFile: '[PLACEHOLDER] tasbih dhikr',
-      pauseAfter: 2000
-    };
+    // Texte du tasbih complet
+    const tasbihArabic = 'سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ وَلَا إِلَٰهَ إِلَّا اللَّهُ وَاللَّهُ أَكْبَرُ';
+    const tasbihTranslit = 'Subhanallahi wal-hamdu lillahi wa la ilaha illallahu wallahu akbar';
 
-    // Réutiliser les étapes standard et ajouter le tasbīh après chaque position importante
-    const standardSteps = this.getPrayerSteps();
-    const steps = [];
-    
-    for (const step of standardSteps) {
-      steps.push(step);
+    // Fonction helper pour créer une étape de tasbih
+    const createTasbihStep = (id, position, count) => ({
+      id: `tasbih_${id}`,
+      name: tr('tasbihDhikr'),
+      arabic: tasbihArabic,
+      transliteration: tasbihTranslit,
+      translation: tr('tasbihDhikrTranslation'),
+      position: position,
+      action: `${tr('reciteTasbih')} ${count} ${tr('times')}`,
+      audioFile: '[AUDIO_PENDING] tasbih_dhikr.mp3',
+      pauseAfter: 2000,
+      tasbihCount: count
+    });
+
+    return [
+      // ===== DÉBUT DE LA RAK'A =====
       
-      // Ajouter tasbīh après certaines positions (simplifié : après chaque étape principale)
-      if (['fatiha', 'second_surah', 'apres_qiyam', 'sujud1', 'sujud2'].includes(step.id)) {
-        steps.push({ ...tasbihDhikr, id: `tasbih_${step.id}`, position: step.position });
-      }
-    }
-    
-    return steps;
+      // Takbir d'ouverture
+      {
+        id: 'takbir_ouverture',
+        name: tr('takbirOpening'),
+        arabic: 'اللَّهُ أَكْبَرُ',
+        transliteration: 'Allahu Akbar',
+        translation: tr('takbirOpeningTranslation'),
+        position: 'standing',
+        action: tr('raiseHands'),
+        audioFile: 'js/features/prayers/assets/audio/guidance/takbir.mp3',
+        firstRakaatOnly: true,
+        pauseAfter: 1000
+      },
+      
+      // Invocation d'ouverture (Thana)
+      {
+        id: 'invocation_ouverture',
+        name: tr('openingInvocation'),
+        arabic: 'سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ وَتَبَارَكَ اسْمُكَ وَتَعَالَىٰ جَدُّكَ وَلَا إِلَٰهَ غَيْرُكَ',
+        transliteration: 'Subhanakal-lahumma wa bihamdika wa tabarakasmuka wa ta\'ala jadduka wa la ilaha ghayruk',
+        translation: tr('openingInvocationTranslation'),
+        position: 'standing',
+        action: tr('reciteOpening'),
+        audioFiles: ['js/features/prayers/assets/audio/guidance/ouverture1.mp3'],
+        firstRakaatOnly: true,
+        pauseAfter: 1000
+      },
+      
+      // *** TASBIH 15x après thana ***
+      createTasbihStep('after_thana', 'standing', 15),
+      
+      // Refuge et Bismillah
+      {
+        id: 'refuge',
+        name: tr('seekingRefuge'),
+        arabic: 'أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ',
+        transliteration: 'A\'udhu billahi minash-shaytanir-rajim',
+        translation: tr('seekingRefugeTranslation'),
+        position: 'standing',
+        action: tr('seekProtection'),
+        firstRakaatOnly: true,
+        pauseAfter: 500
+      },
+      {
+        id: 'bismillah',
+        name: tr('bismillah'),
+        arabic: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
+        transliteration: 'Bismillahir-rahmanir-rahim',
+        translation: tr('bismillahTranslation'),
+        position: 'standing',
+        action: tr('beginWithName'),
+        firstRakaatOnly: true,
+        pauseAfter: 500
+      },
+      
+      // Al-Fatiha
+      {
+        id: 'fatiha',
+        name: tr('reciteFatiha'),
+        arabic: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',
+        transliteration: 'Alhamdulillahi rabbil \'alamin',
+        translation: tr('reciteFatihaTranslation'),
+        position: 'standing',
+        action: tr('reciteFatihaAction'),
+        surahType: 'fatiha',
+        pauseAfter: 1000
+      },
+      
+      // Sourate secondaire
+      {
+        id: 'second_surah',
+        name: tr('secondarySurahStep'),
+        arabic: '...',
+        transliteration: '...',
+        translation: tr('reciteSecondarySurah'),
+        position: 'standing',
+        action: tr('reciteSecondary'),
+        surahType: 'secondary',
+        pauseAfter: 1000
+      },
+      
+      // *** TASBIH 10x après récitation ***
+      createTasbihStep('after_recitation', 'standing', 10),
+      
+      // Takbir pour ruku
+      {
+        id: 'takbir_ruku',
+        name: tr('takbirRuku'),
+        arabic: 'اللَّهُ أَكْبَرُ',
+        transliteration: 'Allahu Akbar',
+        translation: tr('takbirRukuTranslation'),
+        position: 'standing',
+        action: tr('sayTakbirBowing'),
+        audioFile: 'js/features/prayers/assets/audio/guidance/takbir.mp3',
+        pauseAfter: 500
+      },
+      
+      // Ruku avec dhikr standard
+      {
+        id: 'ruku',
+        name: tr('ruku'),
+        arabic: 'سُبْحَانَ رَبِّيَ الْعَظِيمِ',
+        transliteration: 'Subhana Rabbiyal Adheem',
+        translation: tr('rukuTranslation'),
+        position: 'bowing',
+        action: tr('stayBowing'),
+        audioFiles: ['js/features/prayers/assets/audio/guidance/ruku1.mp3'],
+        pauseAfter: 1000
+      },
+      
+      // *** TASBIH 10x en ruku ***
+      createTasbihStep('in_ruku', 'bowing', 10),
+      
+      // Se relever du ruku
+      {
+        id: 'qiyam',
+        name: tr('qiyam'),
+        arabic: 'سَمِعَ اللَّهُ لِمَنْ حَمِدَهُ',
+        transliteration: 'Sami\'a Allahu liman hamidah',
+        translation: tr('qiyamTranslation'),
+        position: 'standing',
+        action: tr('standUpSaying'),
+        audioFile: 'js/features/prayers/assets/audio/guidance/en ce levant1.mp3',
+        pauseAfter: 500
+      },
+      {
+        id: 'apres_qiyam',
+        name: tr('afterQiyam'),
+        arabic: 'رَبَّنَا وَلَكَ الْحَمْدُ',
+        transliteration: 'Rabbana wa lakal hamd',
+        translation: tr('afterQiyamTranslation'),
+        position: 'standing',
+        action: tr('onceStanding'),
+        pauseAfter: 500
+      },
+      
+      // *** TASBIH 10x après qiyam ***
+      createTasbihStep('after_qiyam', 'standing', 10),
+      
+      // Takbir pour sujud 1
+      {
+        id: 'takbir_sujud1',
+        name: tr('takbirSujud'),
+        arabic: 'اللَّهُ أَكْبَرُ',
+        transliteration: 'Allahu Akbar',
+        translation: tr('takbirSujudTranslation'),
+        position: 'standing',
+        action: tr('sayTakbirProstrating'),
+        audioFile: 'js/features/prayers/assets/audio/guidance/takbir.mp3',
+        pauseAfter: 500
+      },
+      
+      // Sujud 1 avec dhikr standard
+      {
+        id: 'sujud1',
+        name: tr('sujud1'),
+        arabic: 'سُبْحَانَ رَبِّيَ الْأَعْلَىٰ',
+        transliteration: 'Subhana Rabbiyal A\'la',
+        translation: tr('sujud1Translation'),
+        position: 'prostrating',
+        action: tr('stayProstrating'),
+        audioFiles: ['js/features/prayers/assets/audio/guidance/durantprosternation1.mp3'],
+        pauseAfter: 1000
+      },
+      
+      // *** TASBIH 10x en sujud 1 ***
+      createTasbihStep('in_sujud1', 'prostrating', 10),
+      
+      // Takbir pour jalsa
+      {
+        id: 'takbir_jalsa',
+        name: tr('takbirSit'),
+        arabic: 'اللَّهُ أَكْبَرُ',
+        transliteration: 'Allahu Akbar',
+        translation: tr('takbirSitTranslation'),
+        position: 'prostrating',
+        action: tr('sayTakbirSitting'),
+        audioFile: 'js/features/prayers/assets/audio/guidance/takbir.mp3',
+        pauseAfter: 500
+      },
+      
+      // Jalsa
+      {
+        id: 'jalsa',
+        name: tr('jalsa'),
+        arabic: 'رَبِّ اغْفِرْ لِي',
+        transliteration: 'Rabbi ghfir li',
+        translation: tr('jalsaTranslation'),
+        position: 'sitting',
+        action: tr('sitBriefly'),
+        pauseAfter: 500
+      },
+      
+      // *** TASBIH 10x en jalsa ***
+      createTasbihStep('in_jalsa', 'sitting', 10),
+      
+      // Takbir pour sujud 2
+      {
+        id: 'takbir_sujud2',
+        name: tr('takbirSujud2'),
+        arabic: 'اللَّهُ أَكْبَرُ',
+        transliteration: 'Allahu Akbar',
+        translation: tr('takbirSujud2Translation'),
+        position: 'sitting',
+        action: tr('sayTakbirProstrating2'),
+        audioFile: 'js/features/prayers/assets/audio/guidance/takbir.mp3',
+        pauseAfter: 500
+      },
+      
+      // Sujud 2 avec dhikr standard
+      {
+        id: 'sujud2',
+        name: tr('sujud2'),
+        arabic: 'سُبْحَانَ رَبِّيَ الْأَعْلَىٰ',
+        transliteration: 'Subhana Rabbiyal A\'la',
+        translation: tr('sujud2Translation'),
+        position: 'prostrating',
+        action: tr('prostrateAgain'),
+        audioFiles: ['js/features/prayers/assets/audio/guidance/durantprosternation2.mp3'],
+        pauseAfter: 1000
+      },
+      
+      // *** TASBIH 10x en sujud 2 ***
+      createTasbihStep('in_sujud2', 'prostrating', 10)
+      
+      // TOTAL: 15 + 10 + 10 + 10 + 10 + 10 + 10 = 75 tasbih par rak'a
+    ];
   }
 }
 
