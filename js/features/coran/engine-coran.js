@@ -1,9 +1,13 @@
+import { QuranAudioService } from './quran-audio-service.js';
+
 export class CoranEngine {
   constructor(dependencies) {
     this.state = dependencies.state;
     this.pluginManager = dependencies.pluginManager;
     this.surahsList = null;
     this.currentSurahData = null;
+    this.audioService = new QuranAudioService();
+    this.recitationsList = null;
     
     this.QURAN_EDITIONS = {
         'fr': { translation: 'fr.hamidullah', arabic: 'quran-simple' },
@@ -130,6 +134,133 @@ export class CoranEngine {
         return true;
     }
     return false;
+  }
+
+  /**
+   * Récupère l'URL audio pour le verset actuel
+   * @param {number} recitationId - ID de la récitation (optionnel, utilise la préférence utilisateur par défaut)
+   * @returns {Promise<string|null>} URL du fichier audio ou null si erreur
+   */
+  async getAudioUrl(recitationId = null) {
+    if (!this.currentSurahData) return null;
+
+    const surahNumber = this.currentSurahData.number;
+    const currentAyahIndex = this.state.get('currentAyahIndex');
+    const ayahNumber = currentAyahIndex + 1; // Les indices commencent à 0, les numéros de verset à 1
+
+    // Utiliser le récitateur sélectionné ou celui par défaut
+    const selectedRecitationId = recitationId || this.state.get('coranRecitationId') || 1;
+
+    try {
+      this.state.set('loadingAudio', true);
+      const audioUrl = await this.audioService.getVerseAudioUrl(surahNumber, ayahNumber, selectedRecitationId);
+      this.state.set('loadingAudio', false);
+      return audioUrl;
+    } catch (error) {
+      console.error('Error getting audio URL:', error);
+      this.state.set('loadingAudio', false);
+      this.state.set('audioError', error.message || 'Erreur lors de la récupération de l\'audio');
+      return null;
+    }
+  }
+
+  /**
+   * Récupère l'URL audio pour une sourate complète
+   * @param {number} surahNumber - Numéro de la sourate (optionnel, utilise la sourate actuelle par défaut)
+   * @param {number} recitationId - ID de la récitation (optionnel, utilise la préférence utilisateur par défaut)
+   * @returns {Promise<string|null>} URL du fichier audio ou null si erreur
+   */
+  async getSurahAudioUrl(surahNumber = null, recitationId = null) {
+    const targetSurahNumber = surahNumber || (this.currentSurahData?.number);
+    if (!targetSurahNumber) return null;
+
+    const selectedRecitationId = recitationId || this.state.get('coranRecitationId') || 1;
+
+    try {
+      this.state.set('loadingAudio', true);
+      const audioUrl = await this.audioService.getSurahAudioUrl(targetSurahNumber, selectedRecitationId);
+      this.state.set('loadingAudio', false);
+      return audioUrl;
+    } catch (error) {
+      console.error('Error getting surah audio URL:', error);
+      this.state.set('loadingAudio', false);
+      this.state.set('audioError', error.message || 'Erreur lors de la récupération de l\'audio');
+      return null;
+    }
+  }
+
+  /**
+   * Récupère la liste des récitations disponibles
+   * @returns {Promise<Array>} Liste des récitations
+   */
+  async getRecitations() {
+    if (this.recitationsList) return this.recitationsList;
+
+    try {
+      this.state.set('loadingRecitations', true);
+      this.recitationsList = await this.audioService.getRecitations();
+      this.state.set('loadingRecitations', false);
+      return this.recitationsList;
+    } catch (error) {
+      console.error('Error fetching recitations:', error);
+      this.state.set('loadingRecitations', false);
+      return [];
+    }
+  }
+
+  /**
+   * Définit le récitateur sélectionné
+   * @param {number} recitationId - ID de la récitation
+   */
+  setRecitationId(recitationId) {
+    this.state.set('coranRecitationId', recitationId);
+  }
+
+  /**
+   * Récupère le récitateur sélectionné
+   * @returns {number} ID de la récitation (1 par défaut)
+   */
+  getRecitationId() {
+    return this.state.get('coranRecitationId') || 1;
+  }
+
+  /**
+   * Télécharge une sourate pour utilisation hors-ligne
+   * @param {number} surahNumber - Numéro de la sourate
+   * @param {number} totalAyahs - Nombre total de versets
+   * @param {number} recitationId - ID du récitateur
+   * @param {Function} onProgress - Callback de progression
+   */
+  async downloadSurahForOffline(surahNumber, totalAyahs, recitationId, onProgress) {
+    return this.audioService.downloadSurahForOffline(surahNumber, totalAyahs, recitationId, onProgress);
+  }
+
+  /**
+   * Vérifie si une sourate est disponible hors-ligne
+   */
+  async isSurahAvailableOffline(surahNumber, recitationId, totalAyahs) {
+    return this.audioService.isSurahAvailableOffline(surahNumber, recitationId, totalAyahs);
+  }
+
+  /**
+   * Supprime le cache d'une sourate
+   */
+  async deleteSurahCache(surahNumber, recitationId) {
+    return this.audioService.deleteSurahCache(surahNumber, recitationId);
+  }
+
+  /**
+   * Récupère la liste des sourates en cache
+   */
+  async getCachedSurahs() {
+    return this.audioService.getCachedSurahs();
+  }
+
+  /**
+   * Récupère la taille du cache
+   */
+  async getCacheSize() {
+    return this.audioService.getCacheSize();
   }
 }
 

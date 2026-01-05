@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Quran Audio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        input, select {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .loading {
+            color: #007bff;
+        }
+        audio {
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test API Quran Audio</h1>
+
+    <div class="container">
+        <h2>1. Test du Proxy PHP</h2>
+        <div class="test-section">
+            <h3>Test de connexion au proxy</h3>
+            <button onclick="testProxyConnection()">Tester la connexion</button>
+            <div id="proxy-connection-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test d'authentification (getToken)</h3>
+            <button onclick="testGetToken()">Obtenir un token</button>
+            <div id="token-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Debug API publique</h3>
+            <button onclick="testDebug()">Tester l'API publique (debug)</button>
+            <div id="debug-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🎙️ Sélection du récitateur</h3>
+            <button onclick="loadReciters()">Charger la liste des récitateurs</button>
+            <select id="reciter-select" style="width: 100%; padding: 10px; margin-top: 10px; font-size: 16px;" disabled>
+                <option value="">-- Cliquez sur "Charger" pour voir les récitateurs --</option>
+            </select>
+            <div id="reciter-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test récupération audio d'un verset</h3>
+            <label>Sourate: <input type="number" id="test-surah" value="1" min="1" max="114"></label>
+            <label>Verset: <input type="number" id="test-ayah" value="1" min="1"></label>
+            <label>Récitateur: <select id="test-recitation" style="min-width: 200px;">
+                <option value="1">AbdulBaset AbdulSamad (Mujawwad)</option>
+            </select></label>
+            <button onclick="testGetVerseAudio()">Tester getVerseAudio</button>
+            <div id="verse-audio-result"></div>
+            <audio id="verse-audio-player" controls style="display:none;"></audio>
+        </div>
+
+        <div class="test-section">
+            <h3>Test récupération audio d'une sourate</h3>
+            <label>Sourate: <input type="number" id="test-surah-full" value="1" min="1" max="114"></label>
+            <label>Récitateur: <select id="test-recitation-full" style="min-width: 200px;">
+                <option value="1">AbdulBaset AbdulSamad (Mujawwad)</option>
+            </select></label>
+            <button onclick="testGetSurahAudio()">Tester getSurahAudio</button>
+            <div id="surah-audio-result"></div>
+            <audio id="surah-audio-player" controls style="display:none;"></audio>
+        </div>
+
+        <div class="test-section">
+            <h3>Test liste des récitations (JSON brut)</h3>
+            <button onclick="testGetRecitations()">Obtenir la liste des récitations</button>
+            <div id="recitations-result"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>2. Test direct de l'API Quran Foundation</h2>
+        <div class="test-section">
+            <p><strong>Note:</strong> Ce test nécessite les credentials côté serveur. Il teste directement l'API.</p>
+            <button onclick="testDirectAPI()">Tester l'API directement (via proxy)</button>
+            <div id="direct-api-result"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>3. Logs détaillés</h2>
+        <div id="detailed-logs" class="result info"></div>
+    </div>
+
+    <script>
+        const proxyUrl = 'api/quran-audio-proxy.php';
+        
+        // Fonction pour construire l'URL du proxy correctement
+        function getProxyUrl(action, params = {}) {
+            const currentUrl = new URL(window.location.href);
+            let basePath = currentUrl.pathname;
+            
+            // Si le chemin se termine par un nom de fichier (avec extension), on l'enlève
+            if (basePath.includes('.')) {
+                const lastSlash = basePath.lastIndexOf('/');
+                if (lastSlash >= 0) {
+                    basePath = basePath.substring(0, lastSlash + 1);
+                }
+            } else if (!basePath.endsWith('/')) {
+                basePath += '/';
+            }
+            
+            // Construire le chemin complet du proxy
+            const proxyPath = basePath + proxyUrl;
+            const url = new URL(proxyPath, currentUrl.origin);
+            url.searchParams.set('action', action);
+            
+            // Ajouter les paramètres
+            Object.keys(params).forEach(key => {
+                if (params[key] !== null && params[key] !== undefined) {
+                    url.searchParams.set(key, params[key]);
+                }
+            });
+            
+            return url.toString();
+        }
+        
+        function log(message, type = 'info') {
+            const logsDiv = document.getElementById('detailed-logs');
+            const timestamp = new Date().toLocaleTimeString();
+            logsDiv.textContent += `[${timestamp}] ${message}\n`;
+            console.log(message);
+        }
+
+        function showResult(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.className = 'result ' + (isError ? 'error' : 'success');
+            element.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+        }
+
+        async function testProxyConnection() {
+            log('Test de connexion au proxy...');
+            const resultDiv = document.getElementById('proxy-connection-result');
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = 'Test en cours...';
+
+            try {
+                const url = getProxyUrl('getToken');
+                log('URL: ' + url);
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showResult('proxy-connection-result', '✅ Proxy accessible et fonctionnel!\n\n' + JSON.stringify(data, null, 2));
+                    log('✅ Proxy accessible');
+                } else {
+                    showResult('proxy-connection-result', '❌ Erreur: ' + JSON.stringify(data, null, 2), true);
+                    log('❌ Erreur proxy: ' + JSON.stringify(data));
+                }
+            } catch (error) {
+                showResult('proxy-connection-result', '❌ Erreur de connexion: ' + error.message, true);
+                log('❌ Erreur: ' + error.message);
+            }
+        }
+
+        async function testGetToken() {
+            log('Test getToken...');
+            const resultDiv = document.getElementById('token-result');
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = 'Test en cours...';
+
+            try {
+                const url = getProxyUrl('getToken');
+                
+                log('URL: ' + url);
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showResult('token-result', '✅ Token obtenu avec succès!\n\n' + JSON.stringify(data, null, 2));
+                    log('✅ Token obtenu');
+                } else {
+                    showResult('token-result', '❌ Erreur: ' + JSON.stringify(data, null, 2), true);
+                    log('❌ Erreur token: ' + JSON.stringify(data));
+                }
+            } catch (error) {
+                showResult('token-result', '❌ Erreur: ' + error.message, true);
+                log('❌ Erreur: ' + error.message);
+            }
+        }
+
+        async function testDebug() {
+            log('Test debug API publique...');
+            const resultDiv = document.getElementById('debug-result');
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = 'Test en cours...';
+
+            try {
+                const url = getProxyUrl('debug');
+                
+                log('URL: ' + url);
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult('debug-result', '✅ API publique fonctionne!\n\n' + JSON.stringify(data, null, 2));
+                    log('✅ Debug OK');
+                } else {
+                    showResult('debug-result', '❌ Erreur: ' + JSON.stringify(data, null, 2), true);
+                    log('❌ Erreur debug: ' + JSON.stringify(data));
+                }
+            } catch (error) {
+                showResult('debug-result', '❌ Erreur: ' + error.message, true);
+                log('❌ Erreur: ' + error.message);
+            }
+        }
+
+        // Variable globale pour stocker les récitateurs
+        let recitersLoaded = false;
+
+        async function loadReciters() {
+            log('Chargement des récitateurs...');
+            const resultDiv = document.getElementById('reciter-result');
+            const select = document.getElementById('reciter-select');
+            const selectVerse = document.getElementById('test-recitation');
+            const selectSurah = document.getElementById('test-recitation-full');
+            
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = 'Chargement en cours...';
+
+            try {
+                const url = getProxyUrl('getRecitations');
+                log('URL: ' + url);
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    // Vider et remplir le dropdown principal
+                    select.innerHTML = '<option value="">-- Sélectionnez un récitateur --</option>';
+                    selectVerse.innerHTML = '';
+                    selectSurah.innerHTML = '';
+                    
+                    data.data.forEach(reciter => {
+                        const option = document.createElement('option');
+                        option.value = reciter.id;
+                        option.textContent = reciter.displayName;
+                        select.appendChild(option);
+                        
+                        // Aussi ajouter aux autres dropdowns
+                        selectVerse.appendChild(option.cloneNode(true));
+                        selectSurah.appendChild(option.cloneNode(true));
+                    });
+                    
+                    select.disabled = false;
+                    recitersLoaded = true;
+                    
+                    showResult('reciter-result', `✅ ${data.count} récitateurs chargés!\n\nSélectionnez un récitateur dans le dropdown ci-dessus.`);
+                    log(`✅ ${data.count} récitateurs chargés`);
+                } else {
+                    showResult('reciter-result', '❌ Erreur: ' + JSON.stringify(data, null, 2), true);
+                    log('❌ Erreur: ' + JSON.stringify(data));
+                }
+            } catch (error) {
+                showResult('reciter-result', '❌ Erreur: ' + error.message, true);
+                log('❌ Erreur: ' + error.message);
+            }
+        }
+
+        async function testGetVerseAudio() {
+            const surah = document.getElementById('test-surah').value;
+            const ayah = document.getElementById('test-ayah').value;
+            const recitation = document.getElementById('test-recitation').value;
+            
+            log(`Test getVerseAudio: surah=${surah}, ayah=${ayah}, recitation=${recitation}`);
+            const resultDiv = document.getElementById('verse-audio-result');
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = 'Test en cours...';
+
+            try {
+                const url = getProxyUrl('getVerseAudio', {
+                    surah: surah,
+                    ayah: ayah,
+                    recitation: recitation
+                });
+                
+                log('URL: ' + url);
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (response.ok && data.success && data.audioUrl) {
+                    showResult('verse-audio-result', '✅ URL audio obtenue!\n\nURL: ' + data.audioUrl + '\n\n' + JSON.stringify(data, null, 2));
+                    const audioPlayer = document.getElementById('verse-audio-player');
+                    audioPlayer.src = data.audioUrl;
+                    audioPlayer.style.display = 'block';
+                    log('✅ URL audio: ' + data.audioUrl);
+                } else {
+                    showResult('verse-audio-result', '❌ Erreur: ' + JSON.stringify(data, null, 2), true);
+                    log('❌ Erreur: ' + JSON.stringify(data));
+                    document.getElementById('verse-audio-player').style.display = 'none';
+                }
+            } catch (error) {
+                showResult('verse-audio-result', '❌ Erreur: ' + error.message, true);
+                log('❌ Erreur: ' + error.message);
+                document.getElementById('verse-audio-player').style.display = 'none';
+            }
+        }
+
+        async function testGetSurahAudio() {
+            const surah = document.getElementById('test-surah-full').value;
+            const recitation = document.getElementById('test-recitation-full').value;
+            
+            log(`Test getSurahAudio: surah=${surah}, recitation=${recitation}`);
+            const resultDiv = document.getElementById('surah-audio-result');
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = 'Test en cours...';
+
+            try {
+                const url = getProxyUrl('getSurahAudio', {
+                    surah: surah,
+                    recitation: recitation
+                });
+                
+                log('URL: ' + url);
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (response.ok && data.success && data.audioUrl) {
+                    showResult('surah-audio-result', '✅ URL audio obtenue!\n\nURL: ' + data.audioUrl + '\n\n' + JSON.stringify(data, null, 2));
+                    const audioPlayer = document.getElementById('surah-audio-player');
+                    audioPlayer.src = data.audioUrl;
+                    audioPlayer.style.display = 'block';
+                    log('✅ URL audio: ' + data.audioUrl);
+                } else {
+                    showResult('surah-audio-result', '❌ Erreur: ' + JSON.stringify(data, null, 2), true);
+                    log('❌ Erreur: ' + JSON.stringify(data));
+                    document.getElementById('surah-audio-player').style.display = 'none';
+                }
+            } catch (error) {
+                showResult('surah-audio-result', '❌ Erreur: ' + error.message, true);
+                log('❌ Erreur: ' + error.message);
+                document.getElementById('surah-audio-player').style.display = 'none';
+            }
+        }
+
+        async function testGetRecitations() {
+            log('Test getRecitations...');
+            const resultDiv = document.getElementById('recitations-result');
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = 'Test en cours...';
+
+            try {
+                const url = getProxyUrl('getRecitations');
+                
+                log('URL: ' + url);
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showResult('recitations-result', '✅ Liste des récitations obtenue!\n\n' + JSON.stringify(data, null, 2));
+                    log('✅ Récitations obtenues');
+                } else {
+                    showResult('recitations-result', '❌ Erreur: ' + JSON.stringify(data, null, 2), true);
+                    log('❌ Erreur: ' + JSON.stringify(data));
+                }
+            } catch (error) {
+                showResult('recitations-result', '❌ Erreur: ' + error.message, true);
+                log('❌ Erreur: ' + error.message);
+            }
+        }
+
+        async function testDirectAPI() {
+            log('Test API directe (via proxy)...');
+            const resultDiv = document.getElementById('direct-api-result');
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = 'Test en cours...';
+
+            try {
+                // Tester getRecitations qui fait un appel direct à l'API
+                const url = getProxyUrl('getRecitations');
+                
+                log('URL: ' + url);
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showResult('direct-api-result', '✅ API accessible via proxy!\n\n' + JSON.stringify(data, null, 2));
+                    log('✅ API accessible');
+                } else {
+                    showResult('direct-api-result', '❌ Erreur API: ' + JSON.stringify(data, null, 2), true);
+                    log('❌ Erreur API: ' + JSON.stringify(data));
+                }
+            } catch (error) {
+                showResult('direct-api-result', '❌ Erreur: ' + error.message, true);
+                log('❌ Erreur: ' + error.message);
+            }
+        }
+
+        // Test automatique au chargement
+        window.addEventListener('load', () => {
+            log('Page de test chargée');
+            log('Proxy URL: ' + getProxyUrl('getToken'));
+            log('Location: ' + window.location.href);
+        });
+    </script>
+</body>
+</html>
+
